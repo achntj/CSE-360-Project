@@ -164,6 +164,18 @@ public class DatabaseHelper {
         }
         return false; // Invalid invitation code
     }
+    
+    // User: Set new password
+    public void setNewPassword(String email, String newPassword) throws SQLException {
+        ensureConnection(); // Ensure connection is available
+
+        String updateUser = "UPDATE cse360users SET password = ?, otp = FALSE WHERE email = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(updateUser)) {
+            pstmt.setBytes(1, hashPassword(newPassword));
+            pstmt.setString(2, email);
+            pstmt.executeUpdate();
+        }
+    }
 
     // Admin: Reset a user's account
     public void resetUserAccount(String email, String newPassword, Timestamp expiry) throws SQLException {
@@ -446,3 +458,4 @@ public class DatabaseHelper {
         }
     }
 }
+
