@@ -62,7 +62,7 @@ public class LoginPage {
                         System.out.println("User needs to reset their password.");
 
                         // Redirect to the password reset page
-                        PasswordResetPage passwordResetPage = new PasswordResetPage(primaryStage, databaseHelper, email);
+                        SetNewPassword passwordResetPage = new SetNewPassword(primaryStage, databaseHelper, email);
                         Scene resetScene = new Scene(passwordResetPage.getPasswordResetLayout(), 400, 300);
                         primaryStage.setScene(resetScene);
 
@@ -129,3 +129,4 @@ public class LoginPage {
         alert.showAndWait();
     }
 }
+
