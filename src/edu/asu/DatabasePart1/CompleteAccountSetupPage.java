@@ -37,6 +37,12 @@ public class CompleteAccountSetupPage {
         TextField lastNameField = new TextField();
         Label preferredNameLabel = new Label("Preferred Name (Optional):");
         TextField preferredNameField = new TextField();
+        Label javaLevelLabel = new Label("Java Level:");
+        TextField javaLevelField = new TextField();
+        Label javaFXLevelLabel = new Label("JavaFX Level: ");
+        TextField javaFXLevelField = new TextField();
+        Label githubLevelLabel = new Label("JavaFX Level: ");
+        TextField githubLevelField = new TextField();
         Button completeSetupButton = new Button("Complete Setup");
 
         completeSetupGrid.add(firstNameLabel, 0, 0);
@@ -47,7 +53,13 @@ public class CompleteAccountSetupPage {
         completeSetupGrid.add(lastNameField, 1, 2);
         completeSetupGrid.add(preferredNameLabel, 0, 3);
         completeSetupGrid.add(preferredNameField, 1, 3);
-        completeSetupGrid.add(completeSetupButton, 1, 4);
+        completeSetupGrid.add(javaLevelLabel, 0, 4);
+        completeSetupGrid.add(javaLevelField, 1, 4);
+        completeSetupGrid.add(javaFXLevelLabel, 0, 5);
+        completeSetupGrid.add(javaFXLevelField, 1, 5);
+        completeSetupGrid.add(githubLevelLabel, 0, 6);
+        completeSetupGrid.add(githubLevelField, 1, 6);
+        completeSetupGrid.add(completeSetupButton, 1, 7);
 
         // Complete Setup Button Action
         completeSetupButton.setOnAction(event -> {
@@ -55,15 +67,18 @@ public class CompleteAccountSetupPage {
             String middleName = middleNameField.getText().trim();
             String lastName = lastNameField.getText().trim();
             String preferredName = preferredNameField.getText().trim();
+            String javaLevel = javaLevelField.getText().trim();
+            String javaFXLevel = javaFXLevelField.getText().trim();
+            String githubLevel = githubLevelField.getText().trim();
 
-            if (firstName.isEmpty() || lastName.isEmpty()) {
-                showAlert("Error", "First Name and Last Name fields cannot be empty.", Alert.AlertType.ERROR);
+            if (firstName.isEmpty() || lastName.isEmpty() || javaLevel.isEmpty() || javaFXLevel.isEmpty() || githubLevel.isEmpty()) {
+                showAlert("Error", "First Name, Last Name, or Level fields cannot be empty.", Alert.AlertType.ERROR);
                 return;
             }
 
             try {
                 // Update user information in the database
-                databaseHelper.updateUserAccount(email, firstName, middleName, lastName, preferredName);
+                databaseHelper.updateUserAccount(email, firstName, middleName, lastName, preferredName, javaLevel, javaFXLevel, githubLevel);
                 showAlert("Success", "Account setup completed successfully.", Alert.AlertType.INFORMATION);
 
                 

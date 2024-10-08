@@ -55,7 +55,9 @@ public class DatabaseHelper {
                 + "preferred_name VARCHAR(50), "
                 + "roles VARCHAR(255), " // Store multiple roles in a comma-separated string
                 + "invite_code VARCHAR(255), " // One-time invitation code
-                + "expertise_levels VARCHAR(255))"; // Store expertise levels as a string (e.g., beginner, intermediate)
+                + "java_level VARCHAR(255), " // Store expertise levels as a string (e.g., beginner, intermediate)
+        		+ "javaFX_level VARCHAR(255), " // Store expertise levels as a string (e.g., beginner, intermediate)
+        		+ "github_level VARCHAR(255))"; // Store expertise levels as a string (e.g., beginner, intermediate)
         statement.execute(userTable);
     }
 
@@ -79,8 +81,8 @@ public class DatabaseHelper {
             role = "Admin";
         }
 
-        String insertUser = "INSERT INTO cse360users (email, username, password, otp, otp_expiry, first_name, middle_name, last_name, preferred_name, roles, expertise_levels) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertUser = "INSERT INTO cse360users (email, username, password, otp, otp_expiry, first_name, middle_name, last_name, preferred_name, roles) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(insertUser)) {
             pstmt.setString(1, email);
             pstmt.setString(2, username);
@@ -92,7 +94,6 @@ public class DatabaseHelper {
             pstmt.setString(8, lastName);
             pstmt.setString(9, preferredName);
             pstmt.setString(10, role); // Store roles (can be multiple, comma-separated)
-            pstmt.setString(11, expertiseLevels);
             pstmt.executeUpdate();
         }
     }
@@ -324,16 +325,19 @@ public class DatabaseHelper {
         return new String[0]; // Return an empty array if no roles are found
     }
  // Update the user's account with the provided details
-    public void updateUserAccount(String email, String firstName, String middleName, String lastName, String preferredName) throws SQLException {
+    public void updateUserAccount(String email, String firstName, String middleName, String lastName, String preferredName, String javaLevel, String javaFXLevel, String githubLevel) throws SQLException {
         ensureConnection(); // Ensure connection is available
 
-        String updateQuery = "UPDATE cse360users SET first_name = ?, middle_name = ?, last_name = ?, preferred_name = ? WHERE email = ?";
+        String updateQuery = "UPDATE cse360users SET first_name = ?, middle_name = ?, last_name = ?, preferred_name = ?, java_level = ?, javaFX_level = ?, github_level = ? WHERE email = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(updateQuery)) {
             pstmt.setString(1, firstName);
             pstmt.setString(2, middleName);
             pstmt.setString(3, lastName);
             pstmt.setString(4, preferredName);
-            pstmt.setString(5, email);
+            pstmt.setString(5, javaFXLevel);
+            pstmt.setString(6, javaLevel);
+            pstmt.setString(7, githubLevel);
+            pstmt.setString(8, email);
             pstmt.executeUpdate();
         }
     }
