@@ -66,10 +66,13 @@ public class CompleteAccountSetupPage {
                 databaseHelper.updateUserAccount(email, firstName, middleName, lastName, preferredName);
                 showAlert("Success", "Account setup completed successfully.", Alert.AlertType.INFORMATION);
 
-                // Redirect to Login Page
-                LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
-                Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
-                primaryStage.setScene(loginScene);
+                
+                //Redirect to User Role Selection Page
+                RoleSelectionPage roleSelectionPage = new RoleSelectionPage(primaryStage, databaseHelper, email);
+                Scene roleSelectionScene = new Scene(roleSelectionPage.getRoleSelectionLayout(), 400, 300);
+                primaryStage.setScene(roleSelectionScene);
+                        
+                
             } catch (SQLException e) {
                 e.printStackTrace();
                 showAlert("Database Error", "An error occurred while updating the account.", Alert.AlertType.ERROR);
