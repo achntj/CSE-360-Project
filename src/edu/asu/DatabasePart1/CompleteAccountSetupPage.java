@@ -41,7 +41,7 @@ public class CompleteAccountSetupPage {
         TextField javaLevelField = new TextField();
         Label javaFXLevelLabel = new Label("JavaFX Level: ");
         TextField javaFXLevelField = new TextField();
-        Label githubLevelLabel = new Label("JavaFX Level: ");
+        Label githubLevelLabel = new Label("Github Level: ");
         TextField githubLevelField = new TextField();
         Button completeSetupButton = new Button("Complete Setup");
 
