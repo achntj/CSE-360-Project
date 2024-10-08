@@ -79,6 +79,18 @@ public class RegisterPage {
                 showAlert("Password Validation Error", validationMessage, Alert.AlertType.ERROR);
                 return;
             }
+            
+            try {
+            	databaseHelper.ensureConnection();
+            	
+            	boolean emailExists = databaseHelper.emailExists(email);
+            	if (emailExists) {
+            		showAlert("Error", "Email Already Exists", Alert.AlertType.ERROR);
+                    return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             try {
                 databaseHelper.ensureConnection();

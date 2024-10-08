@@ -97,6 +97,22 @@ public class DatabaseHelper {
             pstmt.executeUpdate();
         }
     }
+    
+    // Check if the email already exists
+    public boolean emailExists(String email) throws SQLException {
+    	ensureConnection(); // Ensure connection is available
+    	String query = "SELECT COUNT(*) FROM cse360users WHERE email = ?";
+    	try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
+            	System.out.println(rs);
+                if (rs.next()) {
+                    return rs.getInt(1) != 0;
+                }
+            }
+        }
+        return false;
+    }
 
     // Check if the database is empty (i.e., no users are registered)
     public boolean isDatabaseEmpty() throws SQLException {
