@@ -72,6 +72,13 @@ public class RegisterPage {
                 showAlert("Error", "Passwords do not match.", Alert.AlertType.ERROR);
                 return;
             }
+            
+            // Use PasswordEvaluator to validate the password
+            String validationMessage = PasswordChecker.evaluatePassword(password);
+            if (!validationMessage.isEmpty()) {
+                showAlert("Password Validation Error", validationMessage, Alert.AlertType.ERROR);
+                return;
+            }
 
             try {
                 databaseHelper.ensureConnection();

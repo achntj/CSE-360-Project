@@ -55,6 +55,13 @@ public class SetNewPassword {
                 showAlert("Error", "Passwords do not match.", Alert.AlertType.ERROR);
                 return;
             }
+            
+            // Use PasswordEvaluator to validate the password
+            String validationMessage = PasswordChecker.evaluatePassword(newPassword);
+            if (!validationMessage.isEmpty()) {
+                showAlert("Password Validation Error", validationMessage, Alert.AlertType.ERROR);
+                return;
+            }
 
             try {
                 // Set expiry to null as OTP is no longer required after password reset
