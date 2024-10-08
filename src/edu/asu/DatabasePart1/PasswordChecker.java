@@ -43,19 +43,19 @@ public class PasswordChecker {
         // Prepare an error message if any criteria are not met
         String errMessage = "";
         if (!foundUpperCase)
-            errMessage += "Upper case; ";
+            errMessage += "Upper case, ";
         
         if (!foundLowerCase)
-            errMessage += "Lower case; ";
+            errMessage += "Lower case, ";
         
         if (!foundNumericDigit)
-            errMessage += "Numeric digits; ";
+            errMessage += "Numeric digits, ";
         
         if (!foundSpecialChar)
-            errMessage += "Special character; ";
+            errMessage += "Special character, ";
         
         if (!foundLongEnough)
-            errMessage += "At least 8 characters; ";
+            errMessage += "At least 8 characters, ";
 
         // If no criteria were violated, return an empty string (indicating valid password)
         if (errMessage.isEmpty())
