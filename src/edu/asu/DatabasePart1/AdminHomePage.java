@@ -7,22 +7,47 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+/**
+ * <p> AdminHomePage. </p>
+ * 
+ * <p>  Description: Setup for interactive JavaFX user homepage for Admin users to interact with different aspects
+ * of the database and aspects of the application.  </p>
+ * 
+ * @version 1.00	2024-10-09 Project Phase 1 Admin Home Page
+ */
+
 public class AdminHomePage {
 
+	/** Primary stage used for the GUI Interface */
     private final Stage primaryStage;
+    
+    /** Allows us to update and edit the database that holds all of the user information. */
     private final DatabaseHelper databaseHelper;
+    
+    /** The Grid Pane used to map the current admin home page. */
     private final GridPane adminHomeGrid;
 
+    /************
+     * This method initializes all of the elements used in the graphical interface presented for 
+     * the AdminHomePage. It sets up the alignment and text fields used  as well as manages the 
+     * interactions with the page and handles errors that occur. 
+     * 
+     * @param primaryStage		Input of primaryStage used to manage the graphics changes
+     * @param databaseHelper	Input of the databaseHelper that allows us to interact with the content of the database
+     */
     public AdminHomePage(Stage primaryStage, DatabaseHelper databaseHelper) {
+    	
+    	// Initializes the primaryStaged and database helper
         this.primaryStage = primaryStage;
         this.databaseHelper = databaseHelper;
 
-        // Setup Admin Home Page Layout
+        // Creates a gridpane and layout for the admin homepage
         adminHomeGrid = new GridPane();
         adminHomeGrid.setAlignment(Pos.CENTER);
         adminHomeGrid.setVgap(10);
         adminHomeGrid.setHgap(10);
 
+        // Initializes buttons and text displayed on the user interface
         Button inviteUserButton = new Button("Invite User");
         Button resetUserAccountButton = new Button("Reset User Account");
         Button deleteUserAccountButton = new Button("Delete User Account");
@@ -30,7 +55,7 @@ public class AdminHomePage {
         Button addRemoveRoleButton = new Button("Add/Remove User Role");
         Button logoutButton = new Button("Log Out");
 
-        // Add buttons to the layout
+        // Adds buttons to gridpane layout on the user interface
         adminHomeGrid.add(inviteUserButton, 0, 0);
         adminHomeGrid.add(resetUserAccountButton, 0, 1);
         adminHomeGrid.add(deleteUserAccountButton, 0, 2);
@@ -38,60 +63,66 @@ public class AdminHomePage {
         adminHomeGrid.add(addRemoveRoleButton, 0, 4);
         adminHomeGrid.add(logoutButton, 0, 5);
 
-        // Invite User Button Action
+        // Adds redirect for invite user button when pressed
         inviteUserButton.setOnAction(event -> {
+        	// Creates and Redirects to new InviteUserPage and passes Primary Stage and database helper
             InviteUserPage inviteUserPage = new InviteUserPage(primaryStage, databaseHelper);
             Scene inviteUserScene = new Scene(inviteUserPage.getInviteUserLayout(), 400, 300);
             primaryStage.setScene(inviteUserScene);
         });
 
-        // Reset User Account Button Action
+        // Adds redirect for resetUserAccountButton
         resetUserAccountButton.setOnAction(event -> {
+        	// Creates and Redirects to new ResetUserAccountPage and passes Primary Stage and database helper
             ResetUserAccountPage resetUserPage = new ResetUserAccountPage(primaryStage, databaseHelper);
             Scene resetUserScene = new Scene(resetUserPage.getResetUserLayout(), 400, 300);
             primaryStage.setScene(resetUserScene);
         });
 
-        // Delete User Account Button Action
+        // Adds redirect for deleteUserAccounButton
         deleteUserAccountButton.setOnAction(event -> {
+        	// Creates and Redirects to new DeleteUserAccountPage and passes Primary Stage and database helper
             DeleteUserAccountPage deleteUserPage = new DeleteUserAccountPage(primaryStage, databaseHelper);
             Scene deleteUserScene = new Scene(deleteUserPage.getDeleteUserLayout(), 400, 300);
             primaryStage.setScene(deleteUserScene);
         });
 
-        // List User Accounts Button Action
+        // Adds redirect for listUserAccountsButton
         listUserAccountsButton.setOnAction(event -> {
             try {
-                // Display list of users (could be updated to a new page as needed)
+                // Gathers the users accounts from the database and attempts to display them
                 String usersList = databaseHelper.listUserAccounts();
-                showAlert("User Accounts", usersList, Alert.AlertType.INFORMATION);
+                showAlert("User Accounts", usersList, Alert.AlertType.INFORMATION); 
+                // Checks if there was an error in displaying the user accounts and alerts the user
             } catch (Exception e) {
                 e.printStackTrace();
                 showAlert("Error", "An error occurred while listing user accounts.", Alert.AlertType.ERROR);
             }
         });
 
-        // Add/Remove Role Button Action
+        // Adds redirect for addRemoveRoleButton 
         addRemoveRoleButton.setOnAction(event -> {
+        	// Creates and redirects to new addRemoveRolePage and passes in primary stage and database helper for usage
             AddRemoveRolePage addRemoveRolePage = new AddRemoveRolePage(primaryStage, databaseHelper);
             Scene addRemoveRoleScene = new Scene(addRemoveRolePage.getAddRemoveRoleLayout(), 400, 300);
             primaryStage.setScene(addRemoveRoleScene);
         });
 
-        // Log Out Button Action
+        // Adds redirect for logout button
         logoutButton.setOnAction(event -> {
-            // Redirect to Login Page
+            // Redirects to newly created LoginPage
             LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
             Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
             primaryStage.setScene(loginScene);
         });
     }
-
+    
+    //Get method for the gridlayout of admin homepage
     public GridPane getAdminHomeLayout() {
         return adminHomeGrid;
     }
 
-    // Helper method to show alerts to the user
+    // Creates and displays pop up alerts to user 
     private void showAlert(String title, String content, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
