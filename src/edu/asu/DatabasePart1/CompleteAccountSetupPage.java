@@ -110,7 +110,7 @@ public class CompleteAccountSetupPage {
             }
             
             // Checks if user passed in any empty values and returns an error if they did
-            if (firstName.isEmpty() || lastName.isEmpty() || javaLevel.isEmpty() || javaFXLevel.isEmpty() || githubLevel.isEmpty()) {
+            if (firstName.isEmpty() || lastName.isEmpty()) {
                 showAlert("Error", "First Name, Last Name, or Level fields cannot be empty.", Alert.AlertType.ERROR);
                 return;
             }
