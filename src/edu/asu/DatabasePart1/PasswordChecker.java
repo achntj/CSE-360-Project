@@ -1,13 +1,21 @@
 package edu.asu.DatabasePart1;
 
 public class PasswordChecker {
+    
+	public static boolean foundUpperCase = false;
+	public static boolean foundLowerCase = false;
+	public static boolean foundNumericDigit = false;
+	public static boolean foundSpecialChar = false;
+	public static boolean foundLongEnough = false;
 
+	
     public static String evaluatePassword(String password) {
-        boolean foundUpperCase = false;
-        boolean foundLowerCase = false;
-        boolean foundNumericDigit = false;
-        boolean foundSpecialChar = false;
-        boolean foundLongEnough = false;
+    	foundUpperCase = false;
+    	foundLowerCase = false;
+    	foundNumericDigit = false;
+    	foundSpecialChar = false;
+    	foundLongEnough = false;
+
 
         // Check for each character in the password
         for (int i = 0; i < password.length(); i++) {
@@ -28,7 +36,7 @@ public class PasswordChecker {
             // Check for special characters
             else if ("!@#$%^&*()-_=+[]{}|;:'\",.<>?/".indexOf(currentChar) >= 0) {
                 foundSpecialChar = true;
-            } 
+            }
             // If an invalid character is found, return an error
             else {
                 return "*** Error *** An invalid character has been found!";
