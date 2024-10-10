@@ -26,8 +26,17 @@ public class PasswordChecker {
      * @return				An empty string if all criteria are satisfied, otherwise an 
      * 						error message listing the missing requirements
      */
+	
+	// Flags to track whether each criteria is met
+	// The names of the variables specify their function and each is initialize as required
+	public static boolean foundUpperCase = false;
+	public static boolean foundLowerCase = false;
+	public static boolean foundNumericDigit = false;
+	public static boolean foundSpecialChar = false;
+	public static boolean foundLongEnough = false;
+	
     public static String evaluatePassword(String password) {
-        // Flags to track whether each criteria is met
+    	// We set flags to false by default for each string every time
         boolean foundUpperCase = false;
         boolean foundLowerCase = false;
         boolean foundNumericDigit = false;
