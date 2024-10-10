@@ -15,35 +15,26 @@ package edu.asu.DatabasePart1;
 
 
 public class PasswordChecker {
-    
-	/**********************************************************************************************
 
-	Attributes
-	
-	**********************************************************************************************/
-	
-	// We need to define these variables globally (public) for testing access
-	// The names of the variables specify their function and each is initialize as required
-	public static boolean foundUpperCase;
-	public static boolean foundLowerCase;
-	public static boolean foundNumericDigit;
-	public static boolean foundSpecialChar;
-	public static boolean foundLongEnough;
-
-
-	/**********
-	 * This is the method that evaluates each password character by character
-	 */
+    /************
+     * This method evaluates the given password based on multiple criteria including 
+     * upper and lower case letters, numeric digits, special characters, and a minimum 
+     * length of 8 characters. If any of the criteria are not satisfied, a message is 
+     * returned specifying the missing requirements.
+     * 
+     * @param password		The input password to be evaluated
+     * @return				An empty string if all criteria are satisfied, otherwise an 
+     * 						error message listing the missing requirements
+     */
     public static String evaluatePassword(String password) {
-    	// We set checks to false by default for each string
-    	foundUpperCase = false;
-    	foundLowerCase = false;
-    	foundNumericDigit = false;
-    	foundSpecialChar = false;
-    	foundLongEnough = false;
+        // Flags to track whether each criteria is met
+        boolean foundUpperCase = false;
+        boolean foundLowerCase = false;
+        boolean foundNumericDigit = false;
+        boolean foundSpecialChar = false;
+        boolean foundLongEnough = false;
 
-
-        // Check for each character in the password
+        // Loop through each character in the password to check conditions
         for (int i = 0; i < password.length(); i++) {
             char currentChar = password.charAt(i);
 
@@ -62,8 +53,8 @@ public class PasswordChecker {
             // Check for special characters
             else if ("!@#$%^&*()-_=+[]{}|;:'\",.<>?/".indexOf(currentChar) >= 0) {
                 foundSpecialChar = true;
-            }
-            // If an invalid character is found, return an error
+            } 
+            // If an invalid character is found, return an error message
             else {
                 return "*** Error *** An invalid character has been found!";
             }
@@ -91,11 +82,11 @@ public class PasswordChecker {
         if (!foundLongEnough)
             errMessage += "At least 8 characters, ";
 
-        // If no criteria were violated, return an empty string (indicating valid password)
+        // If no criteria were violated, return an empty string indicating a valid password
         if (errMessage.isEmpty())
             return "";
 
-        // Return the error message
+        // Return the error message indicating which conditions were not satisfied
         return errMessage + "conditions were not satisfied.";
     }
 }
