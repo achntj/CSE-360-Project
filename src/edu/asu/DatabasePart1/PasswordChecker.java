@@ -1,15 +1,41 @@
 package edu.asu.DatabasePart1;
 
+/*******
+ * <p> PasswordEvaluator Class </p>
+ * 
+ * <p> Description: A class responsible for evaluating the validity of a password based on specific rules. </p>
+ * 
+ * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
+ * 
+ * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * 
+ * @version 1.00	2024-10-09 Documented code and added more robust test cases
+ * 
+ */
+
+
 public class PasswordChecker {
     
-	public static boolean foundUpperCase = false;
-	public static boolean foundLowerCase = false;
-	public static boolean foundNumericDigit = false;
-	public static boolean foundSpecialChar = false;
-	public static boolean foundLongEnough = false;
+	/**********************************************************************************************
 
+	Attributes
 	
+	**********************************************************************************************/
+	
+	// We need to define these variables globally (public) for testing access
+	// The names of the variables specify their function and each is initialize as required
+	public static boolean foundUpperCase;
+	public static boolean foundLowerCase;
+	public static boolean foundNumericDigit;
+	public static boolean foundSpecialChar;
+	public static boolean foundLongEnough;
+
+
+	/**********
+	 * This is the method that evaluates each password character by character
+	 */
     public static String evaluatePassword(String password) {
+    	// We set checks to false by default for each string
     	foundUpperCase = false;
     	foundLowerCase = false;
     	foundNumericDigit = false;
