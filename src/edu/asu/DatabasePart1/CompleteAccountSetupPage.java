@@ -97,7 +97,18 @@ public class CompleteAccountSetupPage {
             String javaLevel = javaLevelField.getText().trim();
             String javaFXLevel = javaFXLevelField.getText().trim();
             String githubLevel = githubLevelField.getText().trim();
-
+            
+            // Sets default skill levels to intermediate
+            if (githubLevel == "") {
+            	githubLevel = "Intermediate";
+            }
+            if (javaLevel == "") {
+            	javaLevel = "Intermediate";
+            }
+            if (javaFXLevel == "") {
+            	javaFXLevel = "Intermediate";
+            }
+            
             // Checks if user passed in any empty values and returns an error if they did
             if (firstName.isEmpty() || lastName.isEmpty() || javaLevel.isEmpty() || javaFXLevel.isEmpty() || githubLevel.isEmpty()) {
                 showAlert("Error", "First Name, Last Name, or Level fields cannot be empty.", Alert.AlertType.ERROR);
