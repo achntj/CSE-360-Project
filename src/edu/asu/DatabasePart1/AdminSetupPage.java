@@ -12,22 +12,41 @@ import javafx.stage.Stage;
 
 import java.sql.SQLException;
 
+/**
+ * <p> AdminSetupPage. </p>
+ * 
+ * <p>  Description: JavaFX interface implemented to set up admin users accounts in the application. Allows users to 
+ * enter various information about themselves and adds to the database so the user is recognized again. </p>
+ * 
+ * @version 1.00 	2024-10-09 Project Phase 1 Setting Up Admin account page
+ * 
+ */
+
 public class AdminSetupPage {
 
+	/** Primary stage used for the GUI Interface */
     private final Stage primaryStage;
+    
+    /** Allows us to update and edit the database that holds all of the user information. */
     private final DatabaseHelper databaseHelper;
+    
+    /** The Grid Pane used to map the admin set up page. */
     private final GridPane adminSetupGrid;
 
+    
     public AdminSetupPage(Stage primaryStage, DatabaseHelper databaseHelper) {
+    	
+    	// Initializes the primaryStaged and database helper 
         this.primaryStage = primaryStage;
         this.databaseHelper = databaseHelper;
 
-        // Setup Admin Registration UI Layout
+        // Setup new admin registration UI Layout and alignment
         adminSetupGrid = new GridPane();
         adminSetupGrid.setAlignment(Pos.CENTER);
         adminSetupGrid.setVgap(10);
         adminSetupGrid.setHgap(10);
 
+        // Establishes text and buttons to be used in user interface
         Label emailLabel = new Label("Email:");
         TextField emailField = new TextField();
         Label usernameLabel = new Label("Username:");
@@ -44,7 +63,7 @@ public class AdminSetupPage {
         TextField preferredNameField = new TextField();
         Button createAdminButton = new Button("Create Admin Account");
 
-        // Add components to the grid
+        // Adds button and text components to the grid layout
         adminSetupGrid.add(emailLabel, 0, 0);
         adminSetupGrid.add(emailField, 1, 0);
         adminSetupGrid.add(usernameLabel, 0, 1);
@@ -61,8 +80,9 @@ public class AdminSetupPage {
         adminSetupGrid.add(preferredNameField, 1, 6);
         adminSetupGrid.add(createAdminButton, 1, 7);
 
-        // Create Admin Account Button Action
+        // Establishes functionality of create admin button
         createAdminButton.setOnAction(event -> {
+        	// Gathers new admin information from user
             String email = emailField.getText().trim();
             String username = usernameField.getText().trim();
             String password = passwordField.getText().trim();
@@ -71,30 +91,34 @@ public class AdminSetupPage {
             String lastName = lastNameField.getText().trim();
             String preferredName = preferredNameField.getText().trim();
 
+            // Checks if any field is empty, if it is return an error
             if (email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || firstName.isEmpty() || lastName.isEmpty()) {
                 showAlert("Error", "All fields except Preferred Name must be filled.", Alert.AlertType.ERROR);
                 return;
             }
 
+            // Checks if password entered twice matches, and if they do not returns an error
             if (!password.equals(confirmPassword)) {
                 showAlert("Error", "Passwords do not match.", Alert.AlertType.ERROR);
                 return;
             }
             
-            // Use PasswordEvaluator to validate the password
+            // Uses PasswordEvaluator to validate the password and returns an error if the requirements are not met
             String validationMessage = PasswordChecker.evaluatePassword(password);
             if (!validationMessage.isEmpty()) {
                 showAlert("Password Validation Error", validationMessage, Alert.AlertType.ERROR);
                 return;
             }
-
+            
             try {
+            	//Connects to the database 
                 databaseHelper.ensureConnection();
-                // Register the first user as Admin
+                
+                // Register the first user as Admin and displays if addition was successful 
                 databaseHelper.register(email, username, password, "Admin", false, null, firstName, null, lastName, preferredName.isEmpty() ? null : preferredName, "beginner");
                 showAlert("Success", "Admin account created successfully. Please log in.", Alert.AlertType.INFORMATION);
 
-                // Redirect to Login Page
+                // Redirect to new Login Page and passes in primaryStage and databaseHelper
                 LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
                 Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
                 primaryStage.setScene(loginScene);
@@ -105,6 +129,7 @@ public class AdminSetupPage {
         });
     }
 
+    //Get method for admin set up page layout 
     public GridPane getAdminSetupLayout() {
         return adminSetupGrid;
     }

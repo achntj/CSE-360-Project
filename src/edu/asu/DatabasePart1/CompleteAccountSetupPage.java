@@ -11,24 +11,44 @@ import javafx.stage.Stage;
 
 import java.sql.SQLException;
 
+/**
+ * <p> CompleteAccountSetupPage. </p>
+ * 
+ * <p>  Description: Page of JavaFX implemented application that allows users to complete 
+ * the set up of their accounts and adds the information gathered to the database. </p>
+ * 
+ * @version 1.00 	2024-10-09 Project Phase 1 finish setting up account page
+ * 
+ */
+
 public class CompleteAccountSetupPage {
 
+	/** Primary stage used for the GUI Interface. */
     private final Stage primaryStage;
+    
+    /** Allows us to update and edit the database that holds all of the user information. */
     private final DatabaseHelper databaseHelper;
+    
+    /** Holds the email of the user which we are setting up. */
     private final String email;
+    
+    /** The Grid Pane used to map the complete setup page. */
     private final GridPane completeSetupGrid;
-
+    
     public CompleteAccountSetupPage(Stage primaryStage, DatabaseHelper databaseHelper, String email) {
-        this.primaryStage = primaryStage;
+        
+    	// Initializes the passed in variables 
+    	this.primaryStage = primaryStage;
         this.databaseHelper = databaseHelper;
         this.email = email;
 
-        // Setup Complete Account Setup UI Layout
+        // Setup Complete Account and Setup UI Layout and Alignment
         completeSetupGrid = new GridPane();
         completeSetupGrid.setAlignment(Pos.CENTER);
         completeSetupGrid.setVgap(10);
         completeSetupGrid.setHgap(10);
 
+        // Initializes buttons and text fields for the UI
         Label firstNameLabel = new Label("First Name:");
         TextField firstNameField = new TextField();
         Label middleNameLabel = new Label("Middle Name:");
@@ -45,6 +65,7 @@ public class CompleteAccountSetupPage {
         TextField githubLevelField = new TextField();
         Button completeSetupButton = new Button("Complete Setup");
 
+        // Adds initialized buttons, text fields, and labels to interface 
         completeSetupGrid.add(firstNameLabel, 0, 0);
         completeSetupGrid.add(firstNameField, 1, 0);
         completeSetupGrid.add(middleNameLabel, 0, 1);
@@ -61,8 +82,10 @@ public class CompleteAccountSetupPage {
         completeSetupGrid.add(githubLevelField, 1, 6);
         completeSetupGrid.add(completeSetupButton, 1, 7);
 
-        // Complete Setup Button Action
+        // Establishes functionality of complete set up 
         completeSetupButton.setOnAction(event -> {
+        	
+        	// Gathers information from user to pass into database
             String firstName = firstNameField.getText().trim();
             String middleName = middleNameField.getText().trim();
             String lastName = lastNameField.getText().trim();
@@ -71,6 +94,7 @@ public class CompleteAccountSetupPage {
             String javaFXLevel = javaFXLevelField.getText().trim();
             String githubLevel = githubLevelField.getText().trim();
 
+            // Checks if user passed in any empty values and returns an error if they did
             if (firstName.isEmpty() || lastName.isEmpty() || javaLevel.isEmpty() || javaFXLevel.isEmpty() || githubLevel.isEmpty()) {
                 showAlert("Error", "First Name, Last Name, or Level fields cannot be empty.", Alert.AlertType.ERROR);
                 return;
@@ -80,14 +104,14 @@ public class CompleteAccountSetupPage {
                 // Update user information in the database
                 databaseHelper.updateUserAccount(email, firstName, middleName, lastName, preferredName, javaLevel, javaFXLevel, githubLevel);
                 showAlert("Success", "Account setup completed successfully.", Alert.AlertType.INFORMATION);
-
                 
-                //Redirect to User Role Selection Page
+                // Redirects the user to new User Role Selection Page
                 RoleSelectionPage roleSelectionPage = new RoleSelectionPage(primaryStage, databaseHelper, email);
                 Scene roleSelectionScene = new Scene(roleSelectionPage.getRoleSelectionLayout(), 400, 300);
                 primaryStage.setScene(roleSelectionScene);
                         
                 
+                // Displays error if there was an issue adding the account
             } catch (SQLException e) {
                 e.printStackTrace();
                 showAlert("Database Error", "An error occurred while updating the account.", Alert.AlertType.ERROR);
@@ -95,6 +119,7 @@ public class CompleteAccountSetupPage {
         });
     }
 
+    //Getter Method for the layout of Complete Set Up Page
     public GridPane getCompleteSetupLayout() {
         return completeSetupGrid;
     }
