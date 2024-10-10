@@ -17,6 +17,10 @@ import java.sql.SQLException;
  * <p>  Description: Page of JavaFX implemented application that allows users to complete 
  * the set up of their accounts and adds the information gathered to the database. </p>
  * 
+ * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
+ * 
+ * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * 
  * @version 1.00 	2024-10-09 Project Phase 1 finish setting up account page
  * 
  */

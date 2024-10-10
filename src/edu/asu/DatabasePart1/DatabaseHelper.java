@@ -13,6 +13,10 @@ import javafx.scene.control.Alert;
  * <p>  Description: Database helper class used to aid in the alteration of data 
  * within the applications database. Handles all connections and operations on database. </p>
  * 
+ * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
+ * 
+ * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ *  
  * @version 1.00 	2024-10-09 Project Phase 1 DatabaseHelper Page
  * 
  */

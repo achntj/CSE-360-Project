@@ -19,6 +19,10 @@ import java.sql.SQLException;
  * using an invitation code. It validates user input, checks password strength, and 
  * handles user registration with the database. </p>
  * 
+ * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
+ * 
+ * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * 
  * @version 1.00 	2024-10-09 Project Phase 1 Registration Page
  * 
  */

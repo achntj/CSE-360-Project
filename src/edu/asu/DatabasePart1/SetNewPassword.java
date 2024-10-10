@@ -18,6 +18,10 @@ import java.sql.SQLException;
  * after an initial login or password reset requirement. It validates the inputted 
  * password and updates the user's account in the database. </p>
  * 
+ * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
+ * 
+ * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * 
  * @version 1.00 	2024-10-09 Project Phase 1 Set New Password Page
  * 
  */

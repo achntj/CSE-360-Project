@@ -14,6 +14,10 @@ import java.sql.SQLException;
  * <p>  Description: Setup for an interactive JavaFX page that allows admin users to add 
  * or remove roles from specific users in the database </p>
  * 
+ * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
+ * 
+ * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * 
  * @version 1.00 	2024-10-09 Project Phase 1 Add and Remove Role Page
  * 
  */

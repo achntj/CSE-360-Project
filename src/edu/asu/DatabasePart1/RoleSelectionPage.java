@@ -19,6 +19,10 @@ import java.sql.SQLException;
  * user has multiple roles. The selected role will determine which home page the user is 
  * redirected to for the current session. </p>
  * 
+ * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
+ * 
+ * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * 
  * @version 1.00 	2024-10-09 Project Phase 1 Role Selection Page
  * 
  */

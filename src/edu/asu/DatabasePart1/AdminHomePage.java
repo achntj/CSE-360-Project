@@ -13,6 +13,10 @@ import javafx.stage.Stage;
  * <p>  Description: Setup for interactive JavaFX user homepage for Admin users to interact with different aspects
  * of the database and aspects of the application.  </p>
  * 
+ * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
+ * 
+ * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * 
  * @version 1.00	2024-10-09 Project Phase 1 Admin Home Page
  */
 

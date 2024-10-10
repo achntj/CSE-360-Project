@@ -15,6 +15,10 @@ import javafx.stage.Stage;
  * are redirected to after login. The layout is role-specific, and users can log out 
  * from this page. </p>
  * 
+ * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
+ * 
+ * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * 
  * @version 1.00 	2024-10-09 Project Phase 1 User Home Page
  * 
  */

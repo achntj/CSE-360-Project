@@ -11,6 +11,10 @@ import javafx.stage.Stage;
  * the launch of the application and determines whether the first-time admin setup or 
  * regular login page should be displayed, depending on the state of the database. </p>
  * 
+ * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
+ * 
+ * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * 
  * @version 1.00 	2024-10-09 Project Phase 1 Login and Registration System
  * 
  */

@@ -19,6 +19,10 @@ import java.sql.SQLException;
  * allowing users to enter their email and password to log in, and handles the 
  * redirection based on user roles and account status. </p>
  * 
+ * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
+ * 
+ * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * 
  * @version 1.00 	2024-10-09 Project Phase 1 Login Page
  * 
  */
