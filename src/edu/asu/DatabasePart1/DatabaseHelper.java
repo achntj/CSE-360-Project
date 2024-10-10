@@ -7,38 +7,51 @@ import java.util.UUID;
 
 import javafx.scene.control.Alert;
 
+/**
+ * <p> DatabaseHelper Class. </p>
+ * 
+ * <p>  Description: Database helper class used to aid in the alteration of data 
+ * within the applications database. Handles all connections and operations on database. </p>
+ * 
+ * @version 1.00 	2024-10-09 Project Phase 1 DatabaseHelper Page
+ * 
+ */
+
 public class DatabaseHelper {
 
-    // JDBC driver name and database URL 
+    /** JDBC driver name and database URL use for identifying portions of database access.*/
     static final String JDBC_DRIVER = "org.h2.Driver";
     static final String DB_URL = "jdbc:h2:~/firstDatabase";
 
-    // Database credentials 
+    /** Holds Database Credentials which allow further access. */
     static final String USER = "sa";
     static final String PASS = "";
 
+    /** Handles connections to the database and keeps updated on their status */
     private Connection connection = null;
     private Statement statement = null;
 
-    // Ensure the database connection is established
+    // Ensures the database connection is established correctly 
     public void ensureConnection() throws SQLException {
         if (this.connection == null || this.connection.isClosed()) {
             connectToDatabase();
         }
     }
 
+    // Connects and establishes database setup
     public void connectToDatabase() throws SQLException {
         try {
-            Class.forName(JDBC_DRIVER); // Load the JDBC driver
+            Class.forName(JDBC_DRIVER); 		// Load the JDBC driver
             System.out.println("Connecting to database...");
             connection = DriverManager.getConnection(DB_URL, USER, PASS);
             statement = connection.createStatement();
-            createTables(); // Create the necessary tables if they don't exist
+            createTables(); 					// Create the necessary tables if they don't exist
         } catch (ClassNotFoundException e) {
             System.err.println("JDBC Driver not found: " + e.getMessage());
         }
     }
 
+    // Creates storage for users in the database in an organized way
     private void createTables() throws SQLException {
         ensureConnection(); // Ensure connection is available
 
@@ -80,7 +93,8 @@ public class DatabaseHelper {
         if (isDatabaseEmpty()) {
             role = "Admin";
         }
-
+        
+        // Stores roles in the database
         String insertUser = "INSERT INTO cse360users (email, username, password, otp, otp_expiry, first_name, middle_name, last_name, preferred_name, roles) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(insertUser)) {
@@ -98,7 +112,7 @@ public class DatabaseHelper {
         }
     }
     
-    // Check if the email already exists
+    // Check if the email already exists 
     public boolean emailExists(String email) throws SQLException {
     	ensureConnection(); // Ensure connection is available
     	String query = "SELECT COUNT(*) FROM cse360users WHERE email = ?";
@@ -238,6 +252,7 @@ public class DatabaseHelper {
         }
     }
 
+    // Updates the roles for the user 
     private void updateRoles(String email, String roles) throws SQLException {
         ensureConnection(); // Ensure connection is available
 
@@ -357,7 +372,7 @@ public class DatabaseHelper {
             pstmt.executeUpdate();
         }
     }
- // List all user accounts with their details
+    // List all user accounts with their details
     public String listUserAccounts() throws SQLException {
         ensureConnection(); // Ensure the connection is established
 
@@ -392,7 +407,7 @@ public class DatabaseHelper {
             return usersList.toString();
         }
     }
- // Remove a role from a user
+    // Remove a role from a user
     public void removeRoleFromUser(String email, String roleToRemove) throws SQLException {
         ensureConnection(); // Ensure connection is available
 
@@ -428,7 +443,7 @@ public class DatabaseHelper {
             }
         }
     }
- // Check if a user has a specific role
+    // Check if a user has a specific role
     public boolean hasRole(String email, String role) throws SQLException {
         ensureConnection(); // Ensure connection is available
 
@@ -449,7 +464,7 @@ public class DatabaseHelper {
         }
         return false;
     }
- // Update the user's email after registration
+    // Update the user's email after registration
     public void updateUserEmail(String username, String email) throws SQLException {
         ensureConnection(); // Ensure connection is available
 
@@ -464,7 +479,7 @@ public class DatabaseHelper {
             
 
 
-
+    // Closes the connection with the database 
     public void closeConnection() {
         try {
             if (statement != null) statement.close();

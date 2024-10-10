@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 import java.sql.SQLException;
 
 /**
- * <p> AddRemoveRolePage. <p>
+ * <p> AddRemoveRolePage. </p>
  * 
  * <p>  Description: Setup for an interactive JavaFX page that allows admin users to add 
  * or remove roles from specific users in the database </p>

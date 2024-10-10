@@ -24,7 +24,7 @@ import java.sql.SQLException;
 
 public class AdminSetupPage {
 
-	/** Primary stage used for the GUI Interface */
+	/** Primary stage used for the GUI Interface. */
     private final Stage primaryStage;
     
     /** Allows us to update and edit the database that holds all of the user information. */
@@ -122,6 +122,7 @@ public class AdminSetupPage {
                 LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
                 Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
                 primaryStage.setScene(loginScene);
+                
             } catch (SQLException e) {
                 e.printStackTrace();
                 showAlert("Database Error", "An error occurred while creating the admin account.", Alert.AlertType.ERROR);

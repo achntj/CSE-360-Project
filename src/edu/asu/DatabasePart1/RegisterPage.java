@@ -12,22 +12,50 @@ import javafx.stage.Stage;
 
 import java.sql.SQLException;
 
+/**
+ * <p> RegisterPage. </p>
+ * 
+ * <p> Description: This class provides the user interface for creating a new account 
+ * using an invitation code. It validates user input, checks password strength, and 
+ * handles user registration with the database. </p>
+ * 
+ * @version 1.00 	2024-10-09 Project Phase 1 Registration Page
+ * 
+ */
+
 public class RegisterPage {
 
+    /** The primary stage used for the GUI interface */
     private final Stage primaryStage;
+    
+    /** The database helper that allows interactions with the user database */
     private final DatabaseHelper databaseHelper;
+    
+    /** The Grid Pane used to structure the registration page UI */
     private final GridPane registerGrid;
 
+    /************
+     * This constructor initializes the registration page and sets up all of the 
+     * components in the graphical interface, including buttons, labels, and input 
+     * fields for registering a new user. It also manages actions for creating an 
+     * account and returning to the login page.
+     * 
+     * @param primaryStage		The primary stage used to display the graphical interface
+     * @param databaseHelper	The database helper that enables interaction with the database
+     */
     public RegisterPage(Stage primaryStage, DatabaseHelper databaseHelper) {
+    	
+    	// Initializes the primaryStage and database helper
         this.primaryStage = primaryStage;
         this.databaseHelper = databaseHelper;
 
-        // Setup Register UI Layout
+        // Setup the registration page layout using GridPane
         registerGrid = new GridPane();
         registerGrid.setAlignment(Pos.CENTER);
         registerGrid.setVgap(10);
         registerGrid.setHgap(10);
 
+        // Define the labels, input fields, and buttons used in the user interface
         Label invitationCodeLabel = new Label("Invitation Code:");
         TextField invitationCodeField = new TextField();
         Label emailLabel = new Label("Email:");
@@ -41,6 +69,7 @@ public class RegisterPage {
         Button createAccountButton = new Button("Create Account");
         Button backToLoginButton = new Button("Back to Login");
 
+        // Add components to the registration grid layout
         registerGrid.add(invitationCodeLabel, 0, 0);
         registerGrid.add(invitationCodeField, 1, 0);
         registerGrid.add(emailLabel, 0, 1);
@@ -54,15 +83,16 @@ public class RegisterPage {
         registerGrid.add(createAccountButton, 1, 5);
         registerGrid.add(backToLoginButton, 1, 6);
 
-        // Create Account Button Action
+        // Adds functionality for the 'Create Account' button
         createAccountButton.setOnAction(event -> {
+        	// Collects the entered data from the form
             String invitationCode = invitationCodeField.getText().trim();
             String email = emailField.getText().trim();
             String username = usernameField.getText().trim();
             String password = passwordField.getText().trim();
             String confirmPassword = confirmPasswordField.getText().trim();
 
-            // Validate input fields
+            // Validates that all fields are filled and that passwords match
             if (invitationCode.isEmpty() || email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                 showAlert("Error", "All fields must be filled.", Alert.AlertType.ERROR);
                 return;
@@ -73,36 +103,36 @@ public class RegisterPage {
                 return;
             }
             
-            // Use PasswordEvaluator to validate the password
+            // Use PasswordChecker to validate the strength of the password
             String validationMessage = PasswordChecker.evaluatePassword(password);
             if (!validationMessage.isEmpty()) {
                 showAlert("Password Validation Error", validationMessage, Alert.AlertType.ERROR);
                 return;
             }
             
+            // Check if the email already exists in the database
             try {
-            	databaseHelper.ensureConnection();
-            	
-            	boolean emailExists = databaseHelper.emailExists(email);
-            	if (emailExists) {
-            		showAlert("Error", "Email Already Exists", Alert.AlertType.ERROR);
+                databaseHelper.ensureConnection();
+                boolean emailExists = databaseHelper.emailExists(email);
+                if (emailExists) {
+                    showAlert("Error", "Email Already Exists", Alert.AlertType.ERROR);
                     return;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
+            // Attempts to register the new user with the provided invitation code
             try {
                 databaseHelper.ensureConnection();
 
-                // Register the user with the invitation code and email
                 boolean registrationSuccessful = databaseHelper.registerWithInvitationCode(invitationCode, username, password);
                 if (registrationSuccessful) {
-                    // Update email field for the user
+                    // Update the user's email in the database after successful registration
                     databaseHelper.updateUserEmail(username, email);
                     showAlert("Success", "Account created successfully. Please log in.", Alert.AlertType.INFORMATION);
 
-                    // Redirect to Login Page
+                    // Redirect to the login page after registration
                     LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
                     Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
                     primaryStage.setScene(loginScene);
@@ -115,7 +145,7 @@ public class RegisterPage {
             }
         });
 
-        // Back to Login Button Action
+        // Adds functionality for the 'Back to Login' button to redirect to the login page
         backToLoginButton.setOnAction(event -> {
             LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
             Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
@@ -123,11 +153,12 @@ public class RegisterPage {
         });
     }
 
+    // Method to return the registration layout, used in the scene creation
     public GridPane getRegisterLayout() {
         return registerGrid;
     }
 
-    // Helper method to show alerts to the user
+    // Helper method to display alerts to the user
     private void showAlert(String title, String content, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
