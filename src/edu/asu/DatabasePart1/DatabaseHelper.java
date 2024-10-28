@@ -1,10 +1,16 @@
 package edu.asu.DatabasePart1;
 
 import java.sql.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import Encryption.EncryptionUtils;
 import javafx.scene.control.Alert;
 
 /**
@@ -495,6 +501,164 @@ public class DatabaseHelper {
         } catch (SQLException se) {
             se.printStackTrace();
         }
+    }
+    
+    /**
+     * Creates the articles table if it does not already exist.
+     * 
+     * @throws SQLException If a database access error occurs.
+     */
+    private void createArticleTables() throws SQLException {
+        String articleTable = "CREATE TABLE IF NOT EXISTS articles ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                + "title VARCHAR(255), "
+                + "authors VARCHAR(255), "
+                + "abstract VARCHAR(255), "
+                + "keywords VARCHAR(255), "
+                + "body TEXT, "
+                + "references VARCHAR(255))";
+        statement.execute(articleTable);
+    }
+    
+    /**
+     * Creates a new article in the database.
+     * 
+     * @param title The title of the article.
+     * @param authors The authors of the article.
+     * @param abstractText The abstract of the article.
+     * @param keywords The keywords associated with the article.
+     * @param body The body content of the article.
+     * @param references The references for the article.
+     * @throws Exception If an error occurs while creating the article.
+     */
+    public void createArticle(String title, String authors, String abstractText, 
+            String keywords, String body, String references) throws Exception {
+        
+        String insertArticle = "INSERT INTO articles (title, authors, abstract, keywords, body, references) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement pstmt = connection.prepareStatement(insertArticle)) {
+            pstmt.setString(1, title);
+            pstmt.setString(2, authors);
+            pstmt.setString(3, abstractText);
+            pstmt.setString(4, keywords);
+            pstmt.setString(5, body);
+            pstmt.setString(6, references);
+            pstmt.executeUpdate();
+        }
+        System.out.println("Article created successfully.");
+    }
+
+    /**
+     * Displays all articles from the database.
+     * 
+     * @throws Exception If an error occurs while retrieving or displaying the articles.
+     */
+    public void displayArticles() throws Exception {
+        String sql = "SELECT * FROM articles"; 
+        ResultSet rs = statement.executeQuery(sql);
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            String title = rs.getString("title");
+            String authors = rs.getString("authors");
+            String abstractText = rs.getString("abstract");
+            String keywords = rs.getString("keywords");
+            String body = rs.getString("body");
+            String references = rs.getString("references");
+            
+            System.out.println("ID: " + id);
+            System.out.println("Title: " + title);
+            System.out.println("Authors: " + authors);
+            System.out.println("Abstract: " + abstractText);
+            System.out.println("Keywords: " + keywords);
+            System.out.println("Body: " + body);
+            System.out.println("References: " + references);
+            System.out.println();
+        }
+    }
+
+    /**
+     * Deletes an article from the database by its ID.
+     * 
+     * @param id The ID of the article to be deleted.
+     * @throws Exception If an error occurs while deleting the article.
+     */
+    public void deleteArticle(int id) throws Exception {
+        String sql = "DELETE FROM articles WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Article deleted successfully.");
+            } else {
+                System.out.println("No article found with that ID.");
+            }
+        }
+    }
+
+    /**
+     * Backs up all articles to a specified file with encryption.
+     * 
+     * @param fileName The name of the file where the backup will be stored.
+     * @throws Exception If an error occurs during the backup process.
+     */
+    public void backupArticles(String fileName) throws Exception {
+        String sql = "SELECT * FROM articles"; 
+        ResultSet rs = statement.executeQuery(sql);
+
+        List<String> articles = new ArrayList<>();
+        while (rs.next()) {
+            String title = rs.getString("title");
+            String authors = rs.getString("authors");
+            String abstractText = rs.getString("abstract");
+            String keywords = rs.getString("keywords");
+            String body = rs.getString("body");
+            String references = rs.getString("references");
+            articles.add(title + "|" + authors + "|" + abstractText + "|" + keywords + "|" + body + "|" + references);
+        }
+
+        byte[] plainText = String.join("\n", articles).getBytes();
+        byte[] initializationVector = EncryptionUtils.getInitializationVector("your-secret".toCharArray());
+        byte[] encryptedData = encryptionHelper.encrypt(plainText, initializationVector);
+        
+        try (FileOutputStream fos = new FileOutputStream(fileName)) {
+            fos.write(initializationVector);
+            fos.write(encryptedData);
+        }
+        System.out.println("Backup created successfully.");
+    }
+
+    /**
+     * Restores articles from a specified backup file.
+     * 
+     * @param fileName The name of the file from which the articles will be restored.
+     * @throws Exception If an error occurs during the restoration process.
+     */
+    public void restoreArticles(String fileName) throws Exception {
+        File file = new File(fileName);
+        if (!file.exists()) {
+            System.out.println("Backup file not found.");
+            return;
+        }
+
+        byte[] initializationVector = new byte[16];
+        try (FileInputStream fis = new FileInputStream(file)) {
+            fis.read(initializationVector);
+            byte[] encryptedData = new byte[(int) (file.length() - initializationVector.length)];
+            fis.read(encryptedData);
+
+            byte[] decryptedData = encryptionHelper.decrypt(encryptedData, initializationVector);
+            String[] articles = new String(decryptedData).split("\n");
+
+            // Clear existing articles
+            statement.executeUpdate("DELETE FROM articles");
+
+            for (String article : articles) {
+                String[] fields = article.split("\\|");
+                if (fields.length == 6) {
+                    createArticle(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
+                }
+            }
+        }
+        System.out.println("Restore completed successfully.");
     }
 }
 
