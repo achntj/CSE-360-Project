@@ -67,6 +67,15 @@ public class UserHomePage {
 
         // Define the welcome label and logout button
         Label welcomeLabel = new Label("Welcome to User Home Page, " + role + "!");
+        
+        Button createArticleButton = new Button("Create Article");
+        Button listArticlesButton = new Button("List Articles");
+        Button deleteArticleButton = new Button("Delete Article");
+        Button backupArticlesButton = new Button("Backup Articles");
+        Button restoreArticlesButton = new Button("Restore Articles");
+        Button logoutButton = new Button("Log Out");
+        
+        /*
         // Main menu for user commands
         while (true) {
             System.out.println("Choose an option: ");
@@ -77,6 +86,7 @@ public class UserHomePage {
             System.out.println("5. Restore Articles");
             System.out.println("0. Exit");
 
+            
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1":
@@ -102,12 +112,85 @@ public class UserHomePage {
                     System.out.println("Invalid choice. Please try again.");
             }
         }
-        Button logoutButton = new Button("Log Out");
+        
+        */
 
         // Add components to the home grid layout
         homeGrid.add(welcomeLabel, 0, 0);
-        homeGrid.add(logoutButton, 0, 1);
+        homeGrid.add(createArticleButton, 0, 1);
+        homeGrid.add(listArticlesButton, 0, 2);
+        homeGrid.add(deleteArticleButton, 0, 3);
+        homeGrid.add(backupArticlesButton, 0, 4);
+        homeGrid.add(restoreArticlesButton, 0, 5); 
+        homeGrid.add(logoutButton, 0, 6);
 
+        createArticleButton.setOnAction(evenet -> {
+        	try {
+        		databaseHelper.ensureConnection();
+        		
+        		//redirect to create article page
+        		CreateArticlePage createArticlePage = new CreateArticlePage(primaryStage, databaseHelper, email, role);
+                Scene createArticleScene = new Scene(createArticlePage.getCreateArticleLayout(), 400, 300);
+                primaryStage.setScene(createArticleScene);
+        	} catch (Exception e) {
+        		e.printStackTrace();
+                showAlert("Error", "An error occurred while entering create and article.", Alert.AlertType.ERROR);
+        	}
+        });
+        
+        listArticlesButton.setOnAction(event -> {
+        	try {
+                // Gathers the users accounts from the database and attempts to display them
+                String articleList = databaseHelper.listArticles();
+                showAlert("Articles", articleList, Alert.AlertType.INFORMATION); 
+                // Checks if there was an error in displaying the user accounts and alerts the user
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred while listing articles.", Alert.AlertType.ERROR);
+            }
+        	
+        });
+        
+        deleteArticleButton.setOnAction(event -> {
+        	
+        	try {
+        		databaseHelper.ensureConnection();
+        		
+        		//redirect to create article page
+        		DeleteArticlePage deleteArticlePage = new DeleteArticlePage(primaryStage, databaseHelper, email, role);
+                Scene deleteArticleScene = new Scene(deleteArticlePage.getDeleteArticleScene(), 400, 300);
+                primaryStage.setScene(deleteArticleScene);
+        	} catch (Exception e) {
+        		e.printStackTrace();
+                showAlert("Error", "An error occurred while entering create and article.", Alert.AlertType.ERROR);
+        	}
+        });
+        
+        backupArticlesButton.setOnAction(event -> {
+        	showAlert("Info", "Backing up Articles...", Alert.AlertType.INFORMATION );
+        	try {
+        		databaseHelper.ensureConnection();
+        		databaseHelper.backupArticles("articleBackup.txt");
+        		
+        	} catch (Exception e) {
+        		e.printStackTrace();
+                showAlert("Error", "An error occurred while backing up articles.", Alert.AlertType.ERROR);
+        	}
+        });
+        
+        restoreArticlesButton.setOnAction(event -> {
+        	showAlert("Info", "Restoring Articles...", Alert.AlertType.INFORMATION );
+        	try {
+        		databaseHelper.ensureConnection();
+        		databaseHelper.restoreArticles("articleBackup.txt");
+        		
+        	} catch (Exception e) {
+        		e.printStackTrace();
+                showAlert("Error", "An error occurred while backing up articles.", Alert.AlertType.ERROR);
+        	}
+        });
+               
+        
         // Adds functionality for the 'Log Out' button
         logoutButton.setOnAction(event -> {
             try {
@@ -124,6 +207,7 @@ public class UserHomePage {
                 showAlert("Error", "An error occurred during logout.", Alert.AlertType.ERROR);
             }
         });
+                
     }
 
     // Method to return the user home layout, used in the scene creation
@@ -145,6 +229,7 @@ public class UserHomePage {
      *
      * @throws Exception if an error occurs during article creation
      */
+    /*
     private static void createArticle() throws Exception {
         System.out.print("Enter Title: ");
         String title = scanner.nextLine();
@@ -161,12 +246,15 @@ public class UserHomePage {
 
         databaseHelper.createArticle(title, authors, abstractText, keywords, body, references);
     }
+    
 
     /**
      * Displays a list of articles from the database.
      *
      * @throws Exception if an error occurs during article retrieval
      */
+    
+    /*
     private static void listArticles() throws Exception {
         databaseHelper.displayArticles();
     }
@@ -176,6 +264,8 @@ public class UserHomePage {
      *
      * @throws Exception if an error occurs during article deletion
      */
+    
+    /*
     private static void deleteArticle() throws Exception {
         System.out.print("Enter Article ID to delete: ");
         int id = Integer.parseInt(scanner.nextLine());
@@ -187,6 +277,8 @@ public class UserHomePage {
      *
      * @throws Exception if an error occurs during the backup process
      */
+    
+    /*
     private static void backupArticles() throws Exception {
         System.out.print("Enter backup file name: ");
         String fileName = scanner.nextLine();
@@ -198,9 +290,12 @@ public class UserHomePage {
      *
      * @throws Exception if an error occurs during the restore process
      */
+    
+    /*
     private static void restoreArticles() throws Exception {
         System.out.print("Enter restore file name: ");
         String fileName = scanner.nextLine();
         databaseHelper.restoreArticles(fileName);
     }
+    */
 }

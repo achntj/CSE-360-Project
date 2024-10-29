@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import Encryption.EncryptionHelper;
 import Encryption.EncryptionUtils;
 import javafx.scene.control.Alert;
 
@@ -28,6 +29,7 @@ import javafx.scene.control.Alert;
  */
 
 public class DatabaseHelper {
+	
 
     /** JDBC driver name and database URL use for identifying portions of database access.*/
     static final String JDBC_DRIVER = "org.h2.Driver";
@@ -40,6 +42,10 @@ public class DatabaseHelper {
     /** Handles connections to the database and keeps updated on their status */
     private Connection connection = null;
     private Statement statement = null;
+    
+    private EncryptionHelper encryptionHelper;
+	
+ 
 
     // Ensures the database connection is established correctly 
     public void ensureConnection() throws SQLException {
@@ -55,7 +61,14 @@ public class DatabaseHelper {
             System.out.println("Connecting to database...");
             connection = DriverManager.getConnection(DB_URL, USER, PASS);
             statement = connection.createStatement();
-            createTables(); 					// Create the necessary tables if they don't exist
+            // Create the necessary tables if they don't exist
+            createTables(); 
+            createArticleTables();
+            try {
+				encryptionHelper = new EncryptionHelper();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
         } catch (ClassNotFoundException e) {
             System.err.println("JDBC Driver not found: " + e.getMessage());
         }
@@ -572,6 +585,44 @@ public class DatabaseHelper {
             System.out.println("Body: " + body);
             System.out.println("References: " + references);
             System.out.println();
+        }
+    }
+    
+    public String listArticles() throws SQLException {
+        ensureConnection(); // Ensure the connection is established
+
+        StringBuilder articlesList = new StringBuilder();
+        String query = "SELECT id, title, authors, abstract, keywords, body, references FROM articles";
+
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+            	int id = rs.getInt("id");
+                String title = rs.getString("title");
+                String author = rs.getString("authors");
+                String abstractVal = rs.getString("abstract");
+                String keywords = rs.getString("keywords");
+                String body = rs.getString("body");
+                String refrences = rs.getString("references");
+                
+
+                // Append article details to the list
+  
+                articlesList.append("ID: ").append(String.valueOf(id)).append("\n")
+                .append("Title: ").append(title).append("\n")
+                .append("Author: ").append(author).append("\n")
+                .append("Abstract: ").append(abstractVal).append("\n")
+                .append("Keywords: ").append(keywords).append("\n")
+                .append("Body: ").append(body).append("\n")
+                .append("References: ").append(refrences).append("\n")
+                .append("-------------------------------\n");
+
+            }
+        }
+
+        if (articlesList.length() == 0) {
+            return "No articles found.";
+        } else {
+            return articlesList.toString();
         }
     }
 
