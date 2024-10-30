@@ -696,7 +696,7 @@ public class DatabaseHelper {
         }
 
         byte[] plainText = String.join("\n", articles).getBytes();
-        byte[] initializationVector = EncryptionUtils.getInitializationVector("your-secret".toCharArray());
+        byte[] initializationVector = EncryptionUtils.getInitializationVector("this-is-our-secret".toCharArray());
         byte[] encryptedData = encryptionHelper.encrypt(plainText, initializationVector);
         
         try (FileOutputStream fos = new FileOutputStream(fileName)) {
@@ -734,7 +734,7 @@ public class DatabaseHelper {
 
             for (String article : articles) {
                 String[] fields = article.split("\\|");
-                if (fields.length == 6) {
+                if (fields.length == 7) {
                     createArticle(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6]);
                 }
             }
