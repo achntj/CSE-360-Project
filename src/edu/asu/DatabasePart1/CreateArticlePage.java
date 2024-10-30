@@ -6,23 +6,54 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+/**
+ * <p> CreateArticlePage. </p>
+ * 
+ * <p> Description: This class represents the UI for creating a new article entry. 
+ * It provides fields for the article's title, difficulty level, authors, abstract, 
+ * keywords, body, and references. Users can also return to the homepage from this page.</p>
+ * 
+* <p> Copyright: Group 11 - CSE 360 © 2024 </p>
+ * 
+ * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * 
+ * @version 1.00	2024-10-30 Project Phase 2 User Home Page
+ */
+
 public class CreateArticlePage {
 	
+    /** The primary stage used for the Graphical-User-Interface */
 	private final Stage primaryStage;
-	private final DatabaseHelper databaseHelper;
-	private final String email;
-	private final GridPane createArticleGrid;
 	
+    /** The database helper that allows interactions with the article database */
+	private final DatabaseHelper databaseHelper;
+	
+    /** The email of the logged-in user */
+	private final String email;
+	
+    /** The Grid Pane used to structure the create article UI */
+	private final GridPane createArticleGrid;
+
+	/**
+     * Constructor that initializes the create article page and sets up all components in the UI.
+     * 
+     * @param primaryStage		The primary stage used to display the graphical interface
+     * @param databaseHelper	The database helper enabling interaction with the database
+     * @param email				The email of the logged-in user
+     * @param role				The role of the logged-in user
+     */
 	public CreateArticlePage(Stage primaryStage, DatabaseHelper databaseHelper, String email, String role) {
 		this.primaryStage = primaryStage;
 		this.databaseHelper = databaseHelper;
 		this.email = email;
 		
+		// Setup layout for the create article page using GridPane
 		createArticleGrid = new GridPane();
 		createArticleGrid.setAlignment(Pos.CENTER);
 		createArticleGrid.setVgap(10);
 		createArticleGrid.setHgap(10);
 		
+		// Define labels and input fields for article details
 		Label titleLabel = new Label("Title: ");
 		TextField titleTextField = new TextField();
 		
@@ -49,6 +80,7 @@ public class CreateArticlePage {
         Button createArticleButton = new Button("Complete Article Setup");
         Button backButton = new Button("Return to Homepage");
 		
+        // Add components to the create article grid layout
         createArticleGrid.add(titleLabel, 0, 0);
         createArticleGrid.add(titleTextField, 1, 0);
         
@@ -73,6 +105,7 @@ public class CreateArticlePage {
         createArticleGrid.add(backButton, 0, 7);
         createArticleGrid.add(createArticleButton, 1, 7);
 
+        // Action event for create article button
         createArticleButton.setOnAction(event -> {
         	String title = titleTextField.getText().trim();
         	String difficulty = difficultyComboBox.getValue();
@@ -82,15 +115,18 @@ public class CreateArticlePage {
         	String body = bodyField.getText().trim();
         	String references = referenceLinksField.getText().trim();
         	
+        	// Check for empty fields and notify user if found
         	if (title.isEmpty() || authors.isEmpty() || abstractVal.isEmpty() || keywords.isEmpty() || body.isEmpty() || references.isEmpty()) {
         		showAlert("Error", "Empty text fields, please fill out all categories!", Alert.AlertType.ERROR);
         		return;
         	}
         	
+        	// Attempt to create the article and handle exceptions if they occur
         	try {
         		databaseHelper.createArticle(title, difficulty, authors, abstractVal, keywords, body, references);
         		showAlert("Success", "Article Added Successfully!", Alert.AlertType.INFORMATION);
         		
+        		// Redirect to user home page after article creation
         		UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, role);
                 Scene userHomeScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
                 primaryStage.setScene(userHomeScene);
@@ -102,6 +138,7 @@ public class CreateArticlePage {
         	
         });
         
+        // Action event for back button to return to home page
         backButton.setOnAction(event -> {
         	try {
         		UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, role);
@@ -114,10 +151,12 @@ public class CreateArticlePage {
         });
 	}
 	
+	// Method to return the create article layout, used in the scene creation
 	public GridPane getCreateArticleLayout() {
         return createArticleGrid;
     }
 
+    // Helper method to display alerts to the user
     private void showAlert(String title, String content, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

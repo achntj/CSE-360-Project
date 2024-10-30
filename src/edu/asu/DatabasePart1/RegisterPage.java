@@ -24,6 +24,7 @@ import java.sql.SQLException;
  * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
  * 
  * @version 1.00 	2024-10-09 Project Phase 1 Registration Page
+ * @version 2.00 	2024-10-30 Project Phase 2 Registration Page
  * 
  */
 

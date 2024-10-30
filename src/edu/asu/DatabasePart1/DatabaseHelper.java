@@ -25,6 +25,7 @@ import javafx.scene.control.Alert;
  * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
  *  
  * @version 1.00 	2024-10-09 Project Phase 1 DatabaseHelper Page
+ * @version 2.00 	2024-10-30 Project Phase 2 DatabaseHelper Page
  * 
  */
 

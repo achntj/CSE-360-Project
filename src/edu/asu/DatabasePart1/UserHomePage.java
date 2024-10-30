@@ -19,8 +19,8 @@ import javafx.stage.Stage;
  * 
  * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
  * 
- * @version 1.00 	2024-10-09 Project Phase 2 User Home Page
- * 
+ * @version 1.00 	2024-10-09 Project Phase 1 User Home Page
+ * @version 2.00	2024-10-30 Project Phase 2 User Home Page
  */
 
 public class UserHomePage {
@@ -74,46 +74,6 @@ public class UserHomePage {
         Button backupArticlesButton = new Button("Backup Articles");
         Button restoreArticlesButton = new Button("Restore Articles");
         Button logoutButton = new Button("Log Out");
-        
-        /*
-        // Main menu for user commands
-        while (true) {
-            System.out.println("Choose an option: ");
-            System.out.println("1. Create Article");
-            System.out.println("2. List Articles");
-            System.out.println("3. Delete Article");
-            System.out.println("4. Backup Articles");
-            System.out.println("5. Restore Articles");
-            System.out.println("0. Exit");
-
-            
-            String choice = scanner.nextLine();
-            switch (choice) {
-                case "1":
-                    createArticle();
-                    break;
-                case "2":
-                    listArticles();
-                    break;
-                case "3":
-                    deleteArticle();
-                    break;
-                case "4":
-                    backupArticles();
-                    break;
-                case "5":
-                    restoreArticles();
-                    break;
-                case "0":
-                    System.out.println("Good Bye!!");
-                    databaseHelper.closeConnection();
-                    return;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        }
-        
-        */
 
         // Add components to the home grid layout
         homeGrid.add(welcomeLabel, 0, 0);
@@ -224,78 +184,4 @@ public class UserHomePage {
         alert.showAndWait();
     }
     
-    /**
-     * Prompts the user to enter details for a new article and creates it in the database.
-     *
-     * @throws Exception if an error occurs during article creation
-     */
-    /*
-    private static void createArticle() throws Exception {
-        System.out.print("Enter Title: ");
-        String title = scanner.nextLine();
-        System.out.print("Enter Authors (comma-separated): ");
-        String authors = scanner.nextLine();
-        System.out.print("Enter Abstract: ");
-        String abstractText = scanner.nextLine();
-        System.out.print("Enter Keywords (comma-separated): ");
-        String keywords = scanner.nextLine();
-        System.out.print("Enter Body: ");
-        String body = scanner.nextLine();
-        System.out.print("Enter References (comma-separated): ");
-        String references = scanner.nextLine();
-
-        databaseHelper.createArticle(title, authors, abstractText, keywords, body, references);
-    }
-    
-
-    /**
-     * Displays a list of articles from the database.
-     *
-     * @throws Exception if an error occurs during article retrieval
-     */
-    
-    /*
-    private static void listArticles() throws Exception {
-        databaseHelper.displayArticles();
-    }
-
-    /**
-     * Prompts the user for an article ID and deletes the corresponding article from the database.
-     *
-     * @throws Exception if an error occurs during article deletion
-     */
-    
-    /*
-    private static void deleteArticle() throws Exception {
-        System.out.print("Enter Article ID to delete: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        databaseHelper.deleteArticle(id);
-    }
-
-    /**
-     * Prompts the user for a backup file name and backs up the articles to the specified file.
-     *
-     * @throws Exception if an error occurs during the backup process
-     */
-    
-    /*
-    private static void backupArticles() throws Exception {
-        System.out.print("Enter backup file name: ");
-        String fileName = scanner.nextLine();
-        databaseHelper.backupArticles(fileName);
-    }
-
-    /**
-     * Prompts the user for a restore file name and restores articles from the specified file.
-     *
-     * @throws Exception if an error occurs during the restore process
-     */
-    
-    /*
-    private static void restoreArticles() throws Exception {
-        System.out.print("Enter restore file name: ");
-        String fileName = scanner.nextLine();
-        databaseHelper.restoreArticles(fileName);
-    }
-    */
 }
