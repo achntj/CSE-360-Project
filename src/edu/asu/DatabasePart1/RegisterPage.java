@@ -125,6 +125,18 @@ public class RegisterPage {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            
+         // Check if the username already exists in the database
+            try {
+                databaseHelper.ensureConnection();
+                boolean usernameExists = databaseHelper.usernameExists(username);
+                if (usernameExists) {
+                    showAlert("Error", "Username Already Exists", Alert.AlertType.ERROR);
+                    return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             // Attempts to register the new user with the provided invitation code
             try {

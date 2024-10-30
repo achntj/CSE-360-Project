@@ -19,13 +19,13 @@ import javafx.stage.Stage;
  * 
  * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
  * 
- * @version 1.00 	2024-10-09 Project Phase 1 User Home Page
+ * @version 1.00 	2024-10-09 Project Phase 2 User Home Page
  * 
  */
 
 public class UserHomePage {
 
-    /** The primary stage used for the GUI interface */
+    /** The primary stage used for the Graphical-User-Interface*/
     private final Stage primaryStage;
     
     /** The database helper that allows interactions with the user database */
@@ -167,27 +167,27 @@ public class UserHomePage {
         });
         
         backupArticlesButton.setOnAction(event -> {
-        	showAlert("Info", "Backing up Articles...", Alert.AlertType.INFORMATION );
-        	try {
-        		databaseHelper.ensureConnection();
-        		databaseHelper.backupArticles("articleBackup.txt");
-        		
-        	} catch (Exception e) {
-        		e.printStackTrace();
+            showAlert("Info", "Backing up Articles...", Alert.AlertType.INFORMATION);
+            try {
+                databaseHelper.ensureConnection();
+                databaseHelper.backupArticles("articleBackup.txt");
+                showAlert("Success", "Backup created successfully.", Alert.AlertType.INFORMATION);
+            } catch (Exception e) {
+                e.printStackTrace();
                 showAlert("Error", "An error occurred while backing up articles.", Alert.AlertType.ERROR);
-        	}
+            }
         });
-        
+
         restoreArticlesButton.setOnAction(event -> {
-        	showAlert("Info", "Restoring Articles...", Alert.AlertType.INFORMATION );
-        	try {
-        		databaseHelper.ensureConnection();
-        		databaseHelper.restoreArticles("articleBackup.txt");
-        		
-        	} catch (Exception e) {
-        		e.printStackTrace();
-                showAlert("Error", "An error occurred while backing up articles.", Alert.AlertType.ERROR);
-        	}
+            showAlert("Info", "Restoring Articles...", Alert.AlertType.INFORMATION);
+            try {
+                databaseHelper.ensureConnection();
+                databaseHelper.restoreArticles("articleBackup.txt");
+                showAlert("Success", "Restore completed successfully.", Alert.AlertType.INFORMATION);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred while restoring articles.", Alert.AlertType.ERROR);
+            }
         });
                
         

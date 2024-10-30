@@ -150,6 +150,22 @@ public class DatabaseHelper {
         }
         return false;
     }
+    
+    // Check if the username already exists 
+    public boolean usernameExists(String username) throws SQLException {
+    	ensureConnection(); // Ensure connection is available
+    	String query = "SELECT COUNT(*) FROM cse360users WHERE username = ?";
+    	try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, username);
+            try (ResultSet rs = pstmt.executeQuery()) {
+            	System.out.println(rs);
+                if (rs.next()) {
+                    return rs.getInt(1) != 0;
+                }
+            }
+        }
+        return false;
+    }
 
     // Check if the database is empty (i.e., no users are registered)
     public boolean isDatabaseEmpty() throws SQLException {
@@ -525,6 +541,7 @@ public class DatabaseHelper {
         String articleTable = "CREATE TABLE IF NOT EXISTS articles ("
                 + "id INT AUTO_INCREMENT PRIMARY KEY, "
                 + "title VARCHAR(255), "
+                + "difficulty VARCHAR(255),"
                 + "authors VARCHAR(255), "
                 + "abstract VARCHAR(255), "
                 + "keywords VARCHAR(255), "
@@ -537,6 +554,7 @@ public class DatabaseHelper {
      * Creates a new article in the database.
      * 
      * @param title The title of the article.
+     * @param difficulty The difficulty level of the article.
      * @param authors The authors of the article.
      * @param abstractText The abstract of the article.
      * @param keywords The keywords associated with the article.
@@ -544,21 +562,24 @@ public class DatabaseHelper {
      * @param references The references for the article.
      * @throws Exception If an error occurs while creating the article.
      */
-    public void createArticle(String title, String authors, String abstractText, 
-            String keywords, String body, String references) throws Exception {
+    public void createArticle(String title, String difficulty, String authors, 
+            String abstractText, String keywords, String body, String references) throws Exception {
         
-        String insertArticle = "INSERT INTO articles (title, authors, abstract, keywords, body, references) VALUES (?, ?, ?, ?, ?, ?)";
+        String insertArticle = "INSERT INTO articles (title, difficulty, authors, abstract, keywords, body, references) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
         try (PreparedStatement pstmt = connection.prepareStatement(insertArticle)) {
             pstmt.setString(1, title);
-            pstmt.setString(2, authors);
-            pstmt.setString(3, abstractText);
-            pstmt.setString(4, keywords);
-            pstmt.setString(5, body);
-            pstmt.setString(6, references);
+            pstmt.setString(2, difficulty);
+            pstmt.setString(3, authors);
+            pstmt.setString(4, abstractText);
+            pstmt.setString(5, keywords);
+            pstmt.setString(6, body);
+            pstmt.setString(7, references);
             pstmt.executeUpdate();
         }
         System.out.println("Article created successfully.");
     }
+
 
     /**
      * Displays all articles from the database.
@@ -588,34 +609,40 @@ public class DatabaseHelper {
         }
     }
     
+    /**
+     * Retrieves a list of all articles in the database, including their details.
+     * Each article includes its ID, title, difficulty level, authors, abstract, keywords, body, and references.
+     * 
+     * @return A formatted string containing the details of each article, or a message indicating no articles were found.
+     * @throws SQLException If an error occurs while retrieving articles from the database.
+     */
     public String listArticles() throws SQLException {
         ensureConnection(); // Ensure the connection is established
 
         StringBuilder articlesList = new StringBuilder();
-        String query = "SELECT id, title, authors, abstract, keywords, body, references FROM articles";
+        String query = "SELECT id, title, difficulty, authors, abstract, keywords, body, references FROM articles";
 
         try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
-            	int id = rs.getInt("id");
+                int id = rs.getInt("id");
                 String title = rs.getString("title");
+                String difficulty = rs.getString("difficulty"); // Retrieve difficulty
                 String author = rs.getString("authors");
                 String abstractVal = rs.getString("abstract");
                 String keywords = rs.getString("keywords");
                 String body = rs.getString("body");
-                String refrences = rs.getString("references");
-                
+                String references = rs.getString("references");
 
                 // Append article details to the list
-  
-                articlesList.append("ID: ").append(String.valueOf(id)).append("\n")
-                .append("Title: ").append(title).append("\n")
-                .append("Author: ").append(author).append("\n")
-                .append("Abstract: ").append(abstractVal).append("\n")
-                .append("Keywords: ").append(keywords).append("\n")
-                .append("Body: ").append(body).append("\n")
-                .append("References: ").append(refrences).append("\n")
-                .append("-------------------------------\n");
-
+                articlesList.append("ID: ").append(id).append("\n")
+                    .append("Title: ").append(title).append("\n")
+                    .append("Difficulty: ").append(difficulty).append("\n") // Append difficulty
+                    .append("Author: ").append(author).append("\n")
+                    .append("Abstract: ").append(abstractVal).append("\n")
+                    .append("Keywords: ").append(keywords).append("\n")
+                    .append("Body: ").append(body).append("\n")
+                    .append("References: ").append(references).append("\n")
+                    .append("-------------------------------\n");
             }
         }
 
@@ -625,6 +652,7 @@ public class DatabaseHelper {
             return articlesList.toString();
         }
     }
+
 
     /**
      * Deletes an article from the database by its ID.
@@ -658,12 +686,13 @@ public class DatabaseHelper {
         List<String> articles = new ArrayList<>();
         while (rs.next()) {
             String title = rs.getString("title");
+            String difficulty = rs.getString("difficulty");  // New difficulty field
             String authors = rs.getString("authors");
             String abstractText = rs.getString("abstract");
             String keywords = rs.getString("keywords");
             String body = rs.getString("body");
             String references = rs.getString("references");
-            articles.add(title + "|" + authors + "|" + abstractText + "|" + keywords + "|" + body + "|" + references);
+            articles.add(title + "|" + difficulty + "|" + authors + "|" + abstractText + "|" + keywords + "|" + body + "|" + references);
         }
 
         byte[] plainText = String.join("\n", articles).getBytes();
@@ -676,6 +705,7 @@ public class DatabaseHelper {
         }
         System.out.println("Backup created successfully.");
     }
+
 
     /**
      * Restores articles from a specified backup file.
@@ -705,7 +735,7 @@ public class DatabaseHelper {
             for (String article : articles) {
                 String[] fields = article.split("\\|");
                 if (fields.length == 6) {
-                    createArticle(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
+                    createArticle(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6]);
                 }
             }
         }

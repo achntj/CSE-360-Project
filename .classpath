@@ -12,6 +12,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/BountyCastle"/>
+	<classpathentry kind="lib" path="/Users/achintyajha/BouncyCastle-2.73.6/bcprov-lts8on-2.73.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
