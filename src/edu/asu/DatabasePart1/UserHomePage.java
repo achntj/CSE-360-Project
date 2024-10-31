@@ -76,7 +76,8 @@ public class UserHomePage {
         Button restoreArticlesButton = new Button("Restore Articles");
         Button backupByKeywordButton = new Button("Backup Group: ");
         TextField keywordToBackupField = new TextField();
-
+        Button restoreKeywordArticles = new Button("Restore Group:");
+        TextField keywordToRestore = new TextField();
         Button logoutButton = new Button("Log Out");
 
         // Add components to the home grid layout
@@ -88,7 +89,9 @@ public class UserHomePage {
         homeGrid.add(restoreArticlesButton, 0, 5); 
         homeGrid.add(backupByKeywordButton, 0, 6);
         homeGrid.add(keywordToBackupField, 0, 7);
-        homeGrid.add(logoutButton, 0, 8);
+        homeGrid.add(restoreKeywordArticles, 0, 8);
+        homeGrid.add(keywordToRestore, 0, 9);
+        homeGrid.add(logoutButton, 0, 10);
 
         createArticleButton.setOnAction(event -> {
         	try {
@@ -170,6 +173,26 @@ public class UserHomePage {
             try {
                 databaseHelper.ensureConnection();
                 databaseHelper.restoreArticles("articleBackup.txt");
+                showAlert("Success", "Restore completed successfully.", Alert.AlertType.INFORMATION);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred while restoring articles.", Alert.AlertType.ERROR);
+            }
+        });
+        
+        restoreKeywordArticles.setOnAction(event -> {
+        	String keyword = keywordToRestore.getText().trim();
+        	String filename = "backup" + keyword + ".txt";
+        	
+        	if (keyword.isEmpty()){
+        		showAlert("Error", "Keyword is empty, please add a keyword!", Alert.AlertType.ERROR);
+        		return;
+        	}
+        	
+            showAlert("Info", "Restoring Articles...", Alert.AlertType.INFORMATION);
+            try {
+                databaseHelper.ensureConnection();
+                databaseHelper.restoreArticles(filename);
                 showAlert("Success", "Restore completed successfully.", Alert.AlertType.INFORMATION);
             } catch (Exception e) {
                 e.printStackTrace();
