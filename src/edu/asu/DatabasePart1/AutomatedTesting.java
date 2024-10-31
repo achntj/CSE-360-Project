@@ -13,7 +13,7 @@ package edu.asu.DatabasePart1;
  * 
  */
 
-public class PasswordEvaluationTestingAutomation {
+public class AutomatedTesting {
 	// Variables to track the number of passed and failed test cases
 	static int numPassed = 0;
 	static int numFailed = 0;
@@ -32,18 +32,18 @@ public class PasswordEvaluationTestingAutomation {
 		// Execute test cases with sample inputs and expected outcomes
 		
 		// Testing valid passwords
-		performTestCase(1, "Aa!15678", true);   // Valid password
-		performTestCase(2, "Abcdef1!", true);   // Valid password with different characters
-		performTestCase(3, "Passw0rd@", true);  // Valid password with upper, lower, digit, special
-		performTestCase(4, "StrongP@ss1", true); // Longer valid password
+		passwordTestCase(1, "Aa!15678", true);   // Valid password
+		passwordTestCase(2, "Abcdef1!", true);   // Valid password with different characters
+		passwordTestCase(3, "Passw0rd@", true);  // Valid password with upper, lower, digit, special
+		passwordTestCase(4, "StrongP@ss1", true); // Longer valid password
 
 		// Testing invalid passwords
-		performTestCase(5, "A!", false);          // Too short
-		performTestCase(6, "abcdefg", false);     // No uppercase, digit, or special character
-		performTestCase(7, "ABCDEFG", false);     // No lowercase, digit, or special character
-		performTestCase(8, "12345678", false);    // No letters or special character
-		performTestCase(9, "Password1", false);   // Missing special character
-		performTestCase(10, "", false);            // Empty password
+		passwordTestCase(5, "A!", false);          // Too short
+		passwordTestCase(6, "abcdefg", false);     // No uppercase, digit, or special character
+		passwordTestCase(7, "ABCDEFG", false);     // No lowercase, digit, or special character
+		passwordTestCase(8, "12345678", false);    // No letters or special character
+		passwordTestCase(9, "Password1", false);   // Missing special character
+		passwordTestCase(10, "", false);            // Empty password
 
 		
 		// Print final results of test execution
@@ -62,7 +62,7 @@ public class PasswordEvaluationTestingAutomation {
      * @param inputText The password input to be evaluated.
      * @param expectedPass Indicates if the test case is expected to pass (true) or fail (false).
      */
-	private static void performTestCase(int testCase, String inputText, boolean expectedPass) {
+	private static void passwordTestCase(int testCase, String inputText, boolean expectedPass) {
 		// Print details of the current test case being executed
 		System.out.println("____________________________________________________________________________\n\nTest case: " + testCase);
 		System.out.println("Input: \"" + inputText + "\"");
@@ -119,6 +119,9 @@ public class PasswordEvaluationTestingAutomation {
      * This method checks if each password requirement was satisfied and prints the result.
      */
 	private static void displayEvaluation() {
+		
+		//PASSWORD TESTS DISPLAY
+		
 		// Check if at least one upper case letter is found
 		if (PasswordChecker.foundUpperCase)
 		    System.out.println("At least one upper case letter - Satisfied");
@@ -148,6 +151,9 @@ public class PasswordEvaluationTestingAutomation {
 		    System.out.println("At least 8 characters - Satisfied");
 		else
 		    System.out.println("At least 8 characters - Not Satisfied");
+		
+		
+		
 
 	}
 }
