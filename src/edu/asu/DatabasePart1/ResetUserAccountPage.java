@@ -32,6 +32,9 @@ public class ResetUserAccountPage {
     /** The database helper that allows interactions with the user database */
     private final DatabaseHelper databaseHelper;
     
+    /** The email of the logged-in user */
+    private final String email;
+    
     /** The Grid Pane used to structure the reset user account page UI */
     private final GridPane resetUserGrid;
 
@@ -44,11 +47,12 @@ public class ResetUserAccountPage {
      * @param primaryStage		The primary stage used to display the graphical interface
      * @param databaseHelper	The database helper that enables interaction with the database
      */
-    public ResetUserAccountPage(Stage primaryStage, DatabaseHelper databaseHelper) {
+    public ResetUserAccountPage(Stage primaryStage, DatabaseHelper databaseHelper, String email) {
     	
     	// Initializes the primaryStage and database helper
         this.primaryStage = primaryStage;
         this.databaseHelper = databaseHelper;
+        this.email = email;
 
         // Setup the layout for the reset user account page using GridPane
         resetUserGrid = new GridPane();
@@ -79,12 +83,12 @@ public class ResetUserAccountPage {
         // Adds functionality for the 'Reset Password' button
         resetPasswordButton.setOnAction(event -> {
         	// Collects the entered data from the form
-            String email = emailField.getText().trim();
+            String userEmail = emailField.getText().trim();
             String newPassword = newPasswordField.getText().trim();
             String expiryText = expiryField.getText().trim();
 
             // Validates that all fields are filled
-            if (email.isEmpty() || newPassword.isEmpty() || expiryText.isEmpty()) {
+            if (userEmail.isEmpty() || newPassword.isEmpty() || expiryText.isEmpty()) {
                 showAlert("Error", "All fields must be filled.", Alert.AlertType.ERROR);
                 return;
             }
@@ -92,7 +96,7 @@ public class ResetUserAccountPage {
             // Attempts to reset the user's password and expiry date
             try {
                 Timestamp expiry = Timestamp.valueOf(expiryText);
-                databaseHelper.resetUserAccount(email, newPassword, expiry);
+                databaseHelper.resetUserAccount(userEmail, newPassword, expiry);
                 showAlert("Success", "User password reset successfully.", Alert.AlertType.INFORMATION);
             } catch (SQLException | IllegalArgumentException e) {
                 e.printStackTrace();
@@ -102,7 +106,7 @@ public class ResetUserAccountPage {
 
         // Adds functionality for the 'Back' button to return to the admin home page
         backButton.setOnAction(event -> {
-            AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper);
+            AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
             Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
             primaryStage.setScene(adminScene);
         });
