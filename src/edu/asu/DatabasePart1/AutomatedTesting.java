@@ -53,13 +53,6 @@ public class AutomatedTesting {
 		System.out.println("Number of tests failed: "+ numFailed);
 	}
 	
-	private static void articleAddTestCase() {
-		
-	}
-	
-	private static void removeArticleTestCase(){
-		
-	}
 	
 
 	/**
@@ -124,6 +117,11 @@ public class AutomatedTesting {
 	}
 	
 	
+	private static void articleTestCase() {
+		
+	}
+	
+	
 	
 	/**
      * Displays the evaluation results of the password criteria.
@@ -164,5 +162,22 @@ public class AutomatedTesting {
 		
 		
 
+	}
+	
+	private static void displayArticleEvaluation() {
+		
+		if (ArticleFunctionChecker.articleAdded) {
+			System.out.println("Article was added - satisfied");
+		}
+		else{
+			System.out.println("Article was not added - Not Satisfied");
+		}
+		
+		if (ArticleFunctionChecker.articleDeleted) {
+			System.out.println("");
+		}
+		else {
+			System.out.println("");
+		}
 	}
 }

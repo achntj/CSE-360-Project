@@ -611,6 +611,29 @@ public class DatabaseHelper {
     }
     
     /**
+     * Retrieves the ID of an article based on its title.
+     *
+     * @param title The title of the article whose ID is to be retrieved.
+     * @return      The ID of the article if found, or -1 if the article does not exist.
+     * @throws SQLException If an error occurs while accessing the database.
+     */
+    public int getArticleID(String title) throws SQLException {
+        ensureConnection(); // Ensure a valid database connection
+
+        String query = "SELECT id FROM articles WHERE title = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, title);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id"); // Return the article ID if found
+                }
+            }
+        }
+        return -1; // Return -1 if no article with the specified title is found
+    }
+    
+    /**
      * Retrieves a list of all articles in the database, including their details.
      * Each article includes its ID, title, difficulty level, authors, abstract, keywords, body, and references.
      * 
