@@ -192,7 +192,7 @@ public class UserHomePage {
             showAlert("Info", "Restoring Articles...", Alert.AlertType.INFORMATION);
             try {
                 databaseHelper.ensureConnection();
-                databaseHelper.restoreArticles(filename);
+                databaseHelper.restoreArticlesByKeyword(filename, keyword);
                 showAlert("Success", "Restore completed successfully.", Alert.AlertType.INFORMATION);
             } catch (Exception e) {
                 e.printStackTrace();

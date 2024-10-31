@@ -739,34 +739,33 @@ public class DatabaseHelper {
      */
     
     public void backupByKeyword(String fileName, String keyword) throws Exception {
-    	String sql = "SELECT * FROM articles"; 
+        String sql = "SELECT * FROM articles";
         ResultSet rs = statement.executeQuery(sql);
 
         List<String> articles = new ArrayList<>();
+        String[] keywords = keyword.split(",");
         
         while (rs.next()) {
-        	String[] keywords = keyword.split(",");
-        	boolean hasKeyword = false;
-        	
-        	for(int i = 0; i < keywords.length; i++) {
-        		keywords[i] = keywords[i].trim();
-        		
-        		if (keywords[i] == keyword) {
-        			hasKeyword = true;
-        		}
-        	}
-        	
-        	if (hasKeyword) {
-        		String title = rs.getString("title");
-                String difficulty = rs.getString("difficulty");  // New difficulty field
+            String keyWords = rs.getString("keywords").toLowerCase();
+            boolean hasKeyword = false;
+
+            for (String kw : keywords) {
+                kw = kw.trim().toLowerCase();
+                if (keyWords.contains(kw)) {
+                    hasKeyword = true;
+                    break;
+                }
+            }
+
+            if (hasKeyword) {
+                String title = rs.getString("title");
+                String difficulty = rs.getString("difficulty"); // New difficulty field
                 String authors = rs.getString("authors");
                 String abstractText = rs.getString("abstract");
-                String keyWords = rs.getString("keywords");
                 String body = rs.getString("body");
                 String references = rs.getString("references");
                 articles.add(title + "|" + difficulty + "|" + authors + "|" + abstractText + "|" + keyWords + "|" + body + "|" + references);
-        	}
-
+            }
         }
 
         byte[] plainText = String.join("\n", articles).getBytes();
@@ -778,8 +777,9 @@ public class DatabaseHelper {
             fos.write(encryptedData);
         }
         
-        System.out.println("Backup for keyword " + keyword + " created successfully.");
+        System.out.println("Backup for keyword(s) " + keyword + " created successfully.");
     }
+
 
 
     /**
@@ -806,6 +806,41 @@ public class DatabaseHelper {
 
             // Clear existing articles
             statement.executeUpdate("DELETE FROM articles");
+
+            for (String article : articles) {
+                String[] fields = article.split("\\|");
+                if (fields.length == 7) {
+                    createArticle(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6]);
+                }
+            }
+        }
+        System.out.println("Restore completed successfully.");
+    }
+    
+    /**
+     * Restores articles from a specified backup file.
+     * 
+     * @param fileName The name of the file from which the articles will be restored.
+     * @throws Exception If an error occurs during the restoration process.
+     */
+    public void restoreArticlesByKeyword(String fileName, String keyword) throws Exception {
+        File file = new File(fileName);
+        if (!file.exists()) {
+            System.out.println("Backup file not found.");
+            return;
+        }
+
+        byte[] initializationVector = new byte[16];
+        try (FileInputStream fis = new FileInputStream(file)) {
+            fis.read(initializationVector);
+            byte[] encryptedData = new byte[(int) (file.length() - initializationVector.length)];
+            fis.read(encryptedData);
+
+            byte[] decryptedData = encryptionHelper.decrypt(encryptedData, initializationVector);
+            String[] articles = new String(decryptedData).split("\n");
+
+            // Clear existing articles
+            statement.executeUpdate("DELETE FROM articles WHERE keywords LIKE '%" + keyword + "%'");
 
             for (String article : articles) {
                 String[] fields = article.split("\\|");
