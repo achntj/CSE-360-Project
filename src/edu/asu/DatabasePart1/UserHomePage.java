@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -73,6 +74,9 @@ public class UserHomePage {
         Button deleteArticleButton = new Button("Delete Article");
         Button backupArticlesButton = new Button("Backup Articles");
         Button restoreArticlesButton = new Button("Restore Articles");
+        Button backupByKeywordButton = new Button("Backup Group: ");
+        TextField keywordToBackupField = new TextField();
+
         Button logoutButton = new Button("Log Out");
 
         // Add components to the home grid layout
@@ -82,9 +86,11 @@ public class UserHomePage {
         homeGrid.add(deleteArticleButton, 0, 3);
         homeGrid.add(backupArticlesButton, 0, 4);
         homeGrid.add(restoreArticlesButton, 0, 5); 
-        homeGrid.add(logoutButton, 0, 6);
+        homeGrid.add(backupByKeywordButton, 0, 6);
+        homeGrid.add(keywordToBackupField, 0, 7);
+        homeGrid.add(logoutButton, 0, 8);
 
-        createArticleButton.setOnAction(evenet -> {
+        createArticleButton.setOnAction(event -> {
         	try {
         		databaseHelper.ensureConnection();
         		
@@ -136,6 +142,27 @@ public class UserHomePage {
                 e.printStackTrace();
                 showAlert("Error", "An error occurred while backing up articles.", Alert.AlertType.ERROR);
             }
+        });
+        
+        backupByKeywordButton.setOnAction(event -> {
+        	String keyword = keywordToBackupField.getText().trim();
+        	
+        	if (keyword.isEmpty()){
+        		showAlert("Error", "Keyword is empty, please add a keyword!", Alert.AlertType.ERROR);
+        		return;
+        	}
+
+        	try {
+        		String filename = "backup" + keyword + ".txt";
+        		
+        		databaseHelper.ensureConnection();
+        		databaseHelper.backupByKeyword(filename, keyword);
+        		showAlert("Success", "Backup created successfully.", Alert.AlertType.INFORMATION);
+        		
+        	} catch (Exception e){
+        		e.printStackTrace();
+                showAlert("Error", "An error occurred while backing up articles.", Alert.AlertType.ERROR);
+        	}
         });
 
         restoreArticlesButton.setOnAction(event -> {
