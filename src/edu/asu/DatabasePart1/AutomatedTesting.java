@@ -52,6 +52,15 @@ public class AutomatedTesting {
 		System.out.println("Number of tests passed: "+ numPassed);
 		System.out.println("Number of tests failed: "+ numFailed);
 	}
+	
+	private static void articleAddTestCase() {
+		
+	}
+	
+	private static void removeArticleTestCase(){
+		
+	}
+	
 
 	/**
      * Performs a test case to evaluate a password against expected results.
@@ -111,16 +120,16 @@ public class AutomatedTesting {
 				numFailed++;
 			}
 		}
-		displayEvaluation();
+		displayPasswordEvaluation();
 	}
+	
+	
 	
 	/**
      * Displays the evaluation results of the password criteria.
      * This method checks if each password requirement was satisfied and prints the result.
      */
-	private static void displayEvaluation() {
-		
-		//PASSWORD TESTS DISPLAY
+	private static void displayPasswordEvaluation() {
 		
 		// Check if at least one upper case letter is found
 		if (PasswordChecker.foundUpperCase)
