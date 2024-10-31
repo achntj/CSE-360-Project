@@ -30,6 +30,9 @@ public class DeleteUserAccountPage {
     /** Allows us to update and edit the database that holds all of the user information. */
     private final DatabaseHelper databaseHelper;
     
+    /** The email of the logged-in user */
+    private final String email;
+    
     /** The Grid Pane used to determine the layout of UI */
     private final GridPane deleteUserGrid;
 
@@ -43,11 +46,12 @@ public class DeleteUserAccountPage {
      * @param databaseHelper	Input of the databaseHelper that allows us to interact with the content of the database
      */
     
-    public DeleteUserAccountPage(Stage primaryStage, DatabaseHelper databaseHelper) {
+    public DeleteUserAccountPage(Stage primaryStage, DatabaseHelper databaseHelper, String email) {
     	
     	// Initializes the primaryStaged and database helper
         this.primaryStage = primaryStage;
         this.databaseHelper = databaseHelper;
+        this.email = email;
 
         // Creates a new GridPane and sets the alignment
         deleteUserGrid = new GridPane();
@@ -71,10 +75,10 @@ public class DeleteUserAccountPage {
         deleteUserButton.setOnAction(event -> {
         	
         	// gets an email associated with an account to remove
-            String email = emailField.getText().trim();
+            String userEmail = emailField.getText().trim();
 
             // Checks if the email provided is empty 
-            if (email.isEmpty()) {
+            if (userEmail.isEmpty()) {
                 showAlert("Error", "Email must be provided.", Alert.AlertType.ERROR);
                 return;
             }
@@ -88,7 +92,7 @@ public class DeleteUserAccountPage {
             //Accesses the database to remove the account associated with the email
             if (confirmation.getResult() == ButtonType.YES) {
                 try {
-                    databaseHelper.deleteUserAccount(email);
+                    databaseHelper.deleteUserAccount(userEmail);
                     showAlert("Success", "User account deleted successfully.", Alert.AlertType.INFORMATION);
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -99,7 +103,7 @@ public class DeleteUserAccountPage {
 
         // Returns to a new AdminHomePage
         backButton.setOnAction(event -> {
-            AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper);
+            AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
             Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
             primaryStage.setScene(adminScene);
         });

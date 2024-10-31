@@ -114,7 +114,7 @@ public class LoginPage {
 
                         // Check if the user is an Admin, and redirect accordingly
                         if (databaseHelper.hasRole(email, "Admin")) {
-                            AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper);
+                            AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
                             Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
                             primaryStage.setScene(adminScene);
                         }

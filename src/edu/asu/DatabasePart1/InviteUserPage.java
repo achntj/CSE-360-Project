@@ -30,6 +30,9 @@ public class InviteUserPage {
     /** Allows us to update and edit the database that holds user information and generate invitation codes */
     private final DatabaseHelper databaseHelper;
     
+    /** The email of the logged-in user */
+    private final String email;
+    
     /** The Grid Pane used to structure the invite user page */
     private final GridPane inviteUserGrid;
 
@@ -41,11 +44,12 @@ public class InviteUserPage {
      * @param primaryStage		Input of primaryStage used to manage the graphical interface changes
      * @param databaseHelper	Input of the databaseHelper that enables interaction with the database
      */
-    public InviteUserPage(Stage primaryStage, DatabaseHelper databaseHelper) {
+    public InviteUserPage(Stage primaryStage, DatabaseHelper databaseHelper, String email) {
     	
     	// Initializes the primaryStage and database helper
         this.primaryStage = primaryStage;
         this.databaseHelper = databaseHelper;
+        this.email = email;
 
         // Creates a new GridPane and sets its alignment and spacing
         inviteUserGrid = new GridPane();
@@ -89,7 +93,7 @@ public class InviteUserPage {
         // Adds functionality for the 'Back' button to return to the admin home page
         backButton.setOnAction(event -> {
         	// Navigates back to the Admin Home Page
-            AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper);
+            AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
             Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
             primaryStage.setScene(adminScene);
         });

@@ -31,6 +31,9 @@ public class AddRemoveRolePage {
     /** Allows us to update and edit the database that holds all of the user information. */
     private final DatabaseHelper databaseHelper;
     
+    /** The email of the logged-in user */
+    private final String email;
+    
     /** The Grid Pane used to map the current user alter role page. */
     private final GridPane roleGrid;
 
@@ -42,11 +45,12 @@ public class AddRemoveRolePage {
      * @param primaryStage		Input of primaryStage used to manage the graphics changes
      * @param databaseHelper	Input of the databaseHelper that allows us to interact with the content of the database
      */
-    public AddRemoveRolePage(Stage primaryStage, DatabaseHelper databaseHelper) {
+    public AddRemoveRolePage(Stage primaryStage, DatabaseHelper databaseHelper, String email) {
     	
     	// Initializes the primaryStaged and database helper 
         this.primaryStage = primaryStage;
         this.databaseHelper = databaseHelper;
+        this.email = email;
 
         // Creates a new GridPane and sets the alignment
         roleGrid = new GridPane();
@@ -75,7 +79,7 @@ public class AddRemoveRolePage {
         // Adds the functionality for add role button
         addRoleButton.setOnAction(event -> {
         	// Collects which role to add and which email to add it to
-            String email = emailField.getText().trim();
+            String userEmail = emailField.getText().trim();
             String role = roleField.getText().trim();
 
             // If the role or email is empty, displays error message and alerts user to provide one
@@ -97,18 +101,18 @@ public class AddRemoveRolePage {
         // Adds the functionality for remove role button
         removeRoleButton.setOnAction(event -> {
         	// Collects which role to add and which email to add it to
-            String email = emailField.getText().trim();
+            String userEmail = emailField.getText().trim();
             String role = roleField.getText().trim();
 
             // If the role or email is empty, displays error message and alerts user to provide one
-            if (email.isEmpty() || role.isEmpty()) {
+            if (userEmail.isEmpty() || role.isEmpty()) {
                 showAlert("Error", "Email and role must be provided.", Alert.AlertType.ERROR);
                 return;
             }
 
             // Removes the role from the entered user and alerts the current user if it went successfully
             try {
-                databaseHelper.removeRoleFromUser(email, role);
+                databaseHelper.removeRoleFromUser(userEmail, role);
                 showAlert("Success", "Role removed successfully.", Alert.AlertType.INFORMATION);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -119,7 +123,7 @@ public class AddRemoveRolePage {
         // Provides functionality for the back button
         backButton.setOnAction(event -> {
         	// Creates a new home with the primary stage and database helper and returns to the admin scene
-            AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper);
+            AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
             Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
             primaryStage.setScene(adminScene);
         });

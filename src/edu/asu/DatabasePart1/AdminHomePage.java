@@ -28,6 +28,9 @@ public class AdminHomePage {
     /** Allows us to update and edit the database that holds all of the user information. */
     private final DatabaseHelper databaseHelper;
     
+    /** The email of the logged-in user */
+    private final String email;
+    
     /** The Grid Pane used to map the current admin home page. */
     private final GridPane adminHomeGrid;
 
@@ -39,11 +42,12 @@ public class AdminHomePage {
      * @param primaryStage		Input of primaryStage used to manage the graphics changes
      * @param databaseHelper	Input of the databaseHelper that allows us to interact with the content of the database
      */
-    public AdminHomePage(Stage primaryStage, DatabaseHelper databaseHelper) {
+    public AdminHomePage(Stage primaryStage, DatabaseHelper databaseHelper, String email) {
     	
     	// Initializes the primaryStaged and database helper
         this.primaryStage = primaryStage;
         this.databaseHelper = databaseHelper;
+        this.email = email;
 
         // Creates a gridpane and layout for the admin homepage
         adminHomeGrid = new GridPane();
@@ -57,6 +61,7 @@ public class AdminHomePage {
         Button deleteUserAccountButton = new Button("Delete User Account");
         Button listUserAccountsButton = new Button("List User Accounts");
         Button addRemoveRoleButton = new Button("Add/Remove User Role");
+        Button articleButton = new Button("Work with articles");
         Button logoutButton = new Button("Log Out");
 
         // Adds buttons to gridpane layout on the user interface
@@ -65,12 +70,13 @@ public class AdminHomePage {
         adminHomeGrid.add(deleteUserAccountButton, 0, 2);
         adminHomeGrid.add(listUserAccountsButton, 0, 3);
         adminHomeGrid.add(addRemoveRoleButton, 0, 4);
-        adminHomeGrid.add(logoutButton, 0, 5);
+        adminHomeGrid.add(articleButton, 0, 5);
+        adminHomeGrid.add(logoutButton, 0, 6);
 
         // Adds redirect for invite user button when pressed
         inviteUserButton.setOnAction(event -> {
         	// Creates and Redirects to new InviteUserPage and passes Primary Stage and database helper
-            InviteUserPage inviteUserPage = new InviteUserPage(primaryStage, databaseHelper);
+            InviteUserPage inviteUserPage = new InviteUserPage(primaryStage, databaseHelper, email);
             Scene inviteUserScene = new Scene(inviteUserPage.getInviteUserLayout(), 400, 300);
             primaryStage.setScene(inviteUserScene);
         });
@@ -78,7 +84,7 @@ public class AdminHomePage {
         // Adds redirect for resetUserAccountButton
         resetUserAccountButton.setOnAction(event -> {
         	// Creates and Redirects to new ResetUserAccountPage and passes Primary Stage and database helper
-            ResetUserAccountPage resetUserPage = new ResetUserAccountPage(primaryStage, databaseHelper);
+            ResetUserAccountPage resetUserPage = new ResetUserAccountPage(primaryStage, databaseHelper, email);
             Scene resetUserScene = new Scene(resetUserPage.getResetUserLayout(), 400, 300);
             primaryStage.setScene(resetUserScene);
         });
@@ -86,7 +92,7 @@ public class AdminHomePage {
         // Adds redirect for deleteUserAccounButton
         deleteUserAccountButton.setOnAction(event -> {
         	// Creates and Redirects to new DeleteUserAccountPage and passes Primary Stage and database helper
-            DeleteUserAccountPage deleteUserPage = new DeleteUserAccountPage(primaryStage, databaseHelper);
+            DeleteUserAccountPage deleteUserPage = new DeleteUserAccountPage(primaryStage, databaseHelper, email);
             Scene deleteUserScene = new Scene(deleteUserPage.getDeleteUserLayout(), 400, 300);
             primaryStage.setScene(deleteUserScene);
         });
@@ -107,9 +113,17 @@ public class AdminHomePage {
         // Adds redirect for addRemoveRoleButton 
         addRemoveRoleButton.setOnAction(event -> {
         	// Creates and redirects to new addRemoveRolePage and passes in primary stage and database helper for usage
-            AddRemoveRolePage addRemoveRolePage = new AddRemoveRolePage(primaryStage, databaseHelper);
+            AddRemoveRolePage addRemoveRolePage = new AddRemoveRolePage(primaryStage, databaseHelper, email);
             Scene addRemoveRoleScene = new Scene(addRemoveRolePage.getAddRemoveRoleLayout(), 400, 300);
             primaryStage.setScene(addRemoveRoleScene);
+        });
+        
+        // Adds redirect for addRemoveRoleButton 
+        articleButton.setOnAction(event -> {
+        	// Creates and redirects to new addRemoveRolePage and passes in primary stage and database helper for usage
+        	UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, "Admin");
+            Scene userHomeScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
+            primaryStage.setScene(userHomeScene);
         });
 
         // Adds redirect for logout button
