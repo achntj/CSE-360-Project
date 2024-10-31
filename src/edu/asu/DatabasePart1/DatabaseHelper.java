@@ -729,6 +729,57 @@ public class DatabaseHelper {
         }
         System.out.println("Backup created successfully.");
     }
+    
+    /**
+     * Backs up articles that are under a specific keyword.
+     * 
+     * @param fileName The name of the file where the backup will be stored.
+     * @param keyword  The key that is being used to determine what to backup.
+     * @throws Exception If an error occurs during the backup process.
+     */
+    
+    public void backupByKeyword(String fileName, String keyword) throws Exception {
+    	String sql = "SELECT * FROM articles"; 
+        ResultSet rs = statement.executeQuery(sql);
+
+        List<String> articles = new ArrayList<>();
+        
+        while (rs.next()) {
+        	String[] keywords = keyword.split(",");
+        	boolean hasKeyword = false;
+        	
+        	for(int i = 0; i < keywords.length; i++) {
+        		keywords[i] = keywords[i].trim();
+        		
+        		if (keywords[i] == keyword) {
+        			hasKeyword = true;
+        		}
+        	}
+        	
+        	if (hasKeyword) {
+        		String title = rs.getString("title");
+                String difficulty = rs.getString("difficulty");  // New difficulty field
+                String authors = rs.getString("authors");
+                String abstractText = rs.getString("abstract");
+                String keyWords = rs.getString("keywords");
+                String body = rs.getString("body");
+                String references = rs.getString("references");
+                articles.add(title + "|" + difficulty + "|" + authors + "|" + abstractText + "|" + keyWords + "|" + body + "|" + references);
+        	}
+
+        }
+
+        byte[] plainText = String.join("\n", articles).getBytes();
+        byte[] initializationVector = EncryptionUtils.getInitializationVector("this-is-our-secret".toCharArray());
+        byte[] encryptedData = encryptionHelper.encrypt(plainText, initializationVector);
+        
+        try (FileOutputStream fos = new FileOutputStream(fileName)) {
+            fos.write(initializationVector);
+            fos.write(encryptedData);
+        }
+        
+        System.out.println("Backup for keyword " + keyword + " created successfully.");
+    }
 
 
     /**
