@@ -79,6 +79,7 @@ public class UserHomePage {
         Button restoreKeywordArticles = new Button("Restore Group:");
         TextField keywordToRestore = new TextField();
         Button logoutButton = new Button("Log Out");
+        Button helpButton = new Button("Help:");
 
         // Add components to the home grid layout
         homeGrid.add(welcomeLabel, 0, 0);
@@ -92,6 +93,7 @@ public class UserHomePage {
         homeGrid.add(restoreKeywordArticles, 0, 8);
         homeGrid.add(keywordToRestore, 0, 9);
         homeGrid.add(logoutButton, 0, 10);
+        homeGrid.add(helpButton, 0, 11);
 
         createArticleButton.setOnAction(event -> {
         	try {
@@ -216,6 +218,12 @@ public class UserHomePage {
                 e.printStackTrace();
                 showAlert("Error", "An error occurred during logout.", Alert.AlertType.ERROR);
             }
+        });
+        helpButton.setOnAction(event -> {
+        	// Creates and redirects to new addRemoveRolePage and passes in primary stage and database helper for usage
+            HelpMessagePage helpMessagePage = new HelpMessagePage(primaryStage, databaseHelper, email, role);
+            Scene helpMessageScene = new Scene(helpMessagePage.getHelpMessageLayout(), 400, 300);
+            primaryStage.setScene(helpMessageScene );
         });
                 
     }

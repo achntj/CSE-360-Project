@@ -65,6 +65,7 @@ public class DatabaseHelper {
             // Create the necessary tables if they don't exist
             createTables(); 
             createArticleTables();
+            createMessagesTables();
             try {
 				encryptionHelper = new EncryptionHelper();
 			} catch (Exception e) {
@@ -851,5 +852,42 @@ public class DatabaseHelper {
         }
         System.out.println("Restore completed successfully.");
     }
+
+    /**
+     * Creates the articles table if it does not already exist.
+     * 
+     * @throws SQLException If a database access error occurs.
+     */
+    private void createMessagesTables() throws SQLException {
+        String messageTable = "CREATE TABLE IF NOT EXISTS messages ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                + "email VARCHAR(255),"
+                + "body TEXT, "
+                + "type VARCHAR(255))";
+        statement.execute(messageTable);
+    }
+    
+    /**
+     * Creates a new message in the database.
+     * 
+     * @param email The email of the user who sent the message. 
+     * @param body The body content of the message.
+     * @param type The type of the message - either generic or specific
+     * @throws Exception If an error occurs while creating the article.
+     */
+    public void sendMessage(String email, String body, String type) throws Exception {
+        
+        String insertMessage= "INSERT INTO messages (email, body, type) VALUES (?, ?, ?)";
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(insertMessage)) {
+            pstmt.setString(1, email);
+            pstmt.setString(2, body);
+            pstmt.setString(3, type);
+            pstmt.executeUpdate();
+        }
+        System.out.println("Message sent successfully.");
+    }
 }
+    
+    
 
