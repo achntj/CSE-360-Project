@@ -854,7 +854,7 @@ public class DatabaseHelper {
     }
 
     /**
-     * Creates the articles table if it does not already exist.
+     * Creates the messages table if it does not already exist.
      * 
      * @throws SQLException If a database access error occurs.
      */
