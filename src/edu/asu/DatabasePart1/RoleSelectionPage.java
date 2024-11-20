@@ -99,9 +99,29 @@ public class RoleSelectionPage {
 
                 // Redirect to the user home page based on the selected role
                 try {
-                    UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, selectedRoleValue);
-                    Scene userHomeScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
-                    primaryStage.setScene(userHomeScene);
+                    
+                    if (selectedRoleValue.equalsIgnoreCase("admin")) {
+                        AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
+                        Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
+                        primaryStage.setScene(adminScene);
+                    }
+                    else if (selectedRoleValue.equalsIgnoreCase("instructor")) {
+                        InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, "instructor");
+                        Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
+                        primaryStage.setScene(instructorScene);
+                    }
+                    else if (selectedRoleValue.equalsIgnoreCase("student")) {
+                        StudentHomePage studentHomePage = new StudentHomePage(primaryStage, databaseHelper, email, "student");
+                        Scene studentScene = new Scene(studentHomePage.getStudentHomeLayout(), 400, 300);
+                        primaryStage.setScene(studentScene);
+                    }
+                    else {
+                        // Redirect to the user home page based on the user's role
+                        String role = databaseHelper.getUserRole(email);
+                        UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, role);
+                        Scene userHomeScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
+                        primaryStage.setScene(userHomeScene);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     showAlert("Error", "An error occurred while loading the user home page.", Alert.AlertType.ERROR);

@@ -111,24 +111,36 @@ public class LoginPage {
 
                     } else {
                         System.out.println("Login successful");
-
-                        // Check if the user is an Admin, and redirect accordingly
-                        if (databaseHelper.hasRole(email, "Admin")) {
-                            AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
-                            Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
-                            primaryStage.setScene(adminScene);
-                        }
+                        
                         // Check if the user has multiple roles
-                        else if (databaseHelper.hasMultipleRoles(email)) {
+                        if (databaseHelper.hasMultipleRoles(email)) {
                             RoleSelectionPage roleSelectionPage = new RoleSelectionPage(primaryStage, databaseHelper, email);
                             Scene roleScene = new Scene(roleSelectionPage.getRoleSelectionLayout(), 400, 300);
                             primaryStage.setScene(roleScene);
-                        } else {
-                            // Redirect to the user home page based on the user's role
+                        }
+                        // Redirect to the user home page based on the user's role
+                        else if (databaseHelper.hasRole(email, "admin")) {
+                        	AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
+                            Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
+                            primaryStage.setScene(adminScene);
+                        }
+                        else if (databaseHelper.hasRole(email, "instructor")) {
+                            InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, "instructor");
+                            Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
+                            primaryStage.setScene(instructorScene);
+                        }
+                        else if (databaseHelper.hasRole(email, "student")) {
+                            StudentHomePage studentHomePage = new StudentHomePage(primaryStage, databaseHelper, email, "student");
+                            Scene studentScene = new Scene(studentHomePage.getStudentHomeLayout(), 400, 300);
+                            primaryStage.setScene(studentScene);
+                        }
+                        else {
+                           
                             String role = databaseHelper.getUserRole(email);
                             UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, role);
                             Scene userHomeScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
                             primaryStage.setScene(userHomeScene);
+                        
                         }
                     }
                 } else {

@@ -1111,6 +1111,45 @@ public class DatabaseHelper {
             }
         }
     }
+    public String getPrefferedName(String email) throws SQLException {
+    	//preferred_name
+    	String query = "SELECT preferred_name FROM cse360users WHERE email = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("preferred_name");
+                } else {
+                    System.out.println("No user found with email: " + email);
+                    return null;
+                }
+            }
+        }
+    	
+    }
+    
+    public String getName(String email) throws SQLException {
+    	//preferred_name
+    	String query = "SELECT first_name FROM cse360users WHERE email = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                	if (getPrefferedName(email) == "") {
+                		return rs.getString("first_name");
+                	}
+                		
+                    return getPrefferedName(email);
+                } else {
+                    System.out.println("No user found with email: " + email);
+                    return null;
+                }
+            }
+        }
+    	
+    }
 
 
 }

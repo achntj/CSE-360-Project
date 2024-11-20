@@ -120,10 +120,34 @@ public class CompleteAccountSetupPage {
                 databaseHelper.updateUserAccount(email, firstName, middleName, lastName, preferredName, javaLevel, javaFXLevel, githubLevel);
                 showAlert("Success", "Account setup completed successfully.", Alert.AlertType.INFORMATION);
                 
-                // Redirects the user to new User Role Selection Page
-                RoleSelectionPage roleSelectionPage = new RoleSelectionPage(primaryStage, databaseHelper, email);
-                Scene roleSelectionScene = new Scene(roleSelectionPage.getRoleSelectionLayout(), 400, 300);
-                primaryStage.setScene(roleSelectionScene);
+                // Redirects the user to correct selection page
+                if (databaseHelper.hasMultipleRoles(email)) {
+                    RoleSelectionPage roleSelectionPage = new RoleSelectionPage(primaryStage, databaseHelper, email);
+                    Scene roleScene = new Scene(roleSelectionPage.getRoleSelectionLayout(), 400, 300);
+                    primaryStage.setScene(roleScene);
+                }
+                else if (databaseHelper.hasRole(email, "Admin")) {
+                    AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
+                    Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
+                    primaryStage.setScene(adminScene);
+                }
+                else if (databaseHelper.hasRole(email, "Instructor")) {
+                    InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, "instructor");
+                    Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
+                    primaryStage.setScene(instructorScene);
+                }
+                else if (databaseHelper.hasRole(email, "Student")) {
+                    StudentHomePage studentHomePage = new StudentHomePage(primaryStage, databaseHelper, email, "student");
+                    Scene studentScene = new Scene(studentHomePage.getStudentHomeLayout(), 400, 300);
+                    primaryStage.setScene(studentScene);
+                }
+                else {
+                    // Redirect to the user home page based on the user's role
+                    String role = databaseHelper.getUserRole(email);
+                    UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, role);
+                    Scene userHomeScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
+                    primaryStage.setScene(userHomeScene);
+                }
                         
                 
                 // Displays error if there was an issue adding the account
