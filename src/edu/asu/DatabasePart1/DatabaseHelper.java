@@ -67,7 +67,7 @@ public class DatabaseHelper {
             createTables(); 
             createArticleTables();
             createMessagesTables();
-            createGroupsTables();
+            createGroupsTable();
             try {
 				encryptionHelper = new EncryptionHelper();
 			} catch (Exception e) {
@@ -910,22 +910,6 @@ public class DatabaseHelper {
         }
         System.out.println("Message sent successfully.");
     }
-    
-    /**
-     * Creates the groups table if it does not already exist.
-     * 
-     * @throws SQLException If a database access error occurs.
-     */
-	private void createGroupsTables() throws SQLException {
-        String messageTable = "CREATE TABLE IF NOT EXISTS groups ("
-                + "id INT AUTO_INCREMENT PRIMARY KEY, "
-                + "group_name VARCHAR(255),"
-                + "admins VARCHAR(255), " // instructors who are admins
-                + "instructors VARCHAR(255)," // instructors who are NOT admins but view decrypted
-                + "students VARCHAR(255)," // students who view decrypted
-                + "articles VARCHAR(255))";
-        statement.execute(messageTable);
-    }
 	
 	/**
 	 * Creates the groups table if it does not already exist.
@@ -939,8 +923,7 @@ public class DatabaseHelper {
 	            + "article_ids VARCHAR(255), "              // Comma-separated list of article IDs in the group
 	            + "admins VARCHAR(255), "                   // Comma-separated list of admin user IDs
 	            + "instructors VARCHAR(255), "              // Comma-separated list of instructor user IDs
-	            + "students VARCHAR(255), "                 // Comma-separated list of student user IDs
-	            + ")";
+	            + "students VARCHAR(255))";                 // Comma-separated list of student user IDs
 	    statement.execute(groupsTable);
 	}
     

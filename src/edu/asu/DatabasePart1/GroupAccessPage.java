@@ -66,7 +66,6 @@ public class GroupAccessPage {
         groupGrid.setHgap(10);
 
         // Establishes text and buttons to be used in user interface
-        TextField createGroupField = new TextField();
         Button createGroupButton = new Button("Create Group (use ID)");
         Button listGroupsButton = new Button("List Groups");
         TextField deleteGroupField = new TextField();
@@ -75,8 +74,7 @@ public class GroupAccessPage {
 
         // Adds the buttons and text fields to the user interface
         
-        groupGrid.add(createGroupField, 0, 0);
-        groupGrid.add(createGroupButton, 1, 0);
+        groupGrid.add(createGroupButton, 0, 0);
         groupGrid.add(listGroupsButton, 0, 1);
         groupGrid.add(deleteGroupField, 0, 2);
         groupGrid.add(deleteGroupButton, 1, 2);
