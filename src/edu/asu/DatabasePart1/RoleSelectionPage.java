@@ -95,28 +95,31 @@ public class RoleSelectionPage {
                 }
 
                 // Retrieve the value of the selected role
-                String selectedRoleValue = selectedRole.getText();
+                String selectedRoleValue = selectedRole.getText().trim();
+               
 
                 // Redirect to the user home page based on the selected role
                 try {
-                    
-                    if (selectedRoleValue.equalsIgnoreCase("admin")) {
+                  
+                    if (selectedRoleValue.equalsIgnoreCase("admin")) {                   
                         AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
                         Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
                         primaryStage.setScene(adminScene);
                     }
-                    else if (selectedRoleValue.equalsIgnoreCase("instructor")) {
+                    
+                    else if (selectedRoleValue.equalsIgnoreCase("instructor")) {                   
                         InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, "instructor");
                         Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
                         primaryStage.setScene(instructorScene);
                     }
-                    else if (selectedRoleValue.equalsIgnoreCase("student")) {
+                   
+                    else if (selectedRoleValue.equalsIgnoreCase("student")) {                
                         StudentHomePage studentHomePage = new StudentHomePage(primaryStage, databaseHelper, email, "student");
                         Scene studentScene = new Scene(studentHomePage.getStudentHomeLayout(), 400, 300);
                         primaryStage.setScene(studentScene);
                     }
                     else {
-                        // Redirect to the user home page based on the user's role
+                        // Redirect to the user home page based on the user's role   
                         String role = databaseHelper.getUserRole(email);
                         UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, role);
                         Scene userHomeScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);

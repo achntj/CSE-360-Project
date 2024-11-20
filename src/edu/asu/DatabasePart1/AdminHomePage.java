@@ -1,5 +1,6 @@
 package edu.asu.DatabasePart1;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -57,21 +58,31 @@ public class AdminHomePage {
 
         // Initializes buttons and text displayed on the user interface
         Button inviteUserButton = new Button("Invite User");
-        Button resetUserAccountButton = new Button("Reset User Account");
+        Button resetUserAccountButton = new Button("Reset User");
         Button deleteUserAccountButton = new Button("Delete User Account");
         Button listUserAccountsButton = new Button("List User Accounts");
         Button addRemoveRoleButton = new Button("Add/Remove User Role");
-        Button articleButton = new Button("Work with articles");
+        Button articleButton = new Button("Article Edit Functions");
+        Button searchArticlesButton = new Button("Search Articles");
+        Button articleGroupButton = new Button("Group Functions");
         Button logoutButton = new Button("Log Out");
+        Button helpButton = new Button("Help");
 
         // Adds buttons to gridpane layout on the user interface
         adminHomeGrid.add(inviteUserButton, 0, 0);
-        adminHomeGrid.add(resetUserAccountButton, 0, 1);
-        adminHomeGrid.add(deleteUserAccountButton, 0, 2);
-        adminHomeGrid.add(listUserAccountsButton, 0, 3);
-        adminHomeGrid.add(addRemoveRoleButton, 0, 4);
-        adminHomeGrid.add(articleButton, 0, 5);
-        adminHomeGrid.add(logoutButton, 0, 6);
+        adminHomeGrid.add(deleteUserAccountButton, 2, 0);
+        
+        adminHomeGrid.add(resetUserAccountButton, 2, 1);
+        adminHomeGrid.add(addRemoveRoleButton, 0, 1);
+        
+        adminHomeGrid.add(listUserAccountsButton, 2, 2);
+        adminHomeGrid.add(searchArticlesButton, 0, 2);
+        
+        adminHomeGrid.add(articleButton, 0, 3);
+        adminHomeGrid.add(articleGroupButton, 2, 3);
+       
+        adminHomeGrid.add(logoutButton, 0, 4);
+        adminHomeGrid.add(helpButton, 2, 4);
 
         // Adds redirect for invite user button when pressed
         inviteUserButton.setOnAction(event -> {

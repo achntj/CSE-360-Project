@@ -130,9 +130,15 @@ public class LoginPage {
                             primaryStage.setScene(instructorScene);
                         }
                         else if (databaseHelper.hasRole(email, "student")) {
+                        	
+                        	SearchPage searchPage = new SearchPage(primaryStage, databaseHelper, email, "student");
+                            Scene studentScene = new Scene(searchPage.getSearchLayout(), 400, 300);
+                            primaryStage.setScene(studentScene);
+                            
+                        	/*
                             StudentHomePage studentHomePage = new StudentHomePage(primaryStage, databaseHelper, email, "student");
                             Scene studentScene = new Scene(studentHomePage.getStudentHomeLayout(), 400, 300);
-                            primaryStage.setScene(studentScene);
+                            primaryStage.setScene(studentScene);**/
                         }
                         else {
                            

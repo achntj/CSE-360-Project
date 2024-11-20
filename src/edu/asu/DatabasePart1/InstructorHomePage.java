@@ -70,7 +70,6 @@ public class InstructorHomePage {
         try {
         	databaseHelper.ensureConnection();
         	usedName = databaseHelper.getName(email);
-        	System.out.println("USERS NAME: " + usedName);
         } catch (Exception e) {
         	e.printStackTrace();
         	showAlert("Error", "An error occurred while accessing users name!", Alert.AlertType.ERROR);
@@ -78,143 +77,63 @@ public class InstructorHomePage {
         }
 
         // Define the welcome label and logout button
-        Label welcomeLabel = new Label("Welcome to Instructor HomePage," +  usedName + "!");
+        Label welcomeLabel = new Label("Welcome to Instructor Home, " +  usedName + "!");
         
-        Button createArticleButton = new Button("Create Article");
-        Button listArticlesButton = new Button("List Articles");
-        Button deleteArticleButton = new Button("Delete Article");
-        Button backupArticlesButton = new Button("Backup Articles");
-        Button restoreArticlesButton = new Button("Restore Articles");
-        Button backupByKeywordButton = new Button("Backup Group: ");
-        TextField keywordToBackupField = new TextField();
-        Button restoreKeywordArticles = new Button("Restore Group:");
-        TextField keywordToRestore = new TextField();
+        Button inviteStudentButton = new Button("Invite Student");
+        Button deleteStudentButton = new Button("Delete Student");
+        
+        Button listStudentsButton = new Button("List Students");
+        
+        Button searchArticlesButton = new Button("Search Articles");
+        Button articleFunctionsButton = new Button("Article Functions");
+        Button articleGroupsButton = new Button("Article Group Functions");
+     
         Button logoutButton = new Button("Log Out");
-        Button helpButton = new Button("Help:");
-        Button groupButton = new Button("View / Edit Groups:");
+        Button helpButton = new Button("Help");
+        
+        
 
         // Add components to the home grid layout
         homeGrid.add(welcomeLabel, 0, 0);
-        homeGrid.add(createArticleButton, 0, 1);
-        homeGrid.add(listArticlesButton, 0, 2);
-        homeGrid.add(deleteArticleButton, 0, 3);
-        homeGrid.add(backupArticlesButton, 0, 4);
-        homeGrid.add(restoreArticlesButton, 0, 5); 
-        homeGrid.add(backupByKeywordButton, 0, 6);
-        homeGrid.add(keywordToBackupField, 0, 7);
-        homeGrid.add(restoreKeywordArticles, 0, 8);
-        homeGrid.add(keywordToRestore, 0, 9);
-        homeGrid.add(logoutButton, 0, 10);
-        homeGrid.add(helpButton, 0, 11);
-        homeGrid.add(groupButton, 0, 12);
+        
+        homeGrid.add(inviteStudentButton, 0, 1);
+        homeGrid.add(deleteStudentButton, 2, 1);
+        
+        homeGrid.add(listStudentsButton, 0, 2);
+        homeGrid.add(searchArticlesButton, 2, 2);
+        
+        homeGrid.add(articleFunctionsButton, 0, 3); 
+        homeGrid.add(articleGroupsButton, 2, 3);
+        
+        homeGrid.add(logoutButton, 0, 4);
+        homeGrid.add(helpButton, 2, 4);
 
-        createArticleButton.setOnAction(event -> {
-        	try {
-        		databaseHelper.ensureConnection();
-        		
-        		//redirect to create article page
-        		CreateArticlePage createArticlePage = new CreateArticlePage(primaryStage, databaseHelper, email, role);
-                Scene createArticleScene = new Scene(createArticlePage.getCreateArticleLayout(), 400, 300);
-                primaryStage.setScene(createArticleScene);
-        	} catch (Exception e) {
-        		e.printStackTrace();
-                showAlert("Error", "An error occurred while entering create and article.", Alert.AlertType.ERROR);
-        	}
+        inviteStudentButton.setOnAction(event -> {
+        	System.out.println("Invite Student  button pressed");
         });
         
-        listArticlesButton.setOnAction(event -> {
-        	try {
-                // Gathers the users accounts from the database and attempts to display them
-                String articleList = databaseHelper.listArticles();
-                showAlert("Articles", articleList, Alert.AlertType.INFORMATION); 
-                // Checks if there was an error in displaying the user accounts and alerts the user
-            } catch (Exception e) {
-                e.printStackTrace();
-                showAlert("Error", "An error occurred while listing articles.", Alert.AlertType.ERROR);
-            }
+        deleteStudentButton.setOnAction(event -> {
+        	System.out.println("delete students button pressed");
         	
         });
         
-        deleteArticleButton.setOnAction(event -> {
+        listStudentsButton.setOnAction(event -> {
         	
-        	try {
-        		databaseHelper.ensureConnection();
-        		
-        		//redirect to create article page
-        		DeleteArticlePage deleteArticlePage = new DeleteArticlePage(primaryStage, databaseHelper, email, role);
-                Scene deleteArticleScene = new Scene(deleteArticlePage.getDeleteArticleScene(), 400, 300);
-                primaryStage.setScene(deleteArticleScene);
-        	} catch (Exception e) {
-        		e.printStackTrace();
-                showAlert("Error", "An error occurred while entering create and article.", Alert.AlertType.ERROR);
-        	}
+        	System.out.println("List students button pressed");
         });
         
-        backupArticlesButton.setOnAction(event -> {
-            showAlert("Info", "Backing up Articles...", Alert.AlertType.INFORMATION);
-            try {
-                databaseHelper.ensureConnection();
-                databaseHelper.backupArticles("articleBackup.txt");
-                showAlert("Success", "Backup created successfully.", Alert.AlertType.INFORMATION);
-            } catch (Exception e) {
-                e.printStackTrace();
-                showAlert("Error", "An error occurred while backing up articles.", Alert.AlertType.ERROR);
-            }
+        searchArticlesButton.setOnAction(event -> {
+        	System.out.println("Search Articles button pressed");
         });
         
-        backupByKeywordButton.setOnAction(event -> {
-        	String keyword = keywordToBackupField.getText().trim();
-        	
-        	if (keyword.isEmpty()){
-        		showAlert("Error", "Keyword is empty, please add a keyword!", Alert.AlertType.ERROR);
-        		return;
-        	}
-
-        	try {
-        		String filename = "backup" + keyword + ".txt";
-        		
-        		databaseHelper.ensureConnection();
-        		databaseHelper.backupByKeyword(filename, keyword);
-        		showAlert("Success", "Backup created successfully.", Alert.AlertType.INFORMATION);
-        		
-        	} catch (Exception e){
-        		e.printStackTrace();
-                showAlert("Error", "An error occurred while backing up articles.", Alert.AlertType.ERROR);
-        	}
-        });
-
-        restoreArticlesButton.setOnAction(event -> {
-            showAlert("Info", "Restoring Articles...", Alert.AlertType.INFORMATION);
-            try {
-                databaseHelper.ensureConnection();
-                databaseHelper.restoreArticles("articleBackup.txt");
-                showAlert("Success", "Restore completed successfully.", Alert.AlertType.INFORMATION);
-            } catch (Exception e) {
-                e.printStackTrace();
-                showAlert("Error", "An error occurred while restoring articles.", Alert.AlertType.ERROR);
-            }
+        articleFunctionsButton.setOnAction(event -> {
+        	System.out.println("Article functions button pressed");
         });
         
-        restoreKeywordArticles.setOnAction(event -> {
-        	String keyword = keywordToRestore.getText().trim();
-        	String filename = "backup" + keyword + ".txt";
-        	
-        	if (keyword.isEmpty()){
-        		showAlert("Error", "Keyword is empty, please add a keyword!", Alert.AlertType.ERROR);
-        		return;
-        	}
-        	
-            showAlert("Info", "Restoring Articles...", Alert.AlertType.INFORMATION);
-            try {
-                databaseHelper.ensureConnection();
-                databaseHelper.restoreArticlesByKeyword(filename, keyword);
-                showAlert("Success", "Restore completed successfully.", Alert.AlertType.INFORMATION);
-            } catch (Exception e) {
-                e.printStackTrace();
-                showAlert("Error", "An error occurred while restoring articles.", Alert.AlertType.ERROR);
-            }
+        articleGroupsButton.setOnAction(event -> { 
+        	 System.out.println("Article groups button pressed");
         });
-               
+     
         
         // Adds functionality for the 'Log Out' button
         logoutButton.setOnAction(event -> {
@@ -232,12 +151,17 @@ public class InstructorHomePage {
                 showAlert("Error", "An error occurred during logout.", Alert.AlertType.ERROR);
             }
         });
+        
+        
         helpButton.setOnAction(event -> {
         	// Creates and redirects to new HelpMessagePage and passes in primary stage and database helper for usage
             HelpMessagePage helpMessagePage = new HelpMessagePage(primaryStage, databaseHelper, email, role);
             Scene helpMessageScene = new Scene(helpMessagePage.getHelpMessageLayout(), 400, 300);
-            primaryStage.setScene(helpMessageScene );
+            primaryStage.setScene(helpMessageScene);
         });
+        
+        
+        /*
         groupButton.setOnAction(event -> {
         	try {
                 databaseHelper.ensureConnection();
@@ -250,9 +174,10 @@ public class InstructorHomePage {
                 e.printStackTrace();
                 System.out.println("No user id found with the current email");
             }
-        });
+        }); **/
                 
-    }
+    	}
+    
 
     // Method to return the user home layout, used in the scene creation
     public GridPane getInstructorHomeLayout() {
