@@ -420,11 +420,11 @@ public class DatabaseHelper {
         ensureConnection(); // Ensure the connection is established
 
         StringBuilder usersList = new StringBuilder();
-        String query = "SELECT email, username, middle_name, last_name, roles FROM cse360users";
+        String query = "SELECT id, email, username, middle_name, last_name, roles FROM cse360users";
 
         try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
-            	
+            	int id = rs.getInt("id");
             	String email = rs.getString("email");
                 String username = rs.getString("username");
                 String firstName = getName(email);
@@ -434,7 +434,7 @@ public class DatabaseHelper {
 
                 // Append user details to the list
               
-                usersList.append("Email: " + email + "\n");
+                usersList.append("ID: " + id + "\n");
                 usersList.append("Username: ").append(username).append("\n")
                          .append("Name: ").append(firstName);
 
@@ -1094,14 +1094,19 @@ public class DatabaseHelper {
 	
 	public String[] groupsAccessibleToUser(String email) throws SQLException {
 	    // Query to fetch group names for a given email
-	    String queryIDs = "SELECT group_name FROM groups WHERE email = ?";
+	    String queryIDs = "SELECT group_name FROM groups WHERE admins = ? OR instructors = ? OR students = ?";
+	    
+	    int id = Integer.parseInt(getUserIdFromEmail(email));
+	    
 	    
 	    // Use a list to dynamically store group names
 	    List<String> groupList = new ArrayList<>();
 	    
 	    // Fetch group names
 	    try (PreparedStatement pstmt = connection.prepareStatement(queryIDs)) {
-	        pstmt.setString(1, email);
+	        pstmt.setInt(1, id);
+	        pstmt.setInt(2, id);
+	        pstmt.setInt(3, id);
 	        try (ResultSet rs = pstmt.executeQuery()) {
 	            while (rs.next()) { // Iterate through all results
 	                groupList.add(rs.getString("group_name"));

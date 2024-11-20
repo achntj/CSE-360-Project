@@ -145,22 +145,25 @@ public class SearchPage {
                 else {
                 	groupFilter = selectedGroup.getText().trim();
                 }
-                int[] filteredGroupList;
+                int[] filteredGroupList = null;
             	
-                /*
-                if (groupFilter != "ALL") {
-                	filteredGroupList = databaseHelper.getArticlesInGroupList(groups, groupFilter);
+                try {
+	                if (groupFilter != "ALL") {
+	                	filteredGroupList = databaseHelper.getArticlesInGroupList(groups, groupFilter);
+	                }
+	                else {
+	                	filteredGroupList = databaseHelper.getArticlesInGroupList(groups, "*");
+	                }
+	                if (difficultyFilter != "ALL") {
+	                	filteredGroupList = databaseHelper.articlesFilteredDifficulty(filteredGroupList, difficultyFilter);
+	                }
+	                else {
+	                	filteredGroupList = databaseHelper.articlesFilteredDifficulty(filteredGroupList, "*");
+	                }
+                } catch (Exception e) {
+                	e.printStackTrace();
+                    showAlert("Error", "An error occurred during filtering.", Alert.AlertType.ERROR);
                 }
-                else {
-                	filteredGroupList = databaseHelper.getArticlesInGroupList(groups, "*");
-                }
-                if (difficultyFilter != "ALL") {
-                	filteredGroupList = databaseHelper.articlesFilteredDifficulty(filteredGroupList, difficultyFilter);
-                }
-                else {
-                	filteredGroupList = databaseHelper.articlesFilteredDifficulty(filteredGroupList, "*");
-                }
-                
             	
             	String listOfArticles;
                 if (filteredGroupList == null) {
@@ -169,8 +172,8 @@ public class SearchPage {
                 else {
                 	listOfArticles = databaseHelper.getArticlesFromList(filteredGroupList);
                 }
-                */
-            	SearchDisplayPage searchDisplayPage = new SearchDisplayPage(primaryStage, databaseHelper, email, role, "", 2, groupFilter);
+                
+            	SearchDisplayPage searchDisplayPage = new SearchDisplayPage(primaryStage, databaseHelper, email, role, listOfArticles, 2, groupFilter);
             	Scene searchDisplayScene = new Scene(searchDisplayPage.getSearchLayout(), 400, 300);
                 primaryStage.setScene(searchDisplayScene);      			
             

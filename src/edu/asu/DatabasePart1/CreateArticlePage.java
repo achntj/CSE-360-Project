@@ -127,9 +127,18 @@ public class CreateArticlePage {
         		showAlert("Success", "Article Added Successfully!", Alert.AlertType.INFORMATION);
         		
         		// Redirect to user home page after article creation
-        		UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, role);
-                Scene userHomeScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
-                primaryStage.setScene(userHomeScene);
+
+            	if (role.equalsIgnoreCase("admin")) {                   
+                    AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
+                    Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
+                    primaryStage.setScene(adminScene);
+                }
+                
+                else if (role.equalsIgnoreCase("instructor")) {                   
+                    InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, role);
+                    Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
+                    primaryStage.setScene(instructorScene);
+                }    	 
         		
         	} catch (Exception e) {
                 e.printStackTrace();
@@ -140,15 +149,36 @@ public class CreateArticlePage {
         
         // Action event for back button to return to home page
         backButton.setOnAction(event -> {
-        	try {
-        		UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, role);
-                Scene userHomeScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
-                primaryStage.setScene(userHomeScene);
-        	} catch(Exception e) {
-        		 e.printStackTrace();
-                 showAlert("Error", "An error occurred while returning to home.", Alert.AlertType.ERROR);
-        	}
-        });
+        	
+        	if (role.equalsIgnoreCase("admin")) {                   
+                AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
+                Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
+                primaryStage.setScene(adminScene);
+            }
+            
+            else if (role.equalsIgnoreCase("instructor")) {                   
+                InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, role);
+                Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
+                primaryStage.setScene(instructorScene);
+            }    	 
+            else {
+           
+           	 try {
+                    // Ensure connection to the database and log the user out
+                    databaseHelper.ensureConnection();
+                    showAlert("Logout", "You have been logged out successfully.", Alert.AlertType.INFORMATION);
+
+                    // Redirect to the login page after logout
+                    LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
+                    Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
+                    primaryStage.setScene(loginScene);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showAlert("Error", "An error occurred during logout.", Alert.AlertType.ERROR);
+                }
+            }   
+     
+       });
 	}
 	
 	// Method to return the create article layout, used in the scene creation
