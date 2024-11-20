@@ -106,7 +106,7 @@ public class SearchPage {
             homeGrid.add(intermediateLevels, 0, 3);
             homeGrid.add(advancedLevels, 0, 4);
           
-            String[] groups = {"group1", "group2", "group3", "group4", "group5"};//databaseHelper.getAccessibleGroups(email);
+            String[] groups = databaseHelper.groupsAccessibleToUser(email);
             int row = 2;
 
             // Add radio buttons for each role in the grid
@@ -145,10 +145,32 @@ public class SearchPage {
                 else {
                 	groupFilter = selectedGroup.getText().trim();
                 }
+                int[] filteredGroupList;
             	
+                /*
+                if (groupFilter != "ALL") {
+                	filteredGroupList = databaseHelper.getArticlesInGroupList(groups, groupFilter);
+                }
+                else {
+                	filteredGroupList = databaseHelper.getArticlesInGroupList(groups, "*");
+                }
+                if (difficultyFilter != "ALL") {
+                	filteredGroupList = databaseHelper.articlesFilteredDifficulty(filteredGroupList, difficultyFilter);
+                }
+                else {
+                	filteredGroupList = databaseHelper.articlesFilteredDifficulty(filteredGroupList, "*");
+                }
+                
             	
-            	
-            	SearchDisplayPage searchDisplayPage = new SearchDisplayPage(primaryStage, databaseHelper, email, role, "RESULTS RESULTS RESULTS", 2, groupFilter);
+            	String listOfArticles;
+                if (filteredGroupList == null) {
+                	listOfArticles = "No Articles Found!";
+                }
+                else {
+                	listOfArticles = databaseHelper.getArticlesFromList(filteredGroupList);
+                }
+                */
+            	SearchDisplayPage searchDisplayPage = new SearchDisplayPage(primaryStage, databaseHelper, email, role, "", 2, groupFilter);
             	Scene searchDisplayScene = new Scene(searchDisplayPage.getSearchLayout(), 400, 300);
                 primaryStage.setScene(searchDisplayScene);      			
             

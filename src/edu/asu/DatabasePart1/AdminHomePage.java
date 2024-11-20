@@ -62,7 +62,7 @@ public class AdminHomePage {
         Button deleteUserAccountButton = new Button("Delete User Account");
         Button listUserAccountsButton = new Button("List User Accounts");
         Button addRemoveRoleButton = new Button("Add/Remove User Role");
-        Button articleButton = new Button("Article Edit Functions");
+        Button articleButton = new Button("Article Functions");
         Button searchArticlesButton = new Button("Search Articles");
         Button articleGroupButton = new Button("Group Functions");
         Button logoutButton = new Button("Log Out");

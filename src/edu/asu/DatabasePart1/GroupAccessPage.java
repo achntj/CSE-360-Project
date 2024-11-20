@@ -66,8 +66,7 @@ public class GroupAccessPage {
         groupGrid.setHgap(10);
 
         // Establishes text and buttons to be used in user interface
-        Button createGroupButton = new Button("Create General Group");
-        Button createSpecialAccessGroupButton = new Button("Create Special Access Group");
+        Button createGroupButton = new Button("Create General Group");     
         
         Button listGroupsButton = new Button("        List Groups        ");
         
@@ -86,27 +85,22 @@ public class GroupAccessPage {
         // Adds the buttons and text fields to the user interface
         
         groupGrid.add(createGroupButton, 0, 0);
-        groupGrid.add(createSpecialAccessGroupButton, 2, 0);
-        
-        groupGrid.add(listGroupsButton, 0, 1);
+        groupGrid.add(listGroupsButton, 2, 0);
  
-        groupGrid.add(groupIDLabel, 0, 2);    
-        groupGrid.add(groupField, 2, 2);
+        groupGrid.add(groupIDLabel, 0, 1);    
+        groupGrid.add(groupField, 2, 1);
         
-        groupGrid.add(viewGroupButton, 0, 3);    
-        groupGrid.add(deleteGroupButton, 2, 3);
+        groupGrid.add(viewGroupButton, 0, 2);    
+        groupGrid.add(deleteGroupButton, 2, 2);
         
-        groupGrid.add(backupGroupButton, 0, 4);
-        groupGrid.add(restoreGroupButton, 2, 4); 
+        groupGrid.add(backupGroupButton, 0, 3);
+        groupGrid.add(restoreGroupButton, 2, 3); 
         
-        groupGrid.add(helpButton, 0, 5);    
-        groupGrid.add(backButton, 2, 5);
+        groupGrid.add(helpButton, 2, 4);    
+        groupGrid.add(backButton, 0, 4);
+        
         
         createGroupButton.setOnAction(event -> {
-        	System.out.println("createGeneralGroup Button pressed");
-        });
-
-        createSpecialAccessGroupButton.setOnAction(event -> {
         	try {
                 databaseHelper.ensureConnection();
                 

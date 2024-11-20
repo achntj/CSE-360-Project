@@ -420,17 +420,21 @@ public class DatabaseHelper {
         ensureConnection(); // Ensure the connection is established
 
         StringBuilder usersList = new StringBuilder();
-        String query = "SELECT username, first_name, middle_name, last_name, roles FROM cse360users";
+        String query = "SELECT email, username, middle_name, last_name, roles FROM cse360users";
 
         try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
+            	
+            	String email = rs.getString("email");
                 String username = rs.getString("username");
-                String firstName = rs.getString("first_name");
+                String firstName = getName(email);
                 String middleName = rs.getString("middle_name");
                 String lastName = rs.getString("last_name");
                 String roles = rs.getString("roles");
 
                 // Append user details to the list
+              
+                usersList.append("Email: " + email + "\n");
                 usersList.append("Username: ").append(username).append("\n")
                          .append("Name: ").append(firstName);
 
@@ -1087,7 +1091,90 @@ public class DatabaseHelper {
 	    }
 	    System.out.println("Group deleted successfully.");
 	}
-
+	
+	public String[] groupsAccessibleToUser(String email) throws SQLException {
+	    // Query to fetch group names for a given email
+	    String queryIDs = "SELECT group_name FROM groups WHERE email = ?";
+	    
+	    // Use a list to dynamically store group names
+	    List<String> groupList = new ArrayList<>();
+	    
+	    // Fetch group names
+	    try (PreparedStatement pstmt = connection.prepareStatement(queryIDs)) {
+	        pstmt.setString(1, email);
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) { // Iterate through all results
+	                groupList.add(rs.getString("group_name"));
+	            }
+	        }
+	    }
+	    
+	    // If no groups are found, return null
+	    if (groupList.isEmpty()) {
+	        System.out.println("No groups found for email: " + email);
+	        return null;
+	    }
+	    
+	    // Convert List<String> to String[]
+	    return groupList.toArray(new String[0]);
+	}
+	
+	public int[] getArticlesInGroupList(String[] groupsProvided, String groupSpecifier) throws SQLException {
+		int[] returnArticles = new int[groupsProvided.length];
+		
+		String ids_string = "";
+		
+		 String query = "SELECT article_ids FROM groups WHERE group_name = ?";
+		 try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	            pstmt.setString(1, groupSpecifier);
+	            try (ResultSet rs = pstmt.executeQuery()) {
+	                if (rs.next()) {
+	                	ids_string = rs.getString("article_ids");
+	                } else {
+	                    System.out.println("No articles!");
+	                    return null;
+	                }
+	            }
+	        }
+		 
+		String[] parts = ids_string.split(","); // Split string by ',' delimiter
+	        
+		
+	        // Convert String array to int array
+	    returnArticles = Arrays.stream(parts)
+	                              .mapToInt(Integer::parseInt)
+	                              .toArray();
+		 
+		
+		return returnArticles;
+	}
+	
+	public int[] articlesFilteredDifficulty(int[] articleIDs, String difficulty) throws SQLException{
+		int[] returnArticles = new int[articleIDs.length];
+		
+		 String query = "SELECT id FROM articles WHERE difficulty = ?";
+		 try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	            pstmt.setString(1, difficulty);
+	            int index = 0;
+	            try (ResultSet rs = pstmt.executeQuery()) {
+	                if (rs.next()) {
+	                	returnArticles[index] = rs.getInt("id");
+	                	index++;
+	                } else {
+	                    System.out.println("No articles!");
+	                    return null;
+	                }
+	            }
+	        }
+		 
+		 
+	    
+		return returnArticles;
+	}
+	
+	public String getArticlesFromList(int[] articleTitles) {
+		return "List of Appended Articles";
+	}
 
 	/**
      * Retrieves a user's ID based on their email.
