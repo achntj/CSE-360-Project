@@ -123,15 +123,29 @@ public class InstructorHomePage {
         });
         
         searchArticlesButton.setOnAction(event -> {
-        	System.out.println("Search Articles button pressed");
+        	SearchPage searchPage = new SearchPage(primaryStage, databaseHelper, email, "instructor");
+            Scene studentScene = new Scene(searchPage.getSearchLayout(), 400, 300);
+            primaryStage.setScene(studentScene);
         });
         
         articleFunctionsButton.setOnAction(event -> {
-        	System.out.println("Article functions button pressed");
+        	ArticleFunctionsPage articleFunctionsPage = new ArticleFunctionsPage(primaryStage, databaseHelper, email, "instructor");
+            Scene articleFunctionsScene = new Scene(articleFunctionsPage.getArticleFunctionsLayout(), 400, 300);
+            primaryStage.setScene(articleFunctionsScene);
         });
         
         articleGroupsButton.setOnAction(event -> { 
-        	 System.out.println("Article groups button pressed");
+        	try {
+                databaseHelper.ensureConnection();
+                String id = databaseHelper.getUserIdFromEmail(email);
+                // Creates and redirects to new GroupAccessPage and passes in primary stage and database helper for usage
+            	GroupAccessPage groupAccessPage = new GroupAccessPage(primaryStage, databaseHelper, id, email, "instructor");
+                Scene groupAccessScene = new Scene(groupAccessPage.getGroupAccessLayout(), 400, 300);
+                primaryStage.setScene(groupAccessScene );
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("No user id found with the current email");
+            }
         });
      
         

@@ -56,7 +56,7 @@ public class SearchDisplayPage {
      * @param email				The email of the logged-in user
      * @param role				The role of the logged-in user
      */
-    public SearchDisplayPage(Stage primaryStage, DatabaseHelper databaseHelper, String searchContent, int articleNumbers, String group, String email, String role) {
+    public SearchDisplayPage(Stage primaryStage, DatabaseHelper databaseHelper,  String email, String role, String searchContent, int articleNumbers, String group) {
     	
     	// Initializes the primaryStage, database helper, email, and role
         this.primaryStage = primaryStage;
@@ -75,8 +75,6 @@ public class SearchDisplayPage {
         Label activeGroups = new Label("Currently Active Group: " + group);
         Label numberOfArticles = new Label("Number of Articles: " + articleNumbers);
         
-        Label searchResults = new Label("---------Search Results--------");
-        
         Label listedArticles = new Label(searchContent);
         listedArticles.setWrapText(true);
         
@@ -87,17 +85,20 @@ public class SearchDisplayPage {
 
 
         homeGrid.add(activeGroups, 0, 0);
-        homeGrid.add(numberOfArticles, 0, 1);
-        
-        homeGrid.add(searchResults, 1, 2);
-        homeGrid.add(listedArticles, 0, 3);
+        homeGrid.add(numberOfArticles, 1, 0);
+       
+        homeGrid.add(listedArticles, 0, 2);
         
         homeGrid.add(backToSearchButton, 0, 10);
-        homeGrid.add(displayArticleButton, 2, 10);
-        homeGrid.add(articleID, 3, 10);
+        homeGrid.add(displayArticleButton, 0, 11);
+        homeGrid.add(articleID, 0, 12);
         
-        
-                
+        backToSearchButton.setOnAction(event-> {
+        	SearchPage searchPage = new SearchPage(primaryStage, databaseHelper, email, "admin");
+            Scene searchScene = new Scene(searchPage.getSearchLayout(), 400, 300);
+            primaryStage.setScene(searchScene);
+        });
+       
     }
 
     // Method to return the user home layout, used in the scene creation

@@ -120,37 +120,45 @@ public class SearchPage {
             if (lastLayer < row) {
             	lastLayer = row;
             }
-            homeGrid.add(logoutButton, 0, lastLayer);
-            homeGrid.add(backButton, 1, lastLayer);
+            homeGrid.add(logoutButton, 1, lastLayer);
+            homeGrid.add(backButton, 0, lastLayer);
             homeGrid.add(helpButton, 2, lastLayer);
             
             searchButton.setOnAction(event -> {
             	
             	RadioButton selectedDifficulty = (RadioButton) difficultyToggle.getSelectedToggle();
+            	String difficultyFilter;
+            	
                 if (selectedDifficulty == null) {
-                    //Assume default all
+                	difficultyFilter = "ALL";
                 }
-                String difficultyFilter = selectedDifficulty.getText().trim();
-                System.out.println("DIFFICULTY FILTER CHOSEN: " + difficultyFilter);
+                else {
+                	difficultyFilter = selectedDifficulty.getText().trim();
+                }
+         
                 
                 RadioButton selectedGroup = (RadioButton) groupsToggle.getSelectedToggle();
+                String groupFilter;
                 if (selectedGroup == null) {
-                    //assume default all
+                	groupFilter = "ALL";
                 }
-            	String groupFilter = selectedGroup.getText().trim();
-            	System.out.println("GROUP FILTER CHOSEN: " + groupFilter);
+                else {
+                	groupFilter = selectedGroup.getText().trim();
+                }
             	
             	
-            	SearchDisplayPage searchDisplayPage = new SearchDisplayPage(primaryStage, databaseHelper, "RESULTS RESULTS RESULTS", 2, "GROUP NAME" , email, role);
             	
-            	
-            			
+            	SearchDisplayPage searchDisplayPage = new SearchDisplayPage(primaryStage, databaseHelper, email, role, "RESULTS RESULTS RESULTS", 2, groupFilter);
+            	Scene searchDisplayScene = new Scene(searchDisplayPage.getSearchLayout(), 400, 300);
+                primaryStage.setScene(searchDisplayScene);      			
             
             });
             
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Database Error", "An error occurred while retrieving accessible groups.", Alert.AlertType.ERROR);
+       
+        
         }
         
         logoutButton.setOnAction(event -> {

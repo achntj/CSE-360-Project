@@ -66,34 +66,60 @@ public class GroupAccessPage {
         groupGrid.setHgap(10);
 
         // Establishes text and buttons to be used in user interface
-        Button createGroupButton = new Button("Create Group (use ID)");
-        Button listGroupsButton = new Button("List Groups");
-        TextField deleteGroupField = new TextField();
-        Button deleteGroupButton = new Button("Delete Group (use ID)");
+        Button createGroupButton = new Button("Create General Group");
+        Button createSpecialAccessGroupButton = new Button("Create Special Access Group");
+        
+        Button listGroupsButton = new Button("        List Groups        ");
+        
+        Label groupIDLabel = new Label("Group ID: ");
+        TextField groupField = new TextField();
+        
+        Button viewGroupButton = new Button("View Group");   
+        Button deleteGroupButton = new Button("Delete Group");
+        
+        Button backupGroupButton = new Button("Backup Group");   
+        Button restoreGroupButton = new Button("Restore Group");
+        
+        Button helpButton = new Button("Help");
         Button backButton = new Button("Back");
 
         // Adds the buttons and text fields to the user interface
         
         groupGrid.add(createGroupButton, 0, 0);
+        groupGrid.add(createSpecialAccessGroupButton, 2, 0);
+        
         groupGrid.add(listGroupsButton, 0, 1);
-        groupGrid.add(deleteGroupField, 0, 2);
-        groupGrid.add(deleteGroupButton, 1, 2);
-        groupGrid.add(backButton, 0, 3);
-
+ 
+        groupGrid.add(groupIDLabel, 0, 2);    
+        groupGrid.add(groupField, 2, 2);
+        
+        groupGrid.add(viewGroupButton, 0, 3);    
+        groupGrid.add(deleteGroupButton, 2, 3);
+        
+        groupGrid.add(backupGroupButton, 0, 4);
+        groupGrid.add(restoreGroupButton, 2, 4); 
+        
+        groupGrid.add(helpButton, 0, 5);    
+        groupGrid.add(backButton, 2, 5);
+        
         createGroupButton.setOnAction(event -> {
+        	System.out.println("createGeneralGroup Button pressed");
+        });
+
+        createSpecialAccessGroupButton.setOnAction(event -> {
         	try {
                 databaseHelper.ensureConnection();
                 
                 // Redirect to create group page
-                CreateGroupPage createGroupPage = new CreateGroupPage(primaryStage, databaseHelper, email, role);
-                Scene createGroupScene = new Scene(createGroupPage.getCreateGroupLayout(), 400, 300);
+                CreateSpecialGroupPage createSpecialGroupPage = new CreateSpecialGroupPage(primaryStage, databaseHelper, email, role);
+                Scene createGroupScene = new Scene(createSpecialGroupPage.getCreateGroupLayout(), 400, 300);
                 primaryStage.setScene(createGroupScene);
             } catch (Exception e) {
                 e.printStackTrace();
                 showAlert("Error", "An error occurred while entering the create group page.", Alert.AlertType.ERROR);
             }
         });
-
+        
         listGroupsButton.setOnAction(event -> {
             try {
                 // Retrieve the list of groups from the database
@@ -106,28 +132,55 @@ public class GroupAccessPage {
             }
         });
 
+        viewGroupButton.setOnAction(event -> {
+        	System.out.println("viewGroupButton  pressed");
+        });
         deleteGroupButton.setOnAction(event -> {
-        	try {
-        		String groupID = deleteGroupField.getText().trim();
-                int id = Integer.parseInt(groupID);
-                databaseHelper.deleteGroup(id);
-                showAlert("Success", "Article deleted successfully.", Alert.AlertType.INFORMATION);
-            } catch (NumberFormatException e) {
-                showAlert("Error", "Please enter a valid ID.", Alert.AlertType.ERROR);
-            } catch (Exception e) {
-                e.printStackTrace();
-                showAlert("Database Error", "An error occurred while deleting the group.", Alert.AlertType.ERROR);
-            }
+        	System.out.println("deleteGroupButton  pressed");
+        });
+        backupGroupButton.setOnAction(event -> {
+        	System.out.println("backupGroupButton  pressed");
+        });
+        restoreGroupButton.setOnAction(event -> {
+        	System.out.println("restoreGroupButton  pressed");
         });
 
+		helpButton.setOnAction(event -> {
+			System.out.println("helpButton pressed");
+		});
         
         // Provides functionality for the back button
         backButton.setOnAction(event -> {
-        	// Creates a new home with the primary stage and database helper and returns to the home scene
-            UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, role);
-            Scene userScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
-            primaryStage.setScene(userScene);
-        });
+        	
+        	if (role.equalsIgnoreCase("admin")) {                   
+                AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
+                Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
+                primaryStage.setScene(adminScene);
+            }
+            
+            else if (role.equalsIgnoreCase("instructor")) {                   
+                InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, role);
+                Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
+                primaryStage.setScene(instructorScene);
+            }    	 
+            else {
+           
+           	 try {
+                    // Ensure connection to the database and log the user out
+                    databaseHelper.ensureConnection();
+                    showAlert("Logout", "You have been logged out successfully.", Alert.AlertType.INFORMATION);
+
+                    // Redirect to the login page after logout
+                    LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
+                    Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
+                    primaryStage.setScene(loginScene);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showAlert("Error", "An error occurred during logout.", Alert.AlertType.ERROR);
+                }
+            }   
+     
+       });
     }
 
     // Get function for groupGrid 

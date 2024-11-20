@@ -119,11 +119,36 @@ public class HelpMessagePage {
         
         // Provides functionality for the back button
         backButton.setOnAction(event -> {
-        	// Creates a new home with the primary stage and database helper and returns to the home scene
-            UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, role);
-            Scene userScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
-            primaryStage.setScene(userScene);
-        });
+        	
+        	if (role.equalsIgnoreCase("admin")) {                   
+                AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
+                Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
+                primaryStage.setScene(adminScene);
+            }
+            
+            else if (role.equalsIgnoreCase("instructor")) {                   
+                InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, "instructor");
+                Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
+                primaryStage.setScene(instructorScene);
+            }    	 
+            else {
+           
+           	 try {
+                    // Ensure connection to the database and log the user out
+                    databaseHelper.ensureConnection();
+                    showAlert("Logout", "You have been logged out successfully.", Alert.AlertType.INFORMATION);
+
+                    // Redirect to the login page after logout
+                    LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
+                    Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
+                    primaryStage.setScene(loginScene);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showAlert("Error", "An error occurred during logout.", Alert.AlertType.ERROR);
+                }
+            }   
+     
+       });
     }
 
     // Get function for messageGrid 

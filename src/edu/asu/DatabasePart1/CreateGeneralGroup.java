@@ -20,7 +20,7 @@ import javafx.stage.Stage;
  * @version 1.00	2024-10-30 Project Phase 2 User Home Page
  */
 
-public class CreateGroupPage {
+public class CreateGeneralGroup {
 	
     /** The primary stage used for the Graphical-User-Interface */
 	private final Stage primaryStage;
@@ -45,7 +45,7 @@ public class CreateGroupPage {
      * @param email				The email of the logged-in user
      * @param role				The role of the logged-in user
      */
-	public CreateGroupPage(Stage primaryStage, DatabaseHelper databaseHelper, String email, String role) {
+	public CreateGeneralGroup(Stage primaryStage, DatabaseHelper databaseHelper, String email, String role) {
 		this.primaryStage = primaryStage;
 		this.databaseHelper = databaseHelper;
 		this.email = email;
@@ -127,13 +127,16 @@ public class CreateGroupPage {
 
         // Action event for back button to return to home page
         backButton.setOnAction(event -> {
-            try {
-                UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, role);
-                Scene userHomeScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
-                primaryStage.setScene(userHomeScene);
+        	try {
+                databaseHelper.ensureConnection();
+                String id = databaseHelper.getUserIdFromEmail(email);
+                // Creates and redirects to new GroupAccessPage and passes in primary stage and database helper for usage
+            	GroupAccessPage groupAccessPage = new GroupAccessPage(primaryStage, databaseHelper, id, email, role);
+                Scene groupAccessScene = new Scene(groupAccessPage.getGroupAccessLayout(), 400, 300);
+                primaryStage.setScene(groupAccessScene );
             } catch (Exception e) {
                 e.printStackTrace();
-                showAlert("Error", "An error occurred while returning to the home page.", Alert.AlertType.ERROR);
+                System.out.println("No user id found with the current email");
             }
         });
     }
