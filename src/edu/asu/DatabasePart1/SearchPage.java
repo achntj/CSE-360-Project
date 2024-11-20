@@ -80,8 +80,8 @@ public class SearchPage {
         Label filterGroupsLabel = new Label("Filter Groups Displayed: ");
         ToggleGroup groupsToggle = new ToggleGroup();
         
-        
         Button logoutButton = new Button("Log Out");
+        Button backButton = new Button("Back");
         Button helpButton = new Button("Help");
 
 
@@ -94,22 +94,19 @@ public class SearchPage {
         	homeGrid.add(filterDifficultyLabel, 0, 1);
         	homeGrid.add(filterGroupsLabel, 2, 1);
         	
-        	RadioButton allDifficulties = new RadioButton("All Difficulty Levels");
-        	RadioButton beginnerLevels = new RadioButton("Beginner");
+            RadioButton beginnerLevels = new RadioButton("Beginner");
         	RadioButton intermediateLevels = new RadioButton("Intermediate");
         	RadioButton advancedLevels = new RadioButton("Advanced");
-        	
-        	allDifficulties.setToggleGroup(difficultyToggle);
+
         	beginnerLevels.setToggleGroup(difficultyToggle);
         	intermediateLevels.setToggleGroup(difficultyToggle);
         	advancedLevels.setToggleGroup(difficultyToggle);
         	
-            homeGrid.add(allDifficulties, 0, 2);
-            homeGrid.add(beginnerLevels, 0, 3);
-            homeGrid.add(intermediateLevels, 0, 4);
-            homeGrid.add(advancedLevels, 0, 5);
+            homeGrid.add(beginnerLevels, 0, 2);
+            homeGrid.add(intermediateLevels, 0, 3);
+            homeGrid.add(advancedLevels, 0, 4);
           
-            String[] groups = {"group1", "group2"};//databaseHelper.getAccessibleGroups(email);
+            String[] groups = {"group1", "group2", "group3", "group4", "group5"};//databaseHelper.getAccessibleGroups(email);
             int row = 2;
 
             // Add radio buttons for each role in the grid
@@ -119,11 +116,12 @@ public class SearchPage {
                 homeGrid.add(groupOption, 2, row++);
             }
 
-            int lastLayer = 6;
+            int lastLayer = 5;
             if (lastLayer < row) {
             	lastLayer = row;
             }
             homeGrid.add(logoutButton, 0, lastLayer);
+            homeGrid.add(backButton, 1, lastLayer);
             homeGrid.add(helpButton, 2, lastLayer);
             
             searchButton.setOnAction(event -> {
@@ -143,12 +141,65 @@ public class SearchPage {
             	System.out.println("GROUP FILTER CHOSEN: " + groupFilter);
             	
             	
+            	SearchDisplayPage searchDisplayPage = new SearchDisplayPage(primaryStage, databaseHelper, "RESULTS RESULTS RESULTS", 2, "GROUP NAME" , email, role);
+            	
+            	
+            			
+            
             });
             
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Database Error", "An error occurred while retrieving accessible groups.", Alert.AlertType.ERROR);
         }
+        
+        logoutButton.setOnAction(event -> {
+            try {
+                // Ensure connection to the database and log the user out
+                databaseHelper.ensureConnection();
+                showAlert("Logout", "You have been logged out successfully.", Alert.AlertType.INFORMATION);
+
+                // Redirect to the login page after logout
+                LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
+                Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
+                primaryStage.setScene(loginScene);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred during logout.", Alert.AlertType.ERROR);
+            }
+        });
+        
+        backButton.setOnAction(event -> {
+        	
+        	if (role.equalsIgnoreCase("admin")) {                   
+                AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
+                Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
+                primaryStage.setScene(adminScene);
+            }
+            
+            else if (role.equalsIgnoreCase("instructor")) {                   
+                InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, "instructor");
+                Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
+                primaryStage.setScene(instructorScene);
+            }    	 
+            else {
+           
+           	 try {
+                    // Ensure connection to the database and log the user out
+                    databaseHelper.ensureConnection();
+                    showAlert("Logout", "You have been logged out successfully.", Alert.AlertType.INFORMATION);
+
+                    // Redirect to the login page after logout
+                    LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
+                    Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
+                    primaryStage.setScene(loginScene);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showAlert("Error", "An error occurred during logout.", Alert.AlertType.ERROR);
+                }
+            }   
+     
+       });
         
                 
     }

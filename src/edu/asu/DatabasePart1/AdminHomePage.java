@@ -120,6 +120,12 @@ public class AdminHomePage {
                 showAlert("Error", "An error occurred while listing user accounts.", Alert.AlertType.ERROR);
             }
         });
+        
+        searchArticlesButton.setOnAction(event-> {
+        	SearchPage searchPage = new SearchPage(primaryStage, databaseHelper, email, "admin");
+            Scene studentScene = new Scene(searchPage.getSearchLayout(), 400, 300);
+            primaryStage.setScene(studentScene);
+        });
 
         // Adds redirect for addRemoveRoleButton 
         addRemoveRoleButton.setOnAction(event -> {
@@ -132,11 +138,32 @@ public class AdminHomePage {
         // Adds redirect for addRemoveRoleButton 
         articleButton.setOnAction(event -> {
         	// Creates and redirects to new addRemoveRolePage and passes in primary stage and database helper for usage
-        	UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, "Admin");
-            Scene userHomeScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
-            primaryStage.setScene(userHomeScene);
+        	ArticleFunctionsPage articleFunctionsPage = new ArticleFunctionsPage(primaryStage, databaseHelper, email, "admin");
+            Scene articleFunctionsScene = new Scene(articleFunctionsPage.getArticleFunctionsLayout(), 400, 300);
+            primaryStage.setScene(articleFunctionsScene);
         });
 
+        articleGroupButton.setOnAction(event -> {
+        	try {
+                databaseHelper.ensureConnection();
+                String id = databaseHelper.getUserIdFromEmail(email);
+                // Creates and redirects to new GroupAccessPage and passes in primary stage and database helper for usage
+            	GroupAccessPage groupAccessPage = new GroupAccessPage(primaryStage, databaseHelper, id, email, "admin");
+                Scene groupAccessScene = new Scene(groupAccessPage.getGroupAccessLayout(), 400, 300);
+                primaryStage.setScene(groupAccessScene );
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("No user id found with the current email");
+            }
+        });
+        
+        helpButton.setOnAction(event -> {
+        	// Creates and redirects to new HelpMessagePage and passes in primary stage and database helper for usage
+            HelpMessagePage helpMessagePage = new HelpMessagePage(primaryStage, databaseHelper, email, "admin");
+            Scene helpMessageScene = new Scene(helpMessagePage.getHelpMessageLayout(), 400, 300);
+            primaryStage.setScene(helpMessageScene );
+        });
+        
         // Adds redirect for logout button
         logoutButton.setOnAction(event -> {
             // Redirects to newly created LoginPage

@@ -67,35 +67,46 @@ public class ArticleFunctionsPage {
         homeGrid.setHgap(10);
 
         // Define the welcome label and logout button
-        Label welcomeLabel = new Label("Welcome to User Home Page, " + role + "!");
+        Label welcomeLabel = new Label("Article Function Page " + role + "!");
         
         Button createArticleButton = new Button("Create Article");
-        Button listArticlesButton = new Button("List Articles");
         Button deleteArticleButton = new Button("Delete Article");
-        Button backupArticlesButton = new Button("Backup Articles");
+        
+        Button listArticlesButton = new Button("List Articles");
+        Button editArticle = new Button("Edit Article");
+ 
+        Button backupArticlesButton = new Button("Total Backup");
         Button restoreArticlesButton = new Button("Restore Articles");
-        Button backupByKeywordButton = new Button("Backup Group: ");
-        TextField keywordToBackupField = new TextField();
-        Button restoreKeywordArticles = new Button("Restore Group:");
-        TextField keywordToRestore = new TextField();
+        
+        Label keyLabel = new Label("Key Word: ");
+        TextField keywordField = new TextField();
+        
+        Button backupByKeywordButton = new Button("Backup Key");
+        Button restoreKeywordArticles = new Button("Restore Key");
+        
+        Button backButton = new Button("Back");
         Button logoutButton = new Button("Log Out");
-        Button helpButton = new Button("Help:");
-        Button groupButton = new Button("View / Edit Groups:");
+        Button helpButton = new Button("Help");
 
-        // Add components to the home grid layout
-        homeGrid.add(welcomeLabel, 0, 0);
-        homeGrid.add(createArticleButton, 0, 1);
-        homeGrid.add(listArticlesButton, 0, 2);
-        homeGrid.add(deleteArticleButton, 0, 3);
-        homeGrid.add(backupArticlesButton, 0, 4);
-        homeGrid.add(restoreArticlesButton, 0, 5); 
-        homeGrid.add(backupByKeywordButton, 0, 6);
-        homeGrid.add(keywordToBackupField, 0, 7);
-        homeGrid.add(restoreKeywordArticles, 0, 8);
-        homeGrid.add(keywordToRestore, 0, 9);
-        homeGrid.add(logoutButton, 0, 10);
-        homeGrid.add(helpButton, 0, 11);
-        homeGrid.add(groupButton, 0, 12);
+        
+        homeGrid.add(createArticleButton, 0, 0);
+        homeGrid.add(deleteArticleButton, 2, 0);
+
+        homeGrid.add(listArticlesButton, 0, 1);
+        homeGrid.add(editArticle, 2, 1);
+
+        homeGrid.add(backupArticlesButton, 0, 2);
+        homeGrid.add(restoreArticlesButton, 2, 2);
+        
+        homeGrid.add(keyLabel, 0, 3);
+        homeGrid.add(keywordField, 2, 3);
+        
+        homeGrid.add(backupByKeywordButton, 0, 4);
+        homeGrid.add(restoreKeywordArticles, 2, 4);
+       
+        homeGrid.add(backButton, 0, 5);
+        homeGrid.add(logoutButton, 1, 5);
+        homeGrid.add(helpButton, 2, 5);
 
         createArticleButton.setOnAction(event -> {
         	try {
@@ -152,7 +163,7 @@ public class ArticleFunctionsPage {
         });
         
         backupByKeywordButton.setOnAction(event -> {
-        	String keyword = keywordToBackupField.getText().trim();
+        	String keyword = keywordField.getText().trim();
         	
         	if (keyword.isEmpty()){
         		showAlert("Error", "Keyword is empty, please add a keyword!", Alert.AlertType.ERROR);
@@ -185,7 +196,7 @@ public class ArticleFunctionsPage {
         });
         
         restoreKeywordArticles.setOnAction(event -> {
-        	String keyword = keywordToRestore.getText().trim();
+        	String keyword = keywordField.getText().trim();
         	String filename = "backup" + keyword + ".txt";
         	
         	if (keyword.isEmpty()){
@@ -221,24 +232,44 @@ public class ArticleFunctionsPage {
                 showAlert("Error", "An error occurred during logout.", Alert.AlertType.ERROR);
             }
         });
+        
         helpButton.setOnAction(event -> {
         	// Creates and redirects to new HelpMessagePage and passes in primary stage and database helper for usage
             HelpMessagePage helpMessagePage = new HelpMessagePage(primaryStage, databaseHelper, email, role);
             Scene helpMessageScene = new Scene(helpMessagePage.getHelpMessageLayout(), 400, 300);
             primaryStage.setScene(helpMessageScene );
         });
-        groupButton.setOnAction(event -> {
-        	try {
-                databaseHelper.ensureConnection();
-                String id = databaseHelper.getUserIdFromEmail(email);
-                // Creates and redirects to new GroupAccessPage and passes in primary stage and database helper for usage
-            	GroupAccessPage groupAccessPage = new GroupAccessPage(primaryStage, databaseHelper, id, email, role);
-                Scene groupAccessScene = new Scene(groupAccessPage.getGroupAccessLayout(), 400, 300);
-                primaryStage.setScene(groupAccessScene );
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("No user id found with the current email");
-            }
+        
+        backButton.setOnAction(event -> {
+        	
+        	 if (role.equalsIgnoreCase("admin")) {                   
+                 AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
+                 Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
+                 primaryStage.setScene(adminScene);
+             }
+             
+             else if (role.equalsIgnoreCase("instructor")) {                   
+                 InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, "instructor");
+                 Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
+                 primaryStage.setScene(instructorScene);
+             }
+             else {
+            	 System.out.println("Error going back, logging out... ");
+            	 try {
+                     // Ensure connection to the database and log the user out
+                     databaseHelper.ensureConnection();
+                     showAlert("Logout", "You have been logged out successfully.", Alert.AlertType.INFORMATION);
+
+                     // Redirect to the login page after logout
+                     LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
+                     Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
+                     primaryStage.setScene(loginScene);
+                 } catch (Exception e) {
+                     e.printStackTrace();
+                     showAlert("Error", "An error occurred during logout.", Alert.AlertType.ERROR);
+                 }
+             }   
+      
         });
                 
     }
