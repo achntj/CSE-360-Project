@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -66,6 +67,7 @@ public class DatabaseHelper {
             createTables(); 
             createArticleTables();
             createMessagesTables();
+            createGroupsTables();
             try {
 				encryptionHelper = new EncryptionHelper();
 			} catch (Exception e) {
@@ -896,7 +898,7 @@ public class DatabaseHelper {
      * @param type The type of the message - either generic or specific
      * @throws Exception If an error occurs while creating the article.
      */
-    public void createGroup(String email, String body, String type) throws Exception {
+    public void sendMessage(String email, String body, String type) throws Exception {
         
         String insertMessage= "INSERT INTO messages (email, body, type) VALUES (?, ?, ?)";
         
@@ -914,7 +916,7 @@ public class DatabaseHelper {
      * 
      * @throws SQLException If a database access error occurs.
      */
-    private void createGroupsTables() throws SQLException {
+	private void createGroupsTables() throws SQLException {
         String messageTable = "CREATE TABLE IF NOT EXISTS groups ("
                 + "id INT AUTO_INCREMENT PRIMARY KEY, "
                 + "group_name VARCHAR(255),"
@@ -924,27 +926,210 @@ public class DatabaseHelper {
                 + "articles VARCHAR(255))";
         statement.execute(messageTable);
     }
+	
+	/**
+	 * Creates the groups table if it does not already exist.
+	 * 
+	 * @throws SQLException If a database access error occurs.
+	 */
+	private void createGroupsTable() throws SQLException {
+	    String groupsTable = "CREATE TABLE IF NOT EXISTS groups ("
+	            + "id INT AUTO_INCREMENT PRIMARY KEY, "     // Unique identifier for the group
+	            + "group_name VARCHAR(255), "               // Name of the group
+	            + "article_ids VARCHAR(255), "              // Comma-separated list of article IDs in the group
+	            + "admins VARCHAR(255), "                   // Comma-separated list of admin user IDs
+	            + "instructors VARCHAR(255), "              // Comma-separated list of instructor user IDs
+	            + "students VARCHAR(255), "                 // Comma-separated list of student user IDs
+	            + ")";
+	    statement.execute(groupsTable);
+	}
     
-    /**
-     * Creates a new message in the database.
+	/**
+	 * Inserts a new group into the groups table.
+	 * 
+	 * @param groupName The name of the group.
+	 * @param articleIds Comma-separated list of article IDs in the group.
+	 * @param admins Comma-separated list of admin user IDs.
+	 * @param instructors Comma-separated list of instructor user IDs.
+	 * @param students Comma-separated list of student user IDs.
+	 * @throws SQLException If a database access error occurs.
+	 */
+	public void createGroup(String groupName, String articleIds, String admins, String instructors, String students) throws SQLException {
+	    String insertGroup = "INSERT INTO groups (group_name, article_ids, admins, instructors, students) VALUES (?, ?, ?, ?, ?)";
+	    try (PreparedStatement pstmt = connection.prepareStatement(insertGroup)) {
+	        pstmt.setString(1, groupName);
+	        pstmt.setString(2, articleIds);
+	        pstmt.setString(3, admins);
+	        pstmt.setString(4, instructors);
+	        pstmt.setString(5, students);
+	        pstmt.executeUpdate();
+	    }
+	    System.out.println("Group created successfully.");
+	}
+	
+	/**
+	 * Adds or removes a user from a comma-separated column in the groups table.
+	 * Ensures there is always at least one admin in the group.
+	 * 
+	 * @param groupId The ID of the group to update.
+	 * @param column The column to update (e.g., "admins", "instructors", "students").
+	 * @param userId The user ID to add or remove.
+	 * @param addUser True to add the user; false to remove the user.
+	 * @throws SQLException If a database access error occurs.
+	 */
+	public void updateGroupUsers(int groupId, String column, String userId, boolean addUser) throws SQLException {
+	    // Fetch the current value of the column
+	    String query = "SELECT " + column + " FROM groups WHERE id = ?";
+	    String updatedColumnValue = "";
+	    boolean isAdminsColumn = column.equalsIgnoreCase("admins");
+	    
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, groupId);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            String currentValue = rs.getString(column);
+	            
+	            // Convert the current comma-separated value into a list
+	            List<String> users = new ArrayList<>();
+	            if (currentValue != null && !currentValue.trim().isEmpty()) {
+	                users = new ArrayList<>(Arrays.asList(currentValue.split(",")));
+	            }
+	            
+	            if (addUser) {
+	                // Add the user if not already present
+	                if (!users.contains(userId)) {
+	                    users.add(userId);
+	                }
+	            } else {
+	                // Remove the user if present
+	                if (users.contains(userId)) {
+	                    if (isAdminsColumn && users.size() == 1) {
+	                        // Prevent removal if this is the last admin
+	                        throw new SQLException("Cannot remove the last admin from the group.");
+	                    }
+	                    users.remove(userId);
+	                }
+	            }
+	            
+	            // Rebuild the comma-separated value
+	            updatedColumnValue = String.join(",", users);
+	        }
+	    }
+
+	    // Update the column with the new value
+	    String updateQuery = "UPDATE groups SET " + column + " = ? WHERE id = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(updateQuery)) {
+	        pstmt.setString(1, updatedColumnValue);
+	        pstmt.setInt(2, groupId);
+	        pstmt.executeUpdate();
+	    }
+
+	    System.out.println("User " + (addUser ? "added to" : "removed from") + " " + column + " successfully.");
+	}
+
+
+	/**
+	 * Retrieves group details by group ID.
+	 * 
+	 * @param groupId The ID of the group to retrieve.
+	 * @throws SQLException If a database access error occurs.
+	 */
+	public void getGroupInfo(int groupId) throws SQLException {
+	    String query = "SELECT * FROM groups WHERE id = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, groupId);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            System.out.println("Group Name: " + rs.getString("group_name"));
+	            System.out.println("Article IDs: " + rs.getString("article_ids"));
+	            System.out.println("Admins: " + rs.getString("admins"));
+	            System.out.println("Instructors: " + rs.getString("instructors"));
+	            System.out.println("Students: " + rs.getString("students"));
+	        } else {
+	            System.out.println("Group not found.");
+	        }
+	    }
+	}
+	
+	/**
+	 * Lists all groups in the database, including their details.
+	 * 
+	 * @return A formatted string containing the details of all groups.
+	 * @throws SQLException If a database access error occurs.
+	 */
+	public String listGroups() throws SQLException {
+	    ensureConnection(); // Ensure the connection is established
+
+	    StringBuilder groupsList = new StringBuilder();
+	    String query = "SELECT id, group_name, article_ids, admins, instructors, students FROM groups";
+
+	    try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+	        while (rs.next()) {
+	            int id = rs.getInt("id");
+	            String groupName = rs.getString("group_name");
+	            String articleIds = rs.getString("article_ids");
+	            String admins = rs.getString("admins");
+	            String instructors = rs.getString("instructors");
+	            String students = rs.getString("students");
+
+	            // Append group details to the list
+	            groupsList.append("Group ID: ").append(id).append("\n")
+	                .append("Group Name: ").append(groupName).append("\n")
+	                .append("Article IDs: ").append(articleIds).append("\n")
+	                .append("Admins: ").append(admins).append("\n")
+	                .append("Instructors: ").append(instructors).append("\n")
+	                .append("Students: ").append(students).append("\n")
+	                .append("-------------------------------\n");
+	        }
+	    }
+
+	    if (groupsList.length() == 0) {
+	        return "No groups found.";
+	    } else {
+	        return groupsList.toString();
+	    }
+	}
+	
+	/**
+	 * Deletes a group from the groups table.
+	 * 
+	 * @param groupId The ID of the group to delete.
+	 * @throws SQLException If a database access error occurs.
+	 */
+	public void deleteGroup(int groupId) throws SQLException {
+	    String deleteGroup = "DELETE FROM groups WHERE id = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(deleteGroup)) {
+	        pstmt.setInt(1, groupId);
+	        pstmt.executeUpdate();
+	    }
+	    System.out.println("Group deleted successfully.");
+	}
+
+
+	/**
+     * Retrieves a user's ID based on their email.
      * 
-     * @param email The email of the user who sent the message. 
-     * @param body The body content of the message.
-     * @param type The type of the message - either generic or specific
-     * @throws Exception If an error occurs while creating the article.
+     * @param email The email address of the user.
+     * @return The user's ID, or null if the email is not found.
+     * @throws SQLException If a database error occurs.
      */
-    public void sendMessage(String email, String body, String type) throws Exception {
+    public String getUserIdFromEmail(String email) throws SQLException {
+        String query = "SELECT id FROM cse360users WHERE email = ?";
         
-        String insertMessage= "INSERT INTO messages (email, body, type) VALUES (?, ?, ?)";
-        
-        try (PreparedStatement pstmt = connection.prepareStatement(insertMessage)) {
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setString(1, email);
-            pstmt.setString(2, body);
-            pstmt.setString(3, type);
-            pstmt.executeUpdate();
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("id");
+                } else {
+                    System.out.println("No user found with email: " + email);
+                    return null;
+                }
+            }
         }
-        System.out.println("Message sent successfully.");
     }
+
+
 }
     
     

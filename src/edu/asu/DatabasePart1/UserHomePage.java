@@ -80,6 +80,7 @@ public class UserHomePage {
         TextField keywordToRestore = new TextField();
         Button logoutButton = new Button("Log Out");
         Button helpButton = new Button("Help:");
+        Button groupButton = new Button("View / Edit Groups:");
 
         // Add components to the home grid layout
         homeGrid.add(welcomeLabel, 0, 0);
@@ -94,6 +95,7 @@ public class UserHomePage {
         homeGrid.add(keywordToRestore, 0, 9);
         homeGrid.add(logoutButton, 0, 10);
         homeGrid.add(helpButton, 0, 11);
+        homeGrid.add(groupButton, 0, 12);
 
         createArticleButton.setOnAction(event -> {
         	try {
@@ -220,10 +222,23 @@ public class UserHomePage {
             }
         });
         helpButton.setOnAction(event -> {
-        	// Creates and redirects to new addRemoveRolePage and passes in primary stage and database helper for usage
+        	// Creates and redirects to new HelpMessagePage and passes in primary stage and database helper for usage
             HelpMessagePage helpMessagePage = new HelpMessagePage(primaryStage, databaseHelper, email, role);
             Scene helpMessageScene = new Scene(helpMessagePage.getHelpMessageLayout(), 400, 300);
             primaryStage.setScene(helpMessageScene );
+        });
+        groupButton.setOnAction(event -> {
+        	try {
+                databaseHelper.ensureConnection();
+                String id = databaseHelper.getUserIdFromEmail(email);
+                // Creates and redirects to new GroupAccessPage and passes in primary stage and database helper for usage
+            	GroupAccessPage groupAccessPage = new GroupAccessPage(primaryStage, databaseHelper, id, email, role);
+                Scene groupAccessScene = new Scene(groupAccessPage.getGroupAccessLayout(), 400, 300);
+                primaryStage.setScene(groupAccessScene );
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("No user id found with the current email");
+            }
         });
                 
     }
