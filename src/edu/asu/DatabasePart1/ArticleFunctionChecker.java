@@ -84,7 +84,7 @@ public class ArticleFunctionChecker {
         // Attempt to add the article to the database
         try {
             id = databaseHelper.getArticleID(title);
-            databaseHelper.createArticle(title, difficulty, authors, abstractText, keywords, body, references);
+            databaseHelper.createArticle(null, title, difficulty, authors, abstractText, keywords, body, references);
             articleAdded = true;
         } catch (Exception e) {
             return "*** Error *** Failed to add article: " + e.getMessage();

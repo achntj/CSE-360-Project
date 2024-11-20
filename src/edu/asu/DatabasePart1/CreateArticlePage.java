@@ -123,7 +123,7 @@ public class CreateArticlePage {
         	
         	// Attempt to create the article and handle exceptions if they occur
         	try {
-        		databaseHelper.createArticle(title, difficulty, authors, abstractVal, keywords, body, references);
+        		databaseHelper.createArticle(null, title, difficulty, authors, abstractVal, keywords, body, references);
         		showAlert("Success", "Article Added Successfully!", Alert.AlertType.INFORMATION);
         		
         		// Redirect to user home page after article creation

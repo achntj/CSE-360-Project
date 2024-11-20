@@ -541,7 +541,7 @@ public class DatabaseHelper {
      */
     private void createArticleTables() throws SQLException {
         String articleTable = "CREATE TABLE IF NOT EXISTS articles ("
-                + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                + "id INT AUTO_INCREMENT, "
                 + "title VARCHAR(255), "
                 + "difficulty VARCHAR(255),"
                 + "authors VARCHAR(255), "
@@ -564,21 +564,42 @@ public class DatabaseHelper {
      * @param references The references for the article.
      * @throws Exception If an error occurs while creating the article.
      */
-    public void createArticle(String title, String difficulty, String authors, 
+    public void createArticle(String id, String title, String difficulty, String authors, 
             String abstractText, String keywords, String body, String references) throws Exception {
+    	System.out.println("Create function was called");
         
-        String insertArticle = "INSERT INTO articles (title, difficulty, authors, abstract, keywords, body, references) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    	if (id!=null) { 
+    		System.out.println("ID PROVIDED");
+    		String insertArticle = "INSERT INTO articles (id, title, difficulty, authors, abstract, keywords, body, references) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    		try (PreparedStatement pstmt = connection.prepareStatement(insertArticle)) {
+    			pstmt.setString(1, id);
+    			pstmt.setString(2, title);
+                pstmt.setString(3, difficulty);
+                pstmt.setString(4, authors);
+                pstmt.setString(5, abstractText);
+                pstmt.setString(6, keywords);
+                pstmt.setString(7, body);
+                pstmt.setString(8, references);
+                pstmt.executeUpdate();
+                System.out.println(pstmt);
+            }
+    	} else {
+    		System.out.println("NO ID PROVIDED");
+    		String insertArticle = "INSERT INTO articles (title, difficulty, authors, abstract, keywords, body, references) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    		try (PreparedStatement pstmt = connection.prepareStatement(insertArticle)) {
+                pstmt.setString(1, title);
+                pstmt.setString(2, difficulty);
+                pstmt.setString(3, authors);
+                pstmt.setString(4, abstractText);
+                pstmt.setString(5, keywords);
+                pstmt.setString(6, body);
+                pstmt.setString(7, references);
+                pstmt.executeUpdate();
+                System.out.println(pstmt);
+            }
+    	}
         
-        try (PreparedStatement pstmt = connection.prepareStatement(insertArticle)) {
-            pstmt.setString(1, title);
-            pstmt.setString(2, difficulty);
-            pstmt.setString(3, authors);
-            pstmt.setString(4, abstractText);
-            pstmt.setString(5, keywords);
-            pstmt.setString(6, body);
-            pstmt.setString(7, references);
-            pstmt.executeUpdate();
-        }
+        
         System.out.println("Article created successfully.");
     }
 
@@ -710,6 +731,8 @@ public class DatabaseHelper {
 
         List<String> articles = new ArrayList<>();
         while (rs.next()) {
+        	
+        	String id= rs.getString("id");
             String title = rs.getString("title");
             String difficulty = rs.getString("difficulty");  // New difficulty field
             String authors = rs.getString("authors");
@@ -717,7 +740,7 @@ public class DatabaseHelper {
             String keywords = rs.getString("keywords");
             String body = rs.getString("body");
             String references = rs.getString("references");
-            articles.add(title + "|" + difficulty + "|" + authors + "|" + abstractText + "|" + keywords + "|" + body + "|" + references);
+            articles.add(id + "|" + title + "|" + difficulty + "|" + authors + "|" + abstractText + "|" + keywords + "|" + body + "|" + references);
         }
 
         byte[] plainText = String.join("\n", articles).getBytes();
@@ -759,13 +782,14 @@ public class DatabaseHelper {
             }
 
             if (hasKeyword) {
+            	String id= rs.getString("id");
                 String title = rs.getString("title");
                 String difficulty = rs.getString("difficulty"); // New difficulty field
                 String authors = rs.getString("authors");
                 String abstractText = rs.getString("abstract");
                 String body = rs.getString("body");
                 String references = rs.getString("references");
-                articles.add(title + "|" + difficulty + "|" + authors + "|" + abstractText + "|" + keyWords + "|" + body + "|" + references);
+                articles.add(id + "|" + title + "|" + difficulty + "|" + authors + "|" + abstractText + "|" + keyWords + "|" + body + "|" + references);
             }
         }
 
@@ -810,9 +834,8 @@ public class DatabaseHelper {
 
             for (String article : articles) {
                 String[] fields = article.split("\\|");
-                if (fields.length == 7) {
-                    createArticle(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6]);
-                }
+                System.out.println("Restoring this - " + article);
+                createArticle(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7]);
             }
         }
         System.out.println("Restore completed successfully.");
@@ -845,9 +868,7 @@ public class DatabaseHelper {
 
             for (String article : articles) {
                 String[] fields = article.split("\\|");
-                if (fields.length == 7) {
-                    createArticle(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6]);
-                }
+                createArticle(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7]);
             }
         }
         System.out.println("Restore completed successfully.");
@@ -864,6 +885,43 @@ public class DatabaseHelper {
                 + "email VARCHAR(255),"
                 + "body TEXT, "
                 + "type VARCHAR(255))";
+        statement.execute(messageTable);
+    }
+    
+    /**
+     * Creates a new message in the database.
+     * 
+     * @param email The email of the user who sent the message. 
+     * @param body The body content of the message.
+     * @param type The type of the message - either generic or specific
+     * @throws Exception If an error occurs while creating the article.
+     */
+    public void createGroup(String email, String body, String type) throws Exception {
+        
+        String insertMessage= "INSERT INTO messages (email, body, type) VALUES (?, ?, ?)";
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(insertMessage)) {
+            pstmt.setString(1, email);
+            pstmt.setString(2, body);
+            pstmt.setString(3, type);
+            pstmt.executeUpdate();
+        }
+        System.out.println("Message sent successfully.");
+    }
+    
+    /**
+     * Creates the groups table if it does not already exist.
+     * 
+     * @throws SQLException If a database access error occurs.
+     */
+    private void createGroupsTables() throws SQLException {
+        String messageTable = "CREATE TABLE IF NOT EXISTS groups ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                + "group_name VARCHAR(255),"
+                + "admins VARCHAR(255), " // instructors who are admins
+                + "instructors VARCHAR(255)," // instructors who are NOT admins but view decrypted
+                + "students VARCHAR(255)," // students who view decrypted
+                + "articles VARCHAR(255))";
         statement.execute(messageTable);
     }
     
