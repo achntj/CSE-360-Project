@@ -110,7 +110,7 @@ public class InstructorHomePage {
 
         addStudentButton.setOnAction(event -> {
         	// Redirect to the login page after logout
-            AddUserPage addUserPage = new AddUserPage(primaryStage, databaseHelper, email, role);
+            AddUserPage addUserPage = new AddUserPage(primaryStage, databaseHelper, email, "instructor");
             Scene addUserScene = new Scene(addUserPage .getAddUserLayout(), 400, 300);
             primaryStage.setScene(addUserScene);
         	
@@ -119,7 +119,7 @@ public class InstructorHomePage {
         
         deleteStudentButton.setOnAction(event -> {
         	// Redirect to the login page after logout
-            DeleteUserPage deleteUserPage = new DeleteUserPage(primaryStage, databaseHelper, email, role);
+            DeleteUserPage deleteUserPage = new DeleteUserPage(primaryStage, databaseHelper, email, "instructor");
             Scene deleteUserScene = new Scene(deleteUserPage .getDeleteUserLayout(), 400, 300);
             primaryStage.setScene(deleteUserScene);
         	
@@ -181,7 +181,7 @@ public class InstructorHomePage {
         
         helpButton.setOnAction(event -> {
         	// Creates and redirects to new HelpMessagePage and passes in primary stage and database helper for usage
-            HelpMessagePage helpMessagePage = new HelpMessagePage(primaryStage, databaseHelper, email, role);
+            HelpMessagePage helpMessagePage = new HelpMessagePage(primaryStage, databaseHelper, email, "instructor");
             Scene helpMessageScene = new Scene(helpMessagePage.getHelpMessageLayout(), 400, 300);
             primaryStage.setScene(helpMessageScene);
         });

@@ -1138,13 +1138,11 @@ public class DatabaseHelper {
 	}
 	
 	public String[] groupsAccessibleToUser(String email) throws SQLException {
-	    // Query to fetch group names for a given email
-	    String queryIDs = "SELECT group_name FROM groups WHERE admins = ? OR instructors = ? OR students = ?";
+
+	    String queryIDs = "SELECT group_name FROM groups WHERE admins = ? OR instructors = ? OR students = ? OR type = ?";
 	    
 	    int id = Integer.parseInt(getUserIdFromEmail(email));
-	    
-	    
-	    // Use a list to dynamically store group names
+	
 	    List<String> groupList = new ArrayList<>();
 	    
 	    // Fetch group names
@@ -1152,6 +1150,7 @@ public class DatabaseHelper {
 	        pstmt.setInt(1, id);
 	        pstmt.setInt(2, id);
 	        pstmt.setInt(3, id);
+	        pstmt.setString(4, "general");
 	        try (ResultSet rs = pstmt.executeQuery()) {
 	            while (rs.next()) { // Iterate through all results
 	                groupList.add(rs.getString("group_name"));
@@ -1200,6 +1199,9 @@ public class DatabaseHelper {
 	}
 	
 	public int[] articlesFilteredDifficulty(int[] articleIDs, String difficulty) throws SQLException{
+		if (articleIDs == null || articleIDs.length == 0 ) {
+			return null;
+		}
 		int[] returnArticles = new int[articleIDs.length];
 		
 		 String query = "SELECT id FROM articles WHERE difficulty = ?";
@@ -1222,9 +1224,125 @@ public class DatabaseHelper {
 		return returnArticles;
 	}
 	
-	public String getArticlesFromList(int[] articleTitles) {
-		return "List of Appended Articles";
+	public String getArticlesFromList(int[] articleIDs) throws SQLException{
+		ensureConnection(); // Ensure the connection is established
+
+        StringBuilder articlesDisplay = new StringBuilder();    
+        
+		String query = "SELECT title, difficulty, authors FROM articles WHERE id = ?";
+		
+		int index = 0;
+		while (index <= articleIDs.length) {
+			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	            pstmt.setInt(1, articleIDs[index]);
+	            try (ResultSet rs = pstmt.executeQuery()) {
+	                if (rs.next()) {
+		                int id = articleIDs[index];
+		                String title = rs.getString("title");
+		                String difficulty = rs.getString("difficulty"); // Retrieve difficulty
+		                String author = rs.getString("authors");
+		                
+
+	                // Append article details to the list
+	                articlesDisplay.append("ID: ").append(id).append("\n")
+	                    .append("Title: ").append(title).append("\n")
+	                    .append("Difficulty: ").append(difficulty).append("\n") // Append difficulty
+	                    .append("Author: ").append(author).append("\n")
+	                    .append("-------------------------------\n");
+	                }
+		
+	            }
+			}
+			
+			index++;
+		}
+		 
+		if (articleIDs.length == 0) {
+            return "No articles found.";
+        } else {
+            return articlesDisplay.toString();
+        }
+
 	}
+	
+	public String displayFullArticle(int id) throws SQLException{
+		String query = "SELECT * FROM articles WHERE id = ?";
+		StringBuilder articleFull = new StringBuilder();    
+		
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	            pstmt.setInt(1, id);
+	            try (ResultSet rs = pstmt.executeQuery()) {
+	                if (rs.next()) {
+	                	String title = rs.getString("title");
+	                    String difficulty = rs.getString("difficulty");  // New difficulty field
+	                    String authors = rs.getString("authors");
+	                    String abstractText = rs.getString("abstract");
+	                    String keywords = rs.getString("keywords");
+	                    String body = rs.getString("body");
+	                    String references = rs.getString("references");
+			                
+
+		                // Append article details to the list
+	                    articleFull.append("ID: ").append(id).append("\n")
+		                    .append("Title: ").append(title).append("\n")
+		                    .append("Difficulty: ").append(difficulty).append("\n") // Append difficulty
+		                    .append("Author: ").append(authors).append("\n")
+		                    .append("Abstract: ").append(abstractText).append("\n")
+		                    .append("Keywords: ").append(keywords).append("\n")
+		                    .append("Body: ").append(body).append("\n")
+		                    .append("References: ").append(references).append("\n");           
+		              } else {
+		            	  System.out.println("No article with this ID: " + id);
+            				return null;
+		              }
+
+	               }
+	                    
+	      } 
+	    
+		if (articleFull == null) {
+            return "No articles found.";
+        } else {
+            return articleFull.toString();
+        } 
+
+	}
+
+	public int[] searchForArticles(String searchQuery, int[] idList) throws SQLException {
+		if (idList == null || idList.length == 0) {
+			return null;
+		} else if (searchQuery == null) {
+			return idList;
+		}
+
+		int[] finalArticleIDs = new int[idList.length];
+
+		String idListString = Arrays.toString(idList).replace("[", "").replace("]", "");
+
+		String query = "SELECT * FROM articles WHERE id IN (" + idListString
+				+ ") AND (LOWER(keywords) LIKE ? OR LOWER(title) LIKE ? OR "
+				+ "LOWER(authors) LIKE ? OR CAST(id AS CHAR) LIKE ?)";
+
+		ResultSet rs = statement.executeQuery(query);
+
+		int index = 0;
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			String searchPattern = "%" + searchQuery.toLowerCase() + "%";
+			statement.setString(1, searchPattern);
+			statement.setString(2, searchPattern);
+			statement.setString(3, searchPattern);
+			statement.setString(4, searchPattern);
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				finalArticleIDs[index] = id;
+				index++;
+			}
+			return finalArticleIDs;
+		} 
+		
+	}
+	
+	
 
 	/**
      * Retrieves a user's ID based on their email.

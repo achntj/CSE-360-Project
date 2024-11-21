@@ -45,6 +45,7 @@ public class SearchDisplayPage {
     /** The Grid Pane used to structure the user home page UI */
     private final GridPane homeGrid;
 
+
     /************
      * This constructor initializes the user home page and sets up all of the 
      * components in the graphical interface, including a welcome message and a 
@@ -56,7 +57,7 @@ public class SearchDisplayPage {
      * @param email				The email of the logged-in user
      * @param role				The role of the logged-in user
      */
-    public SearchDisplayPage(Stage primaryStage, DatabaseHelper databaseHelper,  String email, String role, String searchContent, int articleNumbers, String group) {
+    public SearchDisplayPage(Stage primaryStage, DatabaseHelper databaseHelper,  String email, String role, String searchContent, int articleNumbers, String group, int[] articleList) {
     	
     	// Initializes the primaryStage, database helper, email, and role
         this.primaryStage = primaryStage;
@@ -79,7 +80,7 @@ public class SearchDisplayPage {
         listedArticles.setWrapText(true);
         
         
-        Button backToSearchButton = new Button("Search");
+        Button backToSearchButton = new Button("Back To Search Page");
         Button displayArticleButton = new Button("View Article (ENTER ID): ");
         TextField articleID = new TextField();
 
@@ -94,9 +95,20 @@ public class SearchDisplayPage {
         homeGrid.add(articleID, 0, 12);
         
         backToSearchButton.setOnAction(event-> {
-        	SearchPage searchPage = new SearchPage(primaryStage, databaseHelper, email, "admin");
+        	SearchPage searchPage = new SearchPage(primaryStage, databaseHelper, email, role);
             Scene searchScene = new Scene(searchPage.getSearchLayout(), 400, 300);
             primaryStage.setScene(searchScene);
+        });
+        
+        displayArticleButton.setOnAction(event -> {
+        	int id = Integer.parseInt(articleID.getText().trim());
+        	try {
+        		String article = databaseHelper.displayFullArticle(id);
+                showAlert("Article ID: " + id, article, Alert.AlertType.INFORMATION); 
+        	} catch (Exception e) {
+        		 e.printStackTrace();
+                 showAlert("Error", "Not a valid ID!", Alert.AlertType.ERROR);
+        	}
         });
        
     }

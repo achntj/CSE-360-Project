@@ -44,6 +44,8 @@ public class SearchPage {
     
     /** The Grid Pane used to structure the user home page UI */
     private final GridPane homeGrid;
+    
+    private String[] groups;
 
     /************
      * This constructor initializes the user home page and sets up all of the 
@@ -63,6 +65,7 @@ public class SearchPage {
         this.databaseHelper = databaseHelper;
         this.email = email;
         this.role = role;
+        this.groups = null;
 
         // Setup the layout for the user home page using GridPane
         homeGrid = new GridPane();
@@ -84,146 +87,123 @@ public class SearchPage {
         Button backButton = new Button("Back");
         Button helpButton = new Button("Help");
 
+        RadioButton beginnerLevels = new RadioButton("Beginner");
+        RadioButton intermediateLevels = new RadioButton("Intermediate");
+        RadioButton advancedLevels = new RadioButton("Advanced");
+        RadioButton expertLevels = new RadioButton("Expert");
+
 
         // Add components to the home grid layout
         homeGrid.add(searchButton, 0, 0);
         homeGrid.add(searchCriteria, 2, 0);
  
-        try {
-        	
-        	homeGrid.add(filterDifficultyLabel, 0, 1);
-        	homeGrid.add(filterGroupsLabel, 2, 1);
-        	
-            RadioButton beginnerLevels = new RadioButton("Beginner");
-        	RadioButton intermediateLevels = new RadioButton("Intermediate");
-        	RadioButton advancedLevels = new RadioButton("Advanced");
+        homeGrid.add(filterDifficultyLabel, 0, 1);
+        homeGrid.add(filterGroupsLabel, 2, 1);
 
-        	beginnerLevels.setToggleGroup(difficultyToggle);
-        	intermediateLevels.setToggleGroup(difficultyToggle);
-        	advancedLevels.setToggleGroup(difficultyToggle);
-        	
-            homeGrid.add(beginnerLevels, 0, 2);
-            homeGrid.add(intermediateLevels, 0, 3);
-            homeGrid.add(advancedLevels, 0, 4);
+        beginnerLevels.setToggleGroup(difficultyToggle);
+        intermediateLevels.setToggleGroup(difficultyToggle);
+        advancedLevels.setToggleGroup(difficultyToggle);
+        expertLevels.setToggleGroup(difficultyToggle);
+        
+        homeGrid.add(beginnerLevels, 0, 2);
+        homeGrid.add(intermediateLevels, 0, 3);
+        homeGrid.add(advancedLevels, 0, 4);
+        homeGrid.add(expertLevels, 0, 5);
+   
+        int lastLayer = 6;
+        int row = 2;
+    
+   
+        try{
+            groups = databaseHelper.groupsAccessibleToUser(email);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Database Error", "An error occurred while retrieving accessible groups.", Alert.AlertType.ERROR);
+        }
+
+        if (groups == null) {
+            System.out.println("No Groups Accessible!");
             
-            int lastLayer = 5;
-            int row = 2;
-            
-            String[] groups = databaseHelper.groupsAccessibleToUser(email);
-            
-            if (groups == null) {
-            	System.out.println("You dont have access to any groups!");
-            	showAlert("Error", "You dont have any group access!", Alert.AlertType.ERROR);
+            Label noGroupsLabel = new Label("No Groups Avalible!");
+            homeGrid.add(noGroupsLabel, 2, row);
+        }
+        else {
+            for (String group : groups) {
+                RadioButton groupOption = new RadioButton(group);
+                groupOption.setToggleGroup(groupsToggle);
+                homeGrid.add(groupOption, 2, row++);
+            }    
+            if (lastLayer < row) {
+                lastLayer = row;
+            }
+        }
+        
+        homeGrid.add(logoutButton, 1, lastLayer);
+        homeGrid.add(backButton, 0, lastLayer);
+        homeGrid.add(helpButton, 2, lastLayer);
+    
+
+        
+        searchButton.setOnAction(event -> {
             	
-            	if (role.equalsIgnoreCase("admin")) {                   
-                    AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
-                    Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
-                    primaryStage.setScene(adminScene);
-                }
-                
-                else if (role.equalsIgnoreCase("instructor")) {                   
-                    InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, "instructor");
-                    Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
-                    primaryStage.setScene(instructorScene);
-                }  
-                else {
-                    
-                  	 try {
-                           // Ensure connection to the database and log the user out
-                           databaseHelper.ensureConnection();
-                           showAlert("Logout", "You have been logged out successfully.", Alert.AlertType.INFORMATION);
+            int[] filteredArticleList = null;
 
-                           // Redirect to the login page after logout
-                           LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
-                           Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
-                           primaryStage.setScene(loginScene);
-                       } catch (Exception e) {
-                           e.printStackTrace();
-                           showAlert("Error", "An error occurred during logout.", Alert.AlertType.ERROR);
-                       }
+            RadioButton selectedGroup = (RadioButton) groupsToggle.getSelectedToggle();
+            String groupFilter = null;
+            RadioButton selectedDifficulty = (RadioButton) difficultyToggle.getSelectedToggle();
+            String difficultyFilter = null;
+            
+            String search = searchCriteria.getText().trim();
+            
+            if (groups != null){
+                try{
+                    if (selectedGroup == null) {
+                        groupFilter = "ALL";
+                        filteredArticleList = databaseHelper.getArticlesInGroupList(groups, "*");
+                    }
+                    else {
+                        groupFilter = selectedGroup.getText().trim();
+                        filteredArticleList = databaseHelper.getArticlesInGroupList(groups, groupFilter);
+                    }
+    
+                    if (selectedDifficulty == null) {
+                        difficultyFilter = "ALL";
+                        filteredArticleList = databaseHelper.articlesFilteredDifficulty(filteredArticleList, "*");
+                    }
+                    else {
+                        difficultyFilter = selectedDifficulty.getText().trim();
+                        filteredArticleList = databaseHelper.articlesFilteredDifficulty(filteredArticleList, difficultyFilter);
+                    }
+                    
+                    filteredArticleList = databaseHelper.searchForArticles(search, filteredArticleList);
+                    
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        showAlert("Error", "An error occurred while filtering the search!.", Alert.AlertType.ERROR);
                 }
+            }
+           
+            int numberOfArticlesUnderSearch = 0;
+            String listOfArticles = null;
+            if (filteredArticleList == null) {
+                listOfArticles = "No Articles Found!";
             }
             else {
-
-                // Add radio buttons for each role in the grid
-                for (String group : groups) {
-                    RadioButton groupOption = new RadioButton(group);
-                    groupOption.setToggleGroup(groupsToggle);
-                    homeGrid.add(groupOption, 2, row++);
-                }
-
-                
-                if (lastLayer < row) {
-                	lastLayer = row;
+                try{
+                    listOfArticles = databaseHelper.getArticlesFromList(filteredArticleList);
+                    numberOfArticlesUnderSearch = filteredArticleList.length;
+                } catch(Exception e){
+                    e.printStackTrace();
+                    showAlert("Error", "An error occurred retriving articles.", Alert.AlertType.ERROR);
                 }
             }
-
-            
-            homeGrid.add(logoutButton, 1, lastLayer);
-            homeGrid.add(backButton, 0, lastLayer);
-            homeGrid.add(helpButton, 2, lastLayer);
-            
-            searchButton.setOnAction(event -> {
-            	
-            	RadioButton selectedDifficulty = (RadioButton) difficultyToggle.getSelectedToggle();
-            	String difficultyFilter;
-            	
-                if (selectedDifficulty == null) {
-                	difficultyFilter = "ALL";
-                }
-                else {
-                	difficultyFilter = selectedDifficulty.getText().trim();
-                }
-         
-                
-                RadioButton selectedGroup = (RadioButton) groupsToggle.getSelectedToggle();
-                String groupFilter;
-                if (selectedGroup == null) {
-                	groupFilter = "ALL";
-                }
-                else {
-                	groupFilter = selectedGroup.getText().trim();
-                }
-                int[] filteredGroupList = null;
-            	
-                try {
-	                if (groupFilter != "ALL") {
-	                	filteredGroupList = databaseHelper.getArticlesInGroupList(groups, groupFilter);
-	                }
-	                else {
-	                	filteredGroupList = databaseHelper.getArticlesInGroupList(groups, "*");
-	                }
-	                if (difficultyFilter != "ALL") {
-	                	filteredGroupList = databaseHelper.articlesFilteredDifficulty(filteredGroupList, difficultyFilter);
-	                }
-	                else {
-	                	filteredGroupList = databaseHelper.articlesFilteredDifficulty(filteredGroupList, "*");
-	                }
-                } catch (Exception e) {
-                	e.printStackTrace();
-                    showAlert("Error", "An error occurred during filtering.", Alert.AlertType.ERROR);
-                }
-            	
-            	String listOfArticles;
-                if (filteredGroupList == null) {
-                	listOfArticles = "No Articles Found!";
-                }
-                else {
-                	listOfArticles = databaseHelper.getArticlesFromList(filteredGroupList);
-                }
-                
-            	SearchDisplayPage searchDisplayPage = new SearchDisplayPage(primaryStage, databaseHelper, email, role, listOfArticles, 2, groupFilter);
+           
+            	SearchDisplayPage searchDisplayPage = new SearchDisplayPage(primaryStage, databaseHelper, email, role, listOfArticles, numberOfArticlesUnderSearch, groupFilter, filteredArticleList);
             	Scene searchDisplayScene = new Scene(searchDisplayPage.getSearchLayout(), 400, 300);
                 primaryStage.setScene(searchDisplayScene);      			
             
-            });
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Database Error", "An error occurred while retrieving accessible groups.", Alert.AlertType.ERROR);
-       
-        
-        }
+        });
         
         logoutButton.setOnAction(event -> {
             try {
