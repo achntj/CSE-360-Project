@@ -66,9 +66,63 @@ public class StudentHomePage {
         homeGrid.setVgap(10);
         homeGrid.setHgap(10);
         
-        SearchPage searchPage = new SearchPage(primaryStage, databaseHelper, email, role);
-        Scene searchScene = new Scene(searchPage.getSearchLayout(), 400, 300);
-        primaryStage.setScene(searchScene);
+        // Define the welcome label and logout button
+        Label welcomeLabel = new Label("Welcome to User Home Page, " + role + "!");
+        Button listArticlesButton = new Button("List Articles");
+        Button searchButton = new Button("Search");
+        Button logoutButton = new Button("Log Out");
+        Button helpButton = new Button("Help:");
+        
+        // Add components to the home grid layout
+        homeGrid.add(welcomeLabel, 0, 0);
+        
+        homeGrid.add(listArticlesButton, 0, 1);
+        homeGrid.add(searchButton, 0, 2);
+        homeGrid.add(logoutButton, 0, 3);
+        homeGrid.add(helpButton, 0, 4);
+        
+       
+        
+        listArticlesButton.setOnAction(event -> {
+        	try {
+                // Gathers the users accounts from the database and attempts to display them
+                String articleList = databaseHelper.listArticles();
+                showAlert("Articles", articleList, Alert.AlertType.INFORMATION); 
+                // Checks if there was an error in displaying the user accounts and alerts the user
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred while listing articles.", Alert.AlertType.ERROR);
+            }
+        	
+        });
+        // Adds functionality for the 'Log Out' button
+        logoutButton.setOnAction(event -> {
+            try {
+                // Ensure connection to the database and log the user out
+                databaseHelper.ensureConnection();
+                showAlert("Logout", "You have been logged out successfully.", Alert.AlertType.INFORMATION);
+
+                // Redirect to the login page after logout
+                LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
+                Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
+                primaryStage.setScene(loginScene);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred during logout.", Alert.AlertType.ERROR);
+            }
+        });
+        helpButton.setOnAction(event -> {
+        	// Creates and redirects to new HelpMessagePage and passes in primary stage and database helper for usage
+            HelpMessagePage helpMessagePage = new HelpMessagePage(primaryStage, databaseHelper, email, role);
+            Scene helpMessageScene = new Scene(helpMessagePage.getHelpMessageLayout(), 400, 300);
+            primaryStage.setScene(helpMessageScene );
+        });
+        searchButton.setOnAction(event -> {
+        	// Creates and redirects to new SearchPage and passes in primary stage and database helper for usage
+        	 SearchPage searchPage = new SearchPage(primaryStage, databaseHelper, email, role);
+             Scene searchScene = new Scene(searchPage.getSearchLayout(), 400, 300);
+             primaryStage.setScene(searchScene);
+        });
                 
     }
 

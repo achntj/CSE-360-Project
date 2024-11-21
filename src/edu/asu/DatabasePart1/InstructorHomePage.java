@@ -79,7 +79,7 @@ public class InstructorHomePage {
         // Define the welcome label and logout button
         Label welcomeLabel = new Label("Welcome to Instructor Home, " +  usedName + "!");
         
-        Button inviteStudentButton = new Button("Invite Student");
+        Button addStudentButton = new Button("Invite Student");
         Button deleteStudentButton = new Button("Delete Student");
         
         Button listStudentsButton = new Button("List Students");
@@ -96,7 +96,7 @@ public class InstructorHomePage {
         // Add components to the home grid layout
         homeGrid.add(welcomeLabel, 0, 0);
         
-        homeGrid.add(inviteStudentButton, 0, 1);
+        homeGrid.add(addStudentButton, 0, 1);
         homeGrid.add(deleteStudentButton, 2, 1);
         
         homeGrid.add(listStudentsButton, 0, 2);
@@ -108,8 +108,8 @@ public class InstructorHomePage {
         homeGrid.add(logoutButton, 0, 4);
         homeGrid.add(helpButton, 2, 4);
 
-        inviteStudentButton.setOnAction(event -> {
-        	System.out.println("Invite Student  button pressed");
+        addStudentButton.setOnAction(event -> {
+        	System.out.println("Add Student  button pressed");
         });
         
         deleteStudentButton.setOnAction(event -> {

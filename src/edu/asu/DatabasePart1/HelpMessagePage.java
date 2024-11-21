@@ -130,7 +130,12 @@ public class HelpMessagePage {
                 InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, "instructor");
                 Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
                 primaryStage.setScene(instructorScene);
-            }    	 
+            }
+            else if (role.equalsIgnoreCase("student")) {                   
+                StudentHomePage studentHomePage = new StudentHomePage(primaryStage, databaseHelper, email, "instructor");
+                Scene instructorScene = new Scene(studentHomePage.getStudentHomeLayout(), 400, 300);
+                primaryStage.setScene(instructorScene);
+            }    
             else {
            
            	 try {
