@@ -927,7 +927,8 @@ public class DatabaseHelper {
 	            + "article_ids VARCHAR(255), "              // Comma-separated list of article IDs in the group
 	            + "admins VARCHAR(255), "                   // Comma-separated list of admin user IDs
 	            + "instructors VARCHAR(255), "              // Comma-separated list of instructor user IDs
-	            + "students VARCHAR(255))";                 // Comma-separated list of student user IDs
+	            + "students VARCHAR(255), "                 // Comma-separated list of student user IDs
+	    		+ "type VARCHAR(255))";						// type - either general or special
 	    statement.execute(groupsTable);
 	}
     
@@ -940,14 +941,15 @@ public class DatabaseHelper {
 	 * @param admins Comma-separated list of admin user IDs.
 	 * @param instructors Comma-separated list of instructor user IDs.
 	 * @param students Comma-separated list of student user IDs.
+	 * @param type - either general or special access group
 	 * @throws SQLException If a database access error occurs.
 	 */
-	public void createGroup(String id, String groupName, String articleIds, String admins, String instructors, String students) throws SQLException {
+	public void createGroup(String id, String groupName, String articleIds, String admins, String instructors, String students, String type) throws SQLException {
 	    System.out.println("Create Group function was called");
 	    
 	    if (id != null) {
 	        System.out.println("ID PROVIDED");
-	        String insertGroup = "INSERT INTO groups (id, group_name, article_ids, admins, instructors, students) VALUES (?, ?, ?, ?, ?, ?)";
+	        String insertGroup = "INSERT INTO groups (id, group_name, article_ids, admins, instructors, students, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	        try (PreparedStatement pstmt = connection.prepareStatement(insertGroup)) {
 	            pstmt.setString(1, id);
 	            pstmt.setString(2, groupName);
@@ -955,18 +957,20 @@ public class DatabaseHelper {
 	            pstmt.setString(4, admins);
 	            pstmt.setString(5, instructors);
 	            pstmt.setString(6, students);
+	            pstmt.setString(7, type);
 	            pstmt.executeUpdate();
 	            System.out.println(pstmt);
 	        }
 	    } else {
 	        System.out.println("NO ID PROVIDED");
-	        String insertGroup = "INSERT INTO groups (group_name, article_ids, admins, instructors, students) VALUES (?, ?, ?, ?, ?)";
+	        String insertGroup = "INSERT INTO groups (group_name, article_ids, admins, instructors, students, type) VALUES (?, ?, ?, ?, ?, ?)";
 	        try (PreparedStatement pstmt = connection.prepareStatement(insertGroup)) {
 	            pstmt.setString(1, groupName);
 	            pstmt.setString(2, articleIds);
 	            pstmt.setString(3, admins);
 	            pstmt.setString(4, instructors);
 	            pstmt.setString(5, students);
+	            pstmt.setString(6, type);
 	            pstmt.executeUpdate();
 	            System.out.println(pstmt);
 	        }
@@ -1064,6 +1068,7 @@ public class DatabaseHelper {
 	                    .append("Admins: ").append(rs.getString("admins")).append("\n")
 	                    .append("Instructors: ").append(rs.getString("instructors")).append("\n")
 	                    .append("Students: ").append(rs.getString("students")).append("\n")
+	                    .append("Type: ").append(rs.getString("type")).append("\n")
 	                    .append("-------------------------------");
 	            } else {
 	                return "Group not found.";
@@ -1073,6 +1078,7 @@ public class DatabaseHelper {
 
 	    return groupInfo.toString();
 	}
+
 	
 	/**
 	 * Lists all groups in the database, including their details.
@@ -1084,7 +1090,7 @@ public class DatabaseHelper {
 	    ensureConnection(); // Ensure the connection is established
 
 	    StringBuilder groupsList = new StringBuilder();
-	    String query = "SELECT id, group_name, article_ids, admins, instructors, students FROM groups";
+	    String query = "SELECT id, group_name, article_ids, admins, instructors, students, type FROM groups";
 
 	    try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
 	        while (rs.next()) {
@@ -1094,6 +1100,7 @@ public class DatabaseHelper {
 	            String admins = rs.getString("admins");
 	            String instructors = rs.getString("instructors");
 	            String students = rs.getString("students");
+	            String groupType = rs.getString("type");
 
 	            // Append group details to the list
 	            groupsList.append("Group ID: ").append(id).append("\n")
@@ -1102,6 +1109,7 @@ public class DatabaseHelper {
 	                .append("Admins: ").append(admins).append("\n")
 	                .append("Instructors: ").append(instructors).append("\n")
 	                .append("Students: ").append(students).append("\n")
+	                .append("Type: ").append(groupType).append("\n")
 	                .append("-------------------------------\n");
 	        }
 	    }
@@ -1112,6 +1120,7 @@ public class DatabaseHelper {
 	        return groupsList.toString();
 	    }
 	}
+
 	
 	/**
 	 * Deletes a group from the groups table.
@@ -1297,7 +1306,8 @@ public class DatabaseHelper {
             String admins = rs.getString("admins");
             String instructors = rs.getString("instructors");
             String students = rs.getString("students");
-            groups.add(id + "|" + groupName + "|" + articleIds + "|" + admins + "|" + instructors + "|" + students);
+            String type = rs.getString("type");
+            groups.add(id + "|" + groupName + "|" + articleIds + "|" + admins + "|" + instructors + "|" + students + "|" + type);
         }
 
         byte[] plainText = String.join("\n", groups).getBytes();
@@ -1338,11 +1348,37 @@ public class DatabaseHelper {
 
             for (String group : groups) {
                 String[] fields = group.split("\\|");
-                createGroup(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
+                createGroup(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6]);
             }
         }
         System.out.println("Restore for groups completed successfully.");
     }
+    
+    public String getGroupType(String groupId) throws SQLException {
+        String query = "SELECT type FROM groups WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, groupId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("type");
+            }
+            return null; // Group not found
+        }
+    }
+
+    public boolean isUserAdminInGroup(String userId, String groupId) throws SQLException {
+        String query = "SELECT admins FROM groups WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, groupId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                String admins = rs.getString("admins");
+                return admins != null && Arrays.asList(admins.split(",")).contains(userId);
+            }
+            return false;
+        }
+    }
+
 
 
 }

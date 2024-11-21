@@ -20,7 +20,7 @@ import javafx.stage.Stage;
  * @version 1.00	2024-10-30 Project Phase 2 User Home Page
  */
 
-public class CreateSpecialGroupPage {
+public class CreateGeneralGroupPage {
 	
     /** The primary stage used for the Graphical-User-Interface */
 	private final Stage primaryStage;
@@ -45,7 +45,7 @@ public class CreateSpecialGroupPage {
      * @param email				The email of the logged-in user
      * @param role				The role of the logged-in user
      */
-	public CreateSpecialGroupPage(Stage primaryStage, DatabaseHelper databaseHelper, String email, String role) {
+	public CreateGeneralGroupPage(Stage primaryStage, DatabaseHelper databaseHelper, String email, String role) {
 		this.primaryStage = primaryStage;
 		this.databaseHelper = databaseHelper;
 		this.email = email;
@@ -111,7 +111,7 @@ public class CreateSpecialGroupPage {
 
             // Attempt to create the group and handle exceptions if they occur
             try {
-                databaseHelper.createGroup(null, groupName, articles, admins, instructors, students, "special");
+                databaseHelper.createGroup(null, groupName, articles, admins, instructors, students, "general");
                 showAlert("Success", "Group Created Successfully!", Alert.AlertType.INFORMATION);
 
                 try {

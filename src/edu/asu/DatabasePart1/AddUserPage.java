@@ -64,8 +64,8 @@ public class AddUserPage {
         // Establishes text fields and buttons used in the user interface
         Label studentLabel = new Label("Student ID");
         TextField studentField = new TextField();
-        Label userRoleLabel = new Label("Role: (admin, instructor, student)");
-        TextField userRoleField = new TextField();
+        Label groupRoleLabel = new Label("Role: (admin, instructor, student)");
+        TextField groupRoleField = new TextField();
         Label groupLabel = new Label("Group ID");
         TextField groupField = new TextField();
         Button addButton = new Button("Add student");
@@ -74,8 +74,8 @@ public class AddUserPage {
         // Adds the fields and buttons to the interface
         inviteUserGrid.add(studentLabel, 0, 0);
         inviteUserGrid.add(studentField, 1, 0);
-        inviteUserGrid.add(userRoleLabel, 0, 1);
-        inviteUserGrid.add(userRoleField, 1, 1);
+        inviteUserGrid.add(groupRoleLabel, 0, 1);
+        inviteUserGrid.add(groupRoleField, 1, 1);
         inviteUserGrid.add(groupLabel, 0, 2);
         inviteUserGrid.add(groupField, 1, 2);
         inviteUserGrid.add(addButton, 0, 3);
@@ -83,9 +83,9 @@ public class AddUserPage {
 
         // Adds functionality for the 'Generate Invitation Code' button
         addButton.setOnAction(event -> {
-        	// Retrieves the entered role(s) to associate with the invitation code
-        	String student = studentField.getText().trim();
-        	String userRole = userRoleField.getText().trim();
+            // Retrieves the entered role(s) to associate with the invitation code
+            String student = studentField.getText().trim();
+            String groupRole = groupRoleField.getText().trim();
             String group = groupField.getText().trim();
 
             // If no roles are specified, displays an error message
@@ -93,7 +93,7 @@ public class AddUserPage {
                 showAlert("Error", "Student must be specified.", Alert.AlertType.ERROR);
                 return;
             }
-            if (userRole.isEmpty()) {
+            if (groupRole.isEmpty()) {
                 showAlert("Error", "Role(s) must be specified.", Alert.AlertType.ERROR);
                 return;
             }
@@ -102,15 +102,26 @@ public class AddUserPage {
                 return;
             }
 
-            // Generates the invitation code for the specified roles and alerts the user upon success or failure
+            // Check if the current user is an admin and the group type
             try {
-                databaseHelper.updateGroupUsers(group, userRole, student, true);
+                String groupType = databaseHelper.getGroupType(group); // Retrieves the group type
+                String currentUserId = databaseHelper.getUserIdFromEmail(email);
+                boolean isAdmin = databaseHelper.isUserAdminInGroup(currentUserId, group); // Checks if the current user is an admin
+
+                if ("special".equalsIgnoreCase(groupType) && !isAdmin) {
+                    showAlert("Permission Denied", "You must be an admin to modify a special group.", Alert.AlertType.ERROR);
+                    return;
+                }
+
+                databaseHelper.updateGroupUsers(group, groupRole, student, true);
                 showAlert("Success", "User added!", Alert.AlertType.INFORMATION);
+
             } catch (SQLException e) {
                 e.printStackTrace();
                 showAlert("Database Error", "An error occurred while adding the user.", Alert.AlertType.ERROR);
             }
         });
+
 
         // Adds functionality for the 'Back' button to return to the instructor home page
         backButton.setOnAction(event -> {

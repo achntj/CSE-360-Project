@@ -66,9 +66,10 @@ public class GroupAccessPage {
         groupGrid.setHgap(10);
 
         // Establishes text and buttons to be used in user interface
-        Button createGroupButton = new Button("Create General Group");     
+        Button createGroupButton = new Button("Create General Group");
+        Button createSpecialButton = new Button("Create Special Access Group");
         
-        Button listGroupsButton = new Button("        List Groups        ");
+        Button listGroupsButton = new Button("List Groups");
         
         Label groupIDLabel = new Label("Group ID: ");
         TextField groupField = new TextField();
@@ -85,6 +86,7 @@ public class GroupAccessPage {
         // Adds the buttons and text fields to the user interface
         
         groupGrid.add(createGroupButton, 0, 0);
+        groupGrid.add(createSpecialButton, 1, 0);
         groupGrid.add(listGroupsButton, 2, 0);
  
         groupGrid.add(groupIDLabel, 0, 1);    
@@ -101,6 +103,20 @@ public class GroupAccessPage {
         
         
         createGroupButton.setOnAction(event -> {
+        	try {
+                databaseHelper.ensureConnection();
+                
+                // Redirect to create group page
+                CreateGeneralGroupPage createGeneralGroupPage = new CreateGeneralGroupPage(primaryStage, databaseHelper, email, role);
+                Scene creaGeneralScene = new Scene(createGeneralGroupPage.getCreateGroupLayout(), 400, 300);
+                primaryStage.setScene(creaGeneralScene);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred while entering the create group page.", Alert.AlertType.ERROR);
+            }
+        });
+        
+        createSpecialButton.setOnAction(event -> {
         	try {
                 databaseHelper.ensureConnection();
                 
@@ -128,6 +144,11 @@ public class GroupAccessPage {
 
         viewGroupButton.setOnAction(event -> {
         	String id = groupField.getText().trim();
+        	// If no id is specified, displays an error message
+            if (id.isEmpty()) {
+                showAlert("Error", "ID must be specified.", Alert.AlertType.ERROR);
+                return;
+            }
         	try {
                 // Gathers the users accounts from the database and attempts to display them
                 String groupInfo = databaseHelper.getGroupInfo(id);
@@ -140,6 +161,11 @@ public class GroupAccessPage {
         });
         deleteGroupButton.setOnAction(event -> {
         	String id = groupField.getText().trim();
+        	// If no id is specified, displays an error message
+            if (id.isEmpty()) {
+                showAlert("Error", "ID must be specified.", Alert.AlertType.ERROR);
+                return;
+            }
             try {
                 databaseHelper.ensureConnection();
                 databaseHelper.deleteGroup(id);
