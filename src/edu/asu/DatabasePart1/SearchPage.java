@@ -176,7 +176,9 @@ public class SearchPage {
                         filteredArticleList = databaseHelper.articlesFilteredDifficulty(filteredArticleList, difficultyFilter);
                     }
                     
-                    filteredArticleList = databaseHelper.searchForArticles(search, filteredArticleList);
+                    if (search != null) {
+                    	 filteredArticleList = databaseHelper.searchForArticles(search, filteredArticleList);
+                    }
                     
                 } catch (Exception e) {
                         e.printStackTrace();

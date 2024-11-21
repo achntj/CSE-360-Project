@@ -1169,15 +1169,23 @@ public class DatabaseHelper {
 	}
 	
 	public int[] getArticlesInGroupList(String[] groupsProvided, String groupSpecifier) throws SQLException {
+		
+		if (groupsProvided == null || groupsProvided.length == 0) {
+			return null;
+		}
+		
 		int[] returnArticles = new int[groupsProvided.length];
+		
 		
 		String ids_string = "";
 		
 		 String query = "SELECT article_ids FROM groups WHERE group_name = ?";
 		 try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	            pstmt.setString(1, groupSpecifier);
+	        
 	            try (ResultSet rs = pstmt.executeQuery()) {
 	                if (rs.next()) {
+	                	
 	                	ids_string = rs.getString("article_ids");
 	                } else {
 	                    System.out.println("No articles!");
@@ -1190,10 +1198,16 @@ public class DatabaseHelper {
 	        
 		
 	        // Convert String array to int array
-	    returnArticles = Arrays.stream(parts)
-	                              .mapToInt(Integer::parseInt)
-	                              .toArray();
-		 
+		int i = 0;
+		for (String part : parts) {
+		    if (part != null && !part.trim().isEmpty() && part.matches("\\d+")) { // Validate numeric strings
+		        returnArticles[i] = Integer.parseInt(part.trim());
+		        i++;
+		    } else {
+		        System.out.println("Invalid article ID: " + part);
+		    }
+		}
+	   
 		
 		return returnArticles;
 	}
@@ -1232,7 +1246,7 @@ public class DatabaseHelper {
 		String query = "SELECT title, difficulty, authors FROM articles WHERE id = ?";
 		
 		int index = 0;
-		while (index <= articleIDs.length) {
+		while (index < articleIDs.length) {
 			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	            pstmt.setInt(1, articleIDs[index]);
 	            try (ResultSet rs = pstmt.executeQuery()) {
@@ -1309,37 +1323,46 @@ public class DatabaseHelper {
 	}
 
 	public int[] searchForArticles(String searchQuery, int[] idList) throws SQLException {
-		if (idList == null || idList.length == 0) {
-			return null;
-		} else if (searchQuery == null) {
-			return idList;
-		}
+	    if (idList == null || idList.length == 0) {
+	        return null;
+	    } else if (searchQuery == null) {
+	        return idList;
+	    }
 
-		int[] finalArticleIDs = new int[idList.length];
+	    // Build the query dynamically
+	    StringBuilder queryBuilder = new StringBuilder("SELECT * FROM articles WHERE id IN (");
+	    for (int i = 0; i < idList.length; i++) {
+	        queryBuilder.append("?");
+	        if (i < idList.length - 1) {
+	            queryBuilder.append(", ");
+	        }
+	    }
+	    queryBuilder.append(") AND (LOWER(keywords) LIKE ? OR LOWER(title) LIKE ? OR LOWER(authors) LIKE ? OR CAST(id AS CHAR) LIKE ?)");
+	    String query = queryBuilder.toString();
 
-		String idListString = Arrays.toString(idList).replace("[", "").replace("]", "");
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        // Set IDs
+	        for (int i = 0; i < idList.length; i++) {
+	            pstmt.setInt(i + 1, idList[i]);
+	        }
 
-		String query = "SELECT * FROM articles WHERE id IN (" + idListString
-				+ ") AND (LOWER(keywords) LIKE ? OR LOWER(title) LIKE ? OR "
-				+ "LOWER(authors) LIKE ? OR CAST(id AS CHAR) LIKE ?)";
+	        // Set search query placeholders
+	        String searchPattern = "%" + searchQuery.toLowerCase() + "%";
+	        int baseIndex = idList.length + 1; // Start after the IDs
+	        pstmt.setString(baseIndex, searchPattern);
+	        pstmt.setString(baseIndex + 1, searchPattern);
+	        pstmt.setString(baseIndex + 2, searchPattern);
+	        pstmt.setString(baseIndex + 3, searchPattern);
 
-		ResultSet rs = statement.executeQuery(query);
-
-		int index = 0;
-		try (PreparedStatement statement = connection.prepareStatement(query)) {
-			String searchPattern = "%" + searchQuery.toLowerCase() + "%";
-			statement.setString(1, searchPattern);
-			statement.setString(2, searchPattern);
-			statement.setString(3, searchPattern);
-			statement.setString(4, searchPattern);
-			while (rs.next()) {
-				int id = rs.getInt("id");
-				finalArticleIDs[index] = id;
-				index++;
-			}
-			return finalArticleIDs;
-		} 
-		
+	        // Execute query
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            List<Integer> finalArticleIDsList = new ArrayList<>();
+	            while (rs.next()) {
+	                finalArticleIDsList.add(rs.getInt("id"));
+	            }
+	            return finalArticleIDsList.stream().mapToInt(Integer::intValue).toArray();
+	        }
+	    }
 	}
 	
 	
