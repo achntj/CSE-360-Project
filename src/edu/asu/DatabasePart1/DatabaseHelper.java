@@ -1519,6 +1519,98 @@ public class DatabaseHelper {
             return false;
         }
     }
+    
+    /**
+     * Retrieves and lists all students from the cse360users table.
+     * 
+     * @return A formatted string containing the details of all students.
+     * @throws SQLException If a database access error occurs.
+     */
+    public String listStudents() throws SQLException {
+        ensureConnection(); // Ensure the connection is established
+
+        StringBuilder studentsList = new StringBuilder();
+        String query = "SELECT id, first_name, email, roles FROM cse360users WHERE roles LIKE '%student%'";
+
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("first_name");
+                String email = rs.getString("email");
+                String roles = rs.getString("roles"); // Should be 'student' as filtered in the query
+
+                // Append student details to the list
+                studentsList.append("Student ID: ").append(id).append("\n")
+                    .append("First Name: ").append(name).append("\n")
+                    .append("Email: ").append(email).append("\n")
+                    .append("Role: ").append(roles).append("\n")
+                    .append("-------------------------------\n");
+            }
+        }
+
+        if (studentsList.length() == 0) {
+            return "No students found.";
+        } else {
+            return studentsList.toString();
+        }
+    }
+    
+    /**
+     * Adds or removes an article from a comma-separated column in the groups table for articles.
+     * 
+     * @param groupId The ID of the group to update.
+     * @param articleId The article ID to add or remove.
+     * @param addArticle True to add the article; false to remove the article.
+     * @throws SQLException If a database access error occurs.
+     */
+    public void updateGroupArticles(String groupId, String articleId, boolean addArticle) throws SQLException {
+        // Fetch the current value of the article column
+        String query = "SELECT article_ids FROM groups WHERE id = ?";
+        String updatedColumnValue = "";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, groupId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                String currentValue = rs.getString("article_ids");
+
+                // Convert the current comma-separated value into a list
+                List<String> articles = new ArrayList<>();
+                if (currentValue != null && !currentValue.trim().isEmpty()) {
+                    articles = new ArrayList<>(Arrays.asList(currentValue.split(",")));
+                }
+
+                if (addArticle) {
+                    // Add the article if not already present
+                    if (!articles.contains(articleId)) {
+                        articles.add(articleId);
+                    } else {
+                        System.out.println("Article already exists in the list");
+                    }
+                } else {
+                    // Remove the article if present
+                    if (articles.contains(articleId)) {
+                        articles.remove(articleId);
+                    } else {
+                        System.out.println("Article does not exist in the list");
+                    }
+                }
+
+                // Rebuild the comma-separated value
+                updatedColumnValue = String.join(",", articles);
+            }
+        }
+
+        // Update the article_ids column with the new value
+        String updateQuery = "UPDATE groups SET article_ids = ? WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(updateQuery)) {
+            pstmt.setString(1, updatedColumnValue);
+            pstmt.setString(2, groupId);
+            pstmt.executeUpdate();
+        }
+
+        System.out.println("Article " + (addArticle ? "added to" : "removed from") + " the group successfully.");
+    }
 
 
 

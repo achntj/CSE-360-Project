@@ -130,8 +130,15 @@ public class InstructorHomePage {
         });
         
         listStudentsButton.setOnAction(event -> {
-        	
-        	System.out.println("List students button pressed");
+        	try {
+                // Gathers the users accounts from the database and attempts to display them
+                String studentList = databaseHelper.listStudents();
+                showAlert("Students", studentList, Alert.AlertType.INFORMATION); 
+                // Checks if there was an error in displaying the user accounts and alerts the user
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred while listing students.", Alert.AlertType.ERROR);
+            }
         });
         
         searchArticlesButton.setOnAction(event -> {
