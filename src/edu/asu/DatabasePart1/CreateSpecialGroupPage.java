@@ -111,7 +111,7 @@ public class CreateSpecialGroupPage {
 
             // Attempt to create the group and handle exceptions if they occur
             try {
-                databaseHelper.createGroup(groupName, articles, admins, instructors, students);
+                databaseHelper.createGroup(null, groupName, articles, admins, instructors, students);
                 showAlert("Success", "Group Created Successfully!", Alert.AlertType.INFORMATION);
 
                 try {

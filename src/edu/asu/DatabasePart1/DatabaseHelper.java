@@ -934,6 +934,7 @@ public class DatabaseHelper {
 	/**
 	 * Inserts a new group into the groups table.
 	 * 
+	 * @param id The ID of the group (can be null).
 	 * @param groupName The name of the group.
 	 * @param articleIds Comma-separated list of article IDs in the group.
 	 * @param admins Comma-separated list of admin user IDs.
@@ -941,18 +942,38 @@ public class DatabaseHelper {
 	 * @param students Comma-separated list of student user IDs.
 	 * @throws SQLException If a database access error occurs.
 	 */
-	public void createGroup(String groupName, String articleIds, String admins, String instructors, String students) throws SQLException {
-	    String insertGroup = "INSERT INTO groups (group_name, article_ids, admins, instructors, students) VALUES (?, ?, ?, ?, ?)";
-	    try (PreparedStatement pstmt = connection.prepareStatement(insertGroup)) {
-	        pstmt.setString(1, groupName);
-	        pstmt.setString(2, articleIds);
-	        pstmt.setString(3, admins);
-	        pstmt.setString(4, instructors);
-	        pstmt.setString(5, students);
-	        pstmt.executeUpdate();
+	public void createGroup(String id, String groupName, String articleIds, String admins, String instructors, String students) throws SQLException {
+	    System.out.println("Create Group function was called");
+	    
+	    if (id != null) {
+	        System.out.println("ID PROVIDED");
+	        String insertGroup = "INSERT INTO groups (id, group_name, article_ids, admins, instructors, students) VALUES (?, ?, ?, ?, ?, ?)";
+	        try (PreparedStatement pstmt = connection.prepareStatement(insertGroup)) {
+	            pstmt.setString(1, id);
+	            pstmt.setString(2, groupName);
+	            pstmt.setString(3, articleIds);
+	            pstmt.setString(4, admins);
+	            pstmt.setString(5, instructors);
+	            pstmt.setString(6, students);
+	            pstmt.executeUpdate();
+	            System.out.println(pstmt);
+	        }
+	    } else {
+	        System.out.println("NO ID PROVIDED");
+	        String insertGroup = "INSERT INTO groups (group_name, article_ids, admins, instructors, students) VALUES (?, ?, ?, ?, ?)";
+	        try (PreparedStatement pstmt = connection.prepareStatement(insertGroup)) {
+	            pstmt.setString(1, groupName);
+	            pstmt.setString(2, articleIds);
+	            pstmt.setString(3, admins);
+	            pstmt.setString(4, instructors);
+	            pstmt.setString(5, students);
+	            pstmt.executeUpdate();
+	            System.out.println(pstmt);
+	        }
 	    }
 	    System.out.println("Group created successfully.");
 	}
+
 	
 	/**
 	 * Adds or removes a user from a comma-separated column in the groups table.
@@ -1021,26 +1042,36 @@ public class DatabaseHelper {
 
 
 	/**
-	 * Retrieves group details by group ID.
-	 * 
+	 * Retrieves detailed information about a specific group by its ID.
+	 *
 	 * @param groupId The ID of the group to retrieve.
+	 * @return A string containing the group's details, or a message if the group is not found.
 	 * @throws SQLException If a database access error occurs.
 	 */
-	public void getGroupInfo(int groupId) throws SQLException {
+	public String getGroupInfo(String groupId) throws SQLException {
+	    ensureConnection(); // Ensure the connection is established
+
 	    String query = "SELECT * FROM groups WHERE id = ?";
+	    StringBuilder groupInfo = new StringBuilder();
+
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-	        pstmt.setInt(1, groupId);
-	        ResultSet rs = pstmt.executeQuery();
-	        if (rs.next()) {
-	            System.out.println("Group Name: " + rs.getString("group_name"));
-	            System.out.println("Article IDs: " + rs.getString("article_ids"));
-	            System.out.println("Admins: " + rs.getString("admins"));
-	            System.out.println("Instructors: " + rs.getString("instructors"));
-	            System.out.println("Students: " + rs.getString("students"));
-	        } else {
-	            System.out.println("Group not found.");
+	        pstmt.setString(1, groupId);
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            if (rs.next()) {
+	                groupInfo.append("Group ID: ").append(groupId).append("\n")
+	                    .append("Group Name: ").append(rs.getString("group_name")).append("\n")
+	                    .append("Article IDs: ").append(rs.getString("article_ids")).append("\n")
+	                    .append("Admins: ").append(rs.getString("admins")).append("\n")
+	                    .append("Instructors: ").append(rs.getString("instructors")).append("\n")
+	                    .append("Students: ").append(rs.getString("students")).append("\n")
+	                    .append("-------------------------------");
+	            } else {
+	                return "Group not found.";
+	            }
 	        }
 	    }
+
+	    return groupInfo.toString();
 	}
 	
 	/**
@@ -1088,10 +1119,10 @@ public class DatabaseHelper {
 	 * @param groupId The ID of the group to delete.
 	 * @throws SQLException If a database access error occurs.
 	 */
-	public void deleteGroup(int groupId) throws SQLException {
+	public void deleteGroup(String groupId) throws SQLException {
 	    String deleteGroup = "DELETE FROM groups WHERE id = ?";
 	    try (PreparedStatement pstmt = connection.prepareStatement(deleteGroup)) {
-	        pstmt.setInt(1, groupId);
+	        pstmt.setString(1, groupId);
 	        pstmt.executeUpdate();
 	    }
 	    System.out.println("Group deleted successfully.");
@@ -1246,6 +1277,71 @@ public class DatabaseHelper {
             }
         }
     	
+    }
+    
+    /**
+     * Backs up all groups to a specified file with encryption.
+     * 
+     * @param fileName The name of the file where the backup will be stored.
+     * @throws Exception If an error occurs during the backup process.
+     */
+    public void backupGroups(String fileName) throws Exception {
+        String sql = "SELECT * FROM groups"; 
+        ResultSet rs = statement.executeQuery(sql);
+
+        List<String> groups = new ArrayList<>();
+        while (rs.next()) {
+            String id = rs.getString("id");
+            String groupName = rs.getString("group_name");
+            String articleIds = rs.getString("article_ids");
+            String admins = rs.getString("admins");
+            String instructors = rs.getString("instructors");
+            String students = rs.getString("students");
+            groups.add(id + "|" + groupName + "|" + articleIds + "|" + admins + "|" + instructors + "|" + students);
+        }
+
+        byte[] plainText = String.join("\n", groups).getBytes();
+        byte[] initializationVector = EncryptionUtils.getInitializationVector("this-is-our-secret".toCharArray());
+        byte[] encryptedData = encryptionHelper.encrypt(plainText, initializationVector);
+        
+        try (FileOutputStream fos = new FileOutputStream(fileName)) {
+            fos.write(initializationVector);
+            fos.write(encryptedData);
+        }
+        System.out.println("Backup for groups created successfully.");
+    }
+
+    /**
+     * Restores all groups from a specified backup file.
+     * 
+     * @param fileName The name of the file from which the groups will be restored.
+     * @throws Exception If an error occurs during the restoration process.
+     */
+    public void restoreGroups(String fileName) throws Exception {
+        File file = new File(fileName);
+        if (!file.exists()) {
+            System.out.println("Backup file not found.");
+            return;
+        }
+
+        byte[] initializationVector = new byte[16];
+        try (FileInputStream fis = new FileInputStream(file)) {
+            fis.read(initializationVector);
+            byte[] encryptedData = new byte[(int) (file.length() - initializationVector.length)];
+            fis.read(encryptedData);
+
+            byte[] decryptedData = encryptionHelper.decrypt(encryptedData, initializationVector);
+            String[] groups = new String(decryptedData).split("\n");
+
+            // Clear existing groups
+            statement.executeUpdate("DELETE FROM groups");
+
+            for (String group : groups) {
+                String[] fields = group.split("\\|");
+                createGroup(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5]);
+            }
+        }
+        System.out.println("Restore for groups completed successfully.");
     }
 
 

@@ -115,11 +115,11 @@ public class GroupAccessPage {
         });
         
         listGroupsButton.setOnAction(event -> {
-            try {
-                // Retrieve the list of groups from the database
+        	try {
+                // Gathers the users accounts from the database and attempts to display them
                 String groupList = databaseHelper.listGroups();
-                showAlert("Groups", groupList, Alert.AlertType.INFORMATION);
-
+                showAlert("Groups", groupList, Alert.AlertType.INFORMATION); 
+                // Checks if there was an error in displaying the user accounts and alerts the user
             } catch (Exception e) {
                 e.printStackTrace();
                 showAlert("Error", "An error occurred while listing groups.", Alert.AlertType.ERROR);
@@ -127,20 +127,57 @@ public class GroupAccessPage {
         });
 
         viewGroupButton.setOnAction(event -> {
-        	System.out.println("viewGroupButton  pressed");
+        	String id = groupField.getText().trim();
+        	try {
+                // Gathers the users accounts from the database and attempts to display them
+                String groupInfo = databaseHelper.getGroupInfo(id);
+                showAlert("Group Info", groupInfo, Alert.AlertType.INFORMATION); 
+                // Checks if there was an error in displaying the user accounts and alerts the user
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred while getting group info.", Alert.AlertType.ERROR);
+            }
         });
         deleteGroupButton.setOnAction(event -> {
-        	System.out.println("deleteGroupButton  pressed");
+        	String id = groupField.getText().trim();
+            try {
+                databaseHelper.ensureConnection();
+                databaseHelper.deleteGroup(id);
+                showAlert("Success", "Group deleted successfully.", Alert.AlertType.INFORMATION);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred while deleting the groups.", Alert.AlertType.ERROR);
+            }
         });
         backupGroupButton.setOnAction(event -> {
-        	System.out.println("backupGroupButton  pressed");
+        	showAlert("Info", "Backing up Groups...", Alert.AlertType.INFORMATION);
+            try {
+                databaseHelper.ensureConnection();
+                databaseHelper.backupGroups("groupBackup.txt");
+                showAlert("Success", "Backup created successfully.", Alert.AlertType.INFORMATION);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred while backing up groups.", Alert.AlertType.ERROR);
+            }
+            
         });
         restoreGroupButton.setOnAction(event -> {
-        	System.out.println("restoreGroupButton  pressed");
+        	showAlert("Info", "Restoring Groups...", Alert.AlertType.INFORMATION);
+            try {
+                databaseHelper.ensureConnection();
+                databaseHelper.restoreGroups("groupBackup.txt");
+                showAlert("Success", "Restore completed successfully.", Alert.AlertType.INFORMATION);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred while restoring groups.", Alert.AlertType.ERROR);
+            }
         });
 
 		helpButton.setOnAction(event -> {
-			System.out.println("helpButton pressed");
+			// Creates and redirects to new HelpMessagePage and passes in primary stage and database helper for usage
+            HelpMessagePage helpMessagePage = new HelpMessagePage(primaryStage, databaseHelper, email, role);
+            Scene helpMessageScene = new Scene(helpMessagePage.getHelpMessageLayout(), 400, 300);
+            primaryStage.setScene(helpMessageScene );
 		});
         
         // Provides functionality for the back button
