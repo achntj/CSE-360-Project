@@ -79,7 +79,7 @@ public class InstructorHomePage {
         // Define the welcome label and logout button
         Label welcomeLabel = new Label("Welcome to Instructor Home, " +  usedName + "!");
         
-        Button addStudentButton = new Button("Invite Student");
+        Button addStudentButton = new Button("Add Student");
         Button deleteStudentButton = new Button("Delete Student");
         
         Button listStudentsButton = new Button("List Students");
@@ -109,10 +109,22 @@ public class InstructorHomePage {
         homeGrid.add(helpButton, 2, 4);
 
         addStudentButton.setOnAction(event -> {
+        	// Redirect to the login page after logout
+            AddUserPage addUserPage = new AddUserPage(primaryStage, databaseHelper, email, role);
+            Scene addUserScene = new Scene(addUserPage .getAddUserLayout(), 400, 300);
+            primaryStage.setScene(addUserScene);
+        	
         	System.out.println("Add Student  button pressed");
         });
         
         deleteStudentButton.setOnAction(event -> {
+        	// Redirect to the login page after logout
+            DeleteUserPage deleteUserPage = new DeleteUserPage(primaryStage, databaseHelper, email, role);
+            Scene deleteUserScene = new Scene(deleteUserPage .getDeleteUserLayout(), 400, 300);
+            primaryStage.setScene(deleteUserScene);
+        	
+        	System.out.println("Add Student  button pressed");
+        	
         	System.out.println("delete students button pressed");
         	
         });

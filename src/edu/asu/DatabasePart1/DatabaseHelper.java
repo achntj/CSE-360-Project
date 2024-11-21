@@ -964,14 +964,14 @@ public class DatabaseHelper {
 	 * @param addUser True to add the user; false to remove the user.
 	 * @throws SQLException If a database access error occurs.
 	 */
-	public void updateGroupUsers(int groupId, String column, String userId, boolean addUser) throws SQLException {
+	public void updateGroupUsers(String groupId, String column, String userId, boolean addUser) throws SQLException {
 	    // Fetch the current value of the column
 	    String query = "SELECT " + column + " FROM groups WHERE id = ?";
 	    String updatedColumnValue = "";
 	    boolean isAdminsColumn = column.equalsIgnoreCase("admins");
 	    
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-	        pstmt.setInt(1, groupId);
+	        pstmt.setString(1, groupId);
 	        ResultSet rs = pstmt.executeQuery();
 	        if (rs.next()) {
 	            String currentValue = rs.getString(column);
@@ -986,6 +986,8 @@ public class DatabaseHelper {
 	                // Add the user if not already present
 	                if (!users.contains(userId)) {
 	                    users.add(userId);
+	                } else {
+	                	System.out.println("User already exists in group");
 	                }
 	            } else {
 	                // Remove the user if present
@@ -995,7 +997,10 @@ public class DatabaseHelper {
 	                        throw new SQLException("Cannot remove the last admin from the group.");
 	                    }
 	                    users.remove(userId);
+	                } else {
+	                	System.out.println("User already exists in group");
 	                }
+	                
 	            }
 	            
 	            // Rebuild the comma-separated value
@@ -1007,7 +1012,7 @@ public class DatabaseHelper {
 	    String updateQuery = "UPDATE groups SET " + column + " = ? WHERE id = ?";
 	    try (PreparedStatement pstmt = connection.prepareStatement(updateQuery)) {
 	        pstmt.setString(1, updatedColumnValue);
-	        pstmt.setInt(2, groupId);
+	        pstmt.setString(2, groupId);
 	        pstmt.executeUpdate();
 	    }
 

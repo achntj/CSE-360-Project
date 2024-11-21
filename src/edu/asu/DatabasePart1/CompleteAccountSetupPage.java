@@ -136,15 +136,10 @@ public class CompleteAccountSetupPage {
                     Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
                     primaryStage.setScene(instructorScene);
                 }
-                else if (databaseHelper.hasRole(email, "Student")) {
-                	SearchPage searchPage = new SearchPage(primaryStage, databaseHelper, email, "student");
-                    Scene studentScene = new Scene(searchPage.getSearchLayout(), 400, 300);
-                    primaryStage.setScene(studentScene);
-                    
-                	/*
+                else if (databaseHelper.hasRole(email, "Student")) {                    
                     StudentHomePage studentHomePage = new StudentHomePage(primaryStage, databaseHelper, email, "student");
                     Scene studentScene = new Scene(studentHomePage.getStudentHomeLayout(), 400, 300);
-                    primaryStage.setScene(studentScene);**/
+                    primaryStage.setScene(studentScene);
                 }
                 else {
                     // Redirect to the user home page based on the user's role
