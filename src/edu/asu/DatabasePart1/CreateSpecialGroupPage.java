@@ -114,10 +114,17 @@ public class CreateSpecialGroupPage {
                 databaseHelper.createGroup(groupName, articles, admins, instructors, students);
                 showAlert("Success", "Group Created Successfully!", Alert.AlertType.INFORMATION);
 
-                // Redirect to user home page after group creation
-                UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, role);
-                Scene userHomeScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
-                primaryStage.setScene(userHomeScene);
+                try {
+                    databaseHelper.ensureConnection();
+                    String id = databaseHelper.getUserIdFromEmail(email);
+                    // Creates and redirects to new GroupAccessPage and passes in primary stage and database helper for usage
+                	GroupAccessPage groupAccessPage = new GroupAccessPage(primaryStage, databaseHelper, id, email, role);
+                    Scene groupAccessScene = new Scene(groupAccessPage.getGroupAccessLayout(), 400, 300);
+                    primaryStage.setScene(groupAccessScene );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("No user id found with the current email");
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();

@@ -105,21 +105,60 @@ public class SearchPage {
             homeGrid.add(beginnerLevels, 0, 2);
             homeGrid.add(intermediateLevels, 0, 3);
             homeGrid.add(advancedLevels, 0, 4);
-          
-            String[] groups = databaseHelper.groupsAccessibleToUser(email);
-            int row = 2;
-
-            // Add radio buttons for each role in the grid
-            for (String group : groups) {
-                RadioButton groupOption = new RadioButton(group);
-                groupOption.setToggleGroup(groupsToggle);
-                homeGrid.add(groupOption, 2, row++);
-            }
-
+            
             int lastLayer = 5;
-            if (lastLayer < row) {
-            	lastLayer = row;
+            int row = 2;
+            
+            String[] groups = databaseHelper.groupsAccessibleToUser(email);
+            
+            if (groups == null) {
+            	System.out.println("You dont have access to any groups!");
+            	showAlert("Error", "You dont have any group access!", Alert.AlertType.ERROR);
+            	
+            	if (role.equalsIgnoreCase("admin")) {                   
+                    AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
+                    Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
+                    primaryStage.setScene(adminScene);
+                }
+                
+                else if (role.equalsIgnoreCase("instructor")) {                   
+                    InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, "instructor");
+                    Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
+                    primaryStage.setScene(instructorScene);
+                }  
+                else {
+                    
+                  	 try {
+                           // Ensure connection to the database and log the user out
+                           databaseHelper.ensureConnection();
+                           showAlert("Logout", "You have been logged out successfully.", Alert.AlertType.INFORMATION);
+
+                           // Redirect to the login page after logout
+                           LoginPage loginPage = new LoginPage(primaryStage, databaseHelper);
+                           Scene loginScene = new Scene(loginPage.getLoginLayout(), 400, 300);
+                           primaryStage.setScene(loginScene);
+                       } catch (Exception e) {
+                           e.printStackTrace();
+                           showAlert("Error", "An error occurred during logout.", Alert.AlertType.ERROR);
+                       }
+                }
             }
+            else {
+
+                // Add radio buttons for each role in the grid
+                for (String group : groups) {
+                    RadioButton groupOption = new RadioButton(group);
+                    groupOption.setToggleGroup(groupsToggle);
+                    homeGrid.add(groupOption, 2, row++);
+                }
+
+                
+                if (lastLayer < row) {
+                	lastLayer = row;
+                }
+            }
+
+            
             homeGrid.add(logoutButton, 1, lastLayer);
             homeGrid.add(backButton, 0, lastLayer);
             homeGrid.add(helpButton, 2, lastLayer);

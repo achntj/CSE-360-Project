@@ -1054,7 +1054,7 @@ public class DatabaseHelper {
 	        while (rs.next()) {
 	            int id = rs.getInt("id");
 	            String groupName = rs.getString("group_name");
-	            String articleIds = rs.getString("article_ids");
+	            String articleIds = rs.getString("article_ids"); // Ensure this column name matches
 	            String admins = rs.getString("admins");
 	            String instructors = rs.getString("instructors");
 	            String students = rs.getString("students");
