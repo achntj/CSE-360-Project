@@ -9,155 +9,162 @@ import javafx.stage.Stage;
 import java.sql.SQLException;
 
 /**
- * <p>
- * InviteUserPage.
- * </p>
+ * <p> DeleteUserPage. </p>
  * 
- * <p>
- * Description: Setup for an interactive JavaFX page that allows an admin user
- * to invite new users to the system by generating invitation codes tied to
- * specific roles.
- * </p>
+ * <p> Description: This class provides an interactive JavaFX interface that allows 
+ * instructors or admins to remove a user from a specific group or role. The functionality 
+ * includes validation checks and ensures proper permissions are enforced before modifying 
+ * group memberships. </p>
  * 
- * <p>
- * Copyright: Group 11 - CSE 360 © 2024
- * </p>
+ * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
  * 
- * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya
- *         Kar, Raya Khanna
+ * @author Achintya Jha,
+ *         Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
  * 
- * @version 1.00 2024-10-09 Project Phase 1 Invite User Page
- * 
+ * @version 1.00 2024-10-09 Project Phase 1 Delete User Page
  */
-
 public class DeleteUserPage {
 
-	/** Primary stage used for the GUI Interface */
-	private final Stage primaryStage;
+    /** The primary stage used for the GUI interface. */
+    private final Stage primaryStage;
 
-	/**
-	 * Allows us to update and edit the database that holds user information and
-	 * generate invitation codes
-	 */
-	private final DatabaseHelper databaseHelper;
+    /** Handles database operations for user and group management. */
+    private final DatabaseHelper databaseHelper;
 
-	/** The email of the logged-in user */
-	private final String email;
+    /** The email of the logged-in user. */
+    private final String email;
 
-	/** The role of the logged-in user */
-	private final String role;
+    /** The role of the logged-in user. */
+    private final String role;
 
-	/** The Grid Pane used to structure the invite user page */
-	private final GridPane inviteUserGrid;
+    /** The GridPane used to structure the delete user page UI. */
+    private final GridPane inviteUserGrid;
 
-	/************
-	 * This method initializes all of the elements used in the graphical interface
-	 * presented for the InviteUserPage. It sets up the alignment, text fields, and
-	 * buttons used for the invitation functionality and provides error handling.
-	 * 
-	 * @param primaryStage   Input of primaryStage used to manage the graphical
-	 *                       interface changes
-	 * @param databaseHelper Input of the databaseHelper that enables interaction
-	 *                       with the database
-	 */
-	public DeleteUserPage(Stage primaryStage, DatabaseHelper databaseHelper, String email, String role) {
+    /**
+     * Constructs the DeleteUserPage with the given parameters.
+     * Initializes the graphical interface for deleting a user from a group or role
+     * and handles interactions, including validations and error handling.
+     * 
+     * @param primaryStage   the primary stage used to display the graphical interface
+     * @param databaseHelper the database helper that enables interaction with the database
+     * @param email          the email of the logged-in user
+     * @param role           the role of the logged-in user
+     */
+    public DeleteUserPage(Stage primaryStage, DatabaseHelper databaseHelper, String email, String role) {
+        this.primaryStage = primaryStage;
+        this.databaseHelper = databaseHelper;
+        this.email = email;
+        this.role = role;
 
-		// Initializes the primaryStage and database helper
-		this.primaryStage = primaryStage;
-		this.databaseHelper = databaseHelper;
-		this.email = email;
-		this.role = role;
+        // Setup the layout for the delete user page using GridPane
+        inviteUserGrid = new GridPane();
+        inviteUserGrid.setAlignment(Pos.CENTER);
+        inviteUserGrid.setVgap(10);
+        inviteUserGrid.setHgap(10);
 
-		// Creates a new GridPane and sets its alignment and spacing
-		inviteUserGrid = new GridPane();
-		inviteUserGrid.setAlignment(Pos.CENTER);
-		inviteUserGrid.setVgap(10);
-		inviteUserGrid.setHgap(10);
+        // Define UI components
+        Label studentLabel = new Label("Student ID:");
+        TextField studentField = new TextField();
+        Label groupRoleLabel = new Label("Role: (admins, instructors, students)");
+        TextField groupRoleField = new TextField();
+        Label groupLabel = new Label("Group ID:");
+        TextField groupField = new TextField();
+        Button deleteButton = new Button("Delete Student");
+        Button backButton = new Button("Back");
 
-		// Establishes text fields and buttons used in the user interface
-		Label studentLabel = new Label("Student ID");
-		TextField studentField = new TextField();
-		Label groupRoleLabel = new Label("Role: (admins, instructors, students)");
-		TextField groupRoleField = new TextField();
-		Label groupLabel = new Label("Group ID");
-		TextField groupField = new TextField();
-		Button deleteButton = new Button("Delete student");
-		Button backButton = new Button("Back");
+        // Add components to the GridPane layout
+        inviteUserGrid.add(studentLabel, 0, 0);
+        inviteUserGrid.add(studentField, 1, 0);
+        inviteUserGrid.add(groupRoleLabel, 0, 1);
+        inviteUserGrid.add(groupRoleField, 1, 1);
+        inviteUserGrid.add(groupLabel, 0, 2);
+        inviteUserGrid.add(groupField, 1, 2);
+        inviteUserGrid.add(deleteButton, 0, 3);
+        inviteUserGrid.add(backButton, 1, 3);
 
-		// Adds the fields and buttons to the interface
-		inviteUserGrid.add(studentLabel, 0, 0);
-		inviteUserGrid.add(studentField, 1, 0);
-		inviteUserGrid.add(groupRoleLabel, 0, 1);
-		inviteUserGrid.add(groupRoleField, 1, 1);
-		inviteUserGrid.add(groupLabel, 0, 2);
-		inviteUserGrid.add(groupField, 1, 2);
-		inviteUserGrid.add(deleteButton, 0, 3);
-		inviteUserGrid.add(backButton, 1, 3);
+        // Setup button actions
+        deleteButton.setOnAction(event -> deleteUser(studentField.getText().trim(), groupRoleField.getText().trim(), groupField.getText().trim()));
+        backButton.setOnAction(event -> navigateBackToHomePage());
+    }
 
-		deleteButton.setOnAction(event -> {
-			// Retrieves the entered role(s) to associate with the invitation code
-			String student = studentField.getText().trim();
-			String groupRole = groupRoleField.getText().trim();
-			String group = groupField.getText().trim();
+    /**
+     * Handles the deletion of a user from a group or role.
+     * Validates inputs, checks permissions, and updates the database.
+     * 
+     * @param student   the ID of the student to delete
+     * @param groupRole the role (admins, instructors, or students) to delete the user from
+     * @param group     the ID of the group from which the user should be removed
+     */
+    private void deleteUser(String student, String groupRole, String group) {
+        // Validate inputs
+        if (student.isEmpty()) {
+            showAlert("Error", "Student ID must be specified.", Alert.AlertType.ERROR);
+            return;
+        }
+        if (groupRole.isEmpty()) {
+            showAlert("Error", "Role must be specified.", Alert.AlertType.ERROR);
+            return;
+        }
+        if (group.isEmpty()) {
+            showAlert("Error", "Group ID must be specified.", Alert.AlertType.ERROR);
+            return;
+        }
 
-			// If no roles are specified, displays an error message
-			if (student.isEmpty()) {
-				showAlert("Error", "Student must be specified.", Alert.AlertType.ERROR);
-				return;
-			}
-			if (groupRole.isEmpty()) {
-				showAlert("Error", "Role(s) must be specified.", Alert.AlertType.ERROR);
-				return;
-			}
-			if (group.isEmpty()) {
-				showAlert("Error", "Group must be specified.", Alert.AlertType.ERROR);
-				return;
-			}
+        try {
+            // Ensure the user has permission to modify the group
+            String groupType = databaseHelper.getGroupType(group);
+            String currentUserId = databaseHelper.getUserIdFromEmail(email);
+            boolean isAdmin = databaseHelper.isUserAdminInGroup(currentUserId, group);
 
-			try {
-				// Check if the current user is allowed to modify the group
-				String groupType = databaseHelper.getGroupType(group); // Retrieves the group type
-				String currentUserId = databaseHelper.getUserIdFromEmail(email);
-				boolean isAdmin = databaseHelper.isUserAdminInGroup(currentUserId, group); // Checks if the current user
-																							// is an admin
+            if ("special".equalsIgnoreCase(groupType) && !isAdmin) {
+                showAlert("Permission Denied", "You must be an admin to modify a special group.", Alert.AlertType.ERROR);
+                return;
+            }
 
-				if ("special".equalsIgnoreCase(groupType) && !isAdmin) {
-					showAlert("Permission Denied", "You must be an admin to modify a special group.",
-							Alert.AlertType.ERROR);
-					return;
-				}
+            // Proceed with deleting the user
+            databaseHelper.updateGroupUsers(group, groupRole, student, false);
+            showAlert("Success", "User deleted successfully!", Alert.AlertType.INFORMATION);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Database Error", "An error occurred while deleting the user.", Alert.AlertType.ERROR);
+        }
+    }
 
-				// Proceed with deleting the user from the group
-				databaseHelper.updateGroupUsers(group, groupRole, student, false);
-				showAlert("Success", "User deleted!", Alert.AlertType.INFORMATION);
+    /**
+     * Navigates back to the home page of the logged-in user.
+     * Redirects to the appropriate home page based on the user's role.
+     */
+    private void navigateBackToHomePage() {
+        if (role.equalsIgnoreCase("instructor")) {
+            InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, role);
+            Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
+            primaryStage.setScene(instructorScene);
+        } else {
+            showAlert("Error", "Navigation for this role is not implemented.", Alert.AlertType.ERROR);
+        }
+    }
 
-			} catch (SQLException e) {
-				e.printStackTrace();
-				showAlert("Database Error", "An error occurred while deleting the user.", Alert.AlertType.ERROR);
-			}
-		});
+    /**
+     * Returns the layout of the delete user page, used in scene creation.
+     * 
+     * @return the GridPane layout of the DeleteUserPage
+     */
+    public GridPane getDeleteUserLayout() {
+        return inviteUserGrid;
+    }
 
-		// Adds functionality for the 'Back' button to return to the instructor home
-		// page
-		backButton.setOnAction(event -> {
-			// Navigates back to the Instructor Home Page
-			InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, role);
-			Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
-			primaryStage.setScene(instructorScene);
-		});
-	}
-
-	// Get function for inviteUserGrid layout
-	public GridPane getDeleteUserLayout() {
-		return inviteUserGrid;
-	}
-
-	// Creates and displays pop up alert messages to the user
-	private void showAlert(String title, String content, Alert.AlertType alertType) {
-		Alert alert = new Alert(alertType);
-		alert.setTitle(title);
-		alert.setContentText(content);
-		alert.setHeaderText(null);
-		alert.showAndWait();
-	}
+    /**
+     * Displays an alert with the specified title, content, and alert type.
+     * 
+     * @param title     the title of the alert
+     * @param content   the content of the alert
+     * @param alertType the type of alert (e.g., ERROR, INFORMATION)
+     */
+    private void showAlert(String title, String content, Alert.AlertType alertType) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
 }
