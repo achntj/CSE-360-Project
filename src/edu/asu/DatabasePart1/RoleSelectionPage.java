@@ -5,8 +5,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -15,45 +15,45 @@ import java.sql.SQLException;
 /**
  * <p> RoleSelectionPage. </p>
  * 
- * <p> Description: This class provides the user interface for selecting a role when a 
- * user has multiple roles. The selected role will determine which home page the user is 
- * redirected to for the current session. </p>
+ * <p> Description: This class provides the user interface for selecting a role 
+ * when a user has multiple roles. The selected role determines which home page 
+ * the user is redirected to for the current session. </p>
  * 
  * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
  * 
- * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * @author Achintya Jha,
+ *         Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
  * 
- * @version 1.00 	2024-10-09 Project Phase 1 Role Selection Page
- * 
+ * @version 1.00 2024-10-09 Initial Version
+ * @version 2.00 2024-10-30 Updated for Phase 2
+ * @version 3.00 2024-11-20 Updated for Phase 3
  */
-
 public class RoleSelectionPage {
 
-    /** The primary stage used for the GUI interface */
+    /** The primary stage used for the GUI interface. */
     private final Stage primaryStage;
-    
-    /** The database helper that allows interactions with the user database */
+
+    /** The database helper that allows interactions with the user database. */
     private final DatabaseHelper databaseHelper;
-    
-    /** The email of the user who is selecting a role */
+
+    /** The email of the user who is selecting a role. */
     private final String email;
-    
-    /** The Grid Pane used to structure the role selection page UI */
+
+    /** The GridPane used to structure the role selection page UI. */
     private final GridPane roleSelectionGrid;
 
-    /************
-     * This constructor initializes the role selection page and sets up all of the 
-     * components in the graphical interface, including radio buttons for each role 
-     * the user holds, and a button to confirm the selection. It also manages the 
-     * redirection to the corresponding home page based on the selected role.
+    /**
+     * Constructs the RoleSelectionPage with the given parameters.
+     * Initializes the role selection page and sets up all components in the 
+     * graphical interface, including radio buttons for each role the user holds, 
+     * and a button to confirm the selection. It also manages the redirection to 
+     * the corresponding home page based on the selected role.
      * 
-     * @param primaryStage		The primary stage used to display the graphical interface
-     * @param databaseHelper	The database helper that enables interaction with the database
-     * @param email				The email of the user who is selecting a role
+     * @param primaryStage   the primary stage used to display the graphical interface
+     * @param databaseHelper the database helper that enables interaction with the database
+     * @param email          the email of the user who is selecting a role
      */
     public RoleSelectionPage(Stage primaryStage, DatabaseHelper databaseHelper, String email) {
-    	
-    	// Initializes the primaryStage, database helper, and email
         this.primaryStage = primaryStage;
         this.databaseHelper = databaseHelper;
         this.email = email;
@@ -96,35 +96,24 @@ public class RoleSelectionPage {
 
                 // Retrieve the value of the selected role
                 String selectedRoleValue = selectedRole.getText().trim();
-               
 
                 // Redirect to the user home page based on the selected role
                 try {
-                  
-                    if (selectedRoleValue.equalsIgnoreCase("admin")) {                   
+                    if (selectedRoleValue.equalsIgnoreCase("admin")) {
                         AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
                         Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
                         primaryStage.setScene(adminScene);
-                    }
-                    
-                    else if (selectedRoleValue.equalsIgnoreCase("instructor")) {                   
-                        InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, "instructor");
+                    } else if (selectedRoleValue.equalsIgnoreCase("instructor")) {
+                        InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper,
+                                email, "instructor");
                         Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
                         primaryStage.setScene(instructorScene);
-                    }
-                   
-                    else if (selectedRoleValue.equalsIgnoreCase("student")) {                
-                    	SearchPage searchPage = new SearchPage(primaryStage, databaseHelper, email, "student");
+                    } else if (selectedRoleValue.equalsIgnoreCase("student")) {
+                        SearchPage searchPage = new SearchPage(primaryStage, databaseHelper, email, "student");
                         Scene studentScene = new Scene(searchPage.getSearchLayout(), 400, 300);
                         primaryStage.setScene(studentScene);
-                        
-                    	/*
-                        StudentHomePage studentHomePage = new StudentHomePage(primaryStage, databaseHelper, email, "student");
-                        Scene studentScene = new Scene(studentHomePage.getStudentHomeLayout(), 400, 300);
-                        primaryStage.setScene(studentScene);**/
-                    }
-                    else {
-                        // Redirect to the user home page based on the user's role   
+                    } else {
+                        // Default redirection for unhandled roles
                         String role = databaseHelper.getUserRole(email);
                         UserHomePage userHomePage = new UserHomePage(primaryStage, databaseHelper, email, role);
                         Scene userHomeScene = new Scene(userHomePage.getUserHomeLayout(), 400, 300);
@@ -142,12 +131,22 @@ public class RoleSelectionPage {
         }
     }
 
-    // Method to return the role selection layout, used in the scene creation
+    /**
+     * Returns the role selection layout, used in scene creation.
+     * 
+     * @return the GridPane layout of the Role Selection Page
+     */
     public GridPane getRoleSelectionLayout() {
         return roleSelectionGrid;
     }
 
-    // Helper method to display alerts to the user
+    /**
+     * Displays an alert with the specified title, content, and alert type.
+     * 
+     * @param title     the title of the alert
+     * @param content   the content of the alert
+     * @param alertType the type of alert (e.g., ERROR, INFORMATION)
+     */
     private void showAlert(String title, String content, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

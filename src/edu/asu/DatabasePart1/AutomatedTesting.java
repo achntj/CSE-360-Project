@@ -14,8 +14,8 @@ package edu.asu.DatabasePart1;
  * Copyright: Group 11 - CSE 360 © 2024
  * </p>
  * 
- * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel,
- *         Shreeya Kar, Raya Khanna
+ * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya
+ *         Kar, Raya Khanna
  * 
  * @version 1.00 2024-10-09 Documented code and added more robust test cases
  */
@@ -51,29 +51,32 @@ public class AutomatedTesting {
 		passwordTestCase(10, "", false); // Empty password
 
 		// Run article test cases for validation
-		articleTestCase(11, "Introduction to Databases", "Beginner", "John Doe", 
-		                "An introductory guide to databases.", "database,sql,introduction", 
-		                "This article covers basics of SQL and database management.", 
-		                "Ref1, Ref2", true); // Valid article
+		articleTestCase(11, "Introduction to Databases", "Beginner", "John Doe", "An introductory guide to databases.",
+				"database,sql,introduction", "This article covers basics of SQL and database management.", "Ref1, Ref2",
+				true); // Valid article
 
-		articleTestCase(12, "", "Intermediate", "Jane Doe", 
-		                "A guide on optimizing database queries.", 
-		                "database,optimization", "This article explores ways to optimize SQL queries.", 
-		                "Ref1, Ref2", false); // Missing title, expected to fail
+		articleTestCase(12, "", "Intermediate", "Jane Doe", "A guide on optimizing database queries.",
+				"database,optimization", "This article explores ways to optimize SQL queries.", "Ref1, Ref2", false); // Missing
+																														// title,
+																														// expected
+																														// to
+																														// fail
 
 		articleTestCase(13, "Advanced Database Techniques", "Advanced", "Alice Smith",
-		                "Detailed insights into database optimization.", "database,optimization,advanced",
-		                "This article delves into complex SQL query optimization and indexing strategies.", 
-		                "Ref3, Ref4, Ref5", true); // Valid with detailed content
+				"Detailed insights into database optimization.", "database,optimization,advanced",
+				"This article delves into complex SQL query optimization and indexing strategies.", "Ref3, Ref4, Ref5",
+				true); // Valid with detailed content
 
-		articleTestCase(14, "Database Security", "Intermediate", "", 
-		                "An overview of database security practices.", 
-		                "database,security", "This article covers best practices for database security.", 
-		                "Ref6", false); // Missing authors, expected to fail
+		articleTestCase(14, "Database Security", "Intermediate", "", "An overview of database security practices.",
+				"database,security", "This article covers best practices for database security.", "Ref6", false); // Missing
+																													// authors,
+																													// expected
+																													// to
+																													// fail
 
-		articleTestCase(15, "NoSQL Databases", "Beginner", "Tom White", "", 
-		                "NoSQL,database", "This article explains NoSQL databases and their use cases.", 
-		                "Ref7", false); // Empty abstract, expected to fail
+		articleTestCase(15, "NoSQL Databases", "Beginner", "Tom White", "", "NoSQL,database",
+				"This article explains NoSQL databases and their use cases.", "Ref7", false); // Empty abstract,
+																								// expected to fail
 
 		// Print final results of test execution
 		System.out.println("____________________________________________________________________________");
@@ -83,8 +86,9 @@ public class AutomatedTesting {
 	}
 
 	/**
-	 * Evaluates a password against expected results using the PasswordChecker class.
-	 * Compares actual result with expected outcome and updates pass/fail counts.
+	 * Evaluates a password against expected results using the PasswordChecker
+	 * class. Compares actual result with expected outcome and updates pass/fail
+	 * counts.
 	 * 
 	 * @param testCase     Identifier for the test case.
 	 * @param inputText    Password input to be evaluated.

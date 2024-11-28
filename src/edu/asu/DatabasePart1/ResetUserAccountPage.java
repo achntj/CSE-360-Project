@@ -12,44 +12,47 @@ import java.sql.Timestamp;
 /**
  * <p> ResetUserAccountPage. </p>
  * 
- * <p> Description: This class provides the user interface for resetting a user's password 
- * and updating the expiry date for their account. The admin inputs the user's email, a new 
- * password, and an expiry timestamp. </p>
+ * <p> Description: This class provides the user interface for resetting a user's
+ * password and updating the expiry date for their account. The admin inputs the
+ * user's email, a new password, and an expiry timestamp. </p>
  * 
  * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
  * 
- * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * <p> This page is accessible only to administrators. </p>
  * 
- * @version 1.00 	2024-10-09 Project Phase 1 Reset User Account Page
+ * @author Achintya Jha,
+ *         Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
  * 
+ * @version 1.00 2024-10-09 Initial Version
+ * @version 2.00 2024-10-30 Updated for Phase 2
+ * @version 3.00 2024-11-20 Updated for Phase 3
  */
-
 public class ResetUserAccountPage {
 
-    /** The primary stage used for the GUI interface */
+    /** The primary stage used for the GUI interface. */
     private final Stage primaryStage;
-    
-    /** The database helper that allows interactions with the user database */
+
+    /** The database helper that allows interactions with the user database. */
     private final DatabaseHelper databaseHelper;
-    
-    /** The email of the logged-in user */
+
+    /** The email of the logged-in admin. */
     private final String email;
-    
-    /** The Grid Pane used to structure the reset user account page UI */
+
+    /** The GridPane used to structure the reset user account page UI. */
     private final GridPane resetUserGrid;
 
-    /************
-     * This constructor initializes the reset user account page and sets up all of the 
-     * components in the graphical interface, including buttons, labels, and input fields 
-     * for resetting a user's password and account expiry date. It also manages the actions 
-     * for resetting the password and returning to the admin home page.
+    /**
+     * Constructs the ResetUserAccountPage with the given parameters.
+     * Initializes the reset user account page and sets up all components in the 
+     * graphical interface, including buttons, labels, and input fields for 
+     * resetting a user's password and account expiry date. It also manages the 
+     * actions for resetting the password and returning to the admin home page.
      * 
-     * @param primaryStage		The primary stage used to display the graphical interface
-     * @param databaseHelper	The database helper that enables interaction with the database
+     * @param primaryStage   the primary stage used to display the graphical interface
+     * @param databaseHelper the database helper that enables interaction with the database
+     * @param email          the email of the logged-in admin
      */
     public ResetUserAccountPage(Stage primaryStage, DatabaseHelper databaseHelper, String email) {
-    	
-    	// Initializes the primaryStage and database helper
         this.primaryStage = primaryStage;
         this.databaseHelper = databaseHelper;
         this.email = email;
@@ -82,7 +85,7 @@ public class ResetUserAccountPage {
 
         // Adds functionality for the 'Reset Password' button
         resetPasswordButton.setOnAction(event -> {
-        	// Collects the entered data from the form
+            // Collects the entered data from the form
             String userEmail = emailField.getText().trim();
             String newPassword = newPasswordField.getText().trim();
             String expiryText = expiryField.getText().trim();
@@ -112,12 +115,22 @@ public class ResetUserAccountPage {
         });
     }
 
-    // Method to return the reset user account layout, used in the scene creation
+    /**
+     * Returns the reset user account layout, used in scene creation.
+     * 
+     * @return the GridPane layout of the Reset User Account Page
+     */
     public GridPane getResetUserLayout() {
         return resetUserGrid;
     }
 
-    // Helper method to display alerts to the user
+    /**
+     * Displays an alert with the specified title, content, and alert type.
+     * 
+     * @param title     the title of the alert
+     * @param content   the content of the alert
+     * @param alertType the type of alert (e.g., ERROR, INFORMATION)
+     */
     private void showAlert(String title, String content, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

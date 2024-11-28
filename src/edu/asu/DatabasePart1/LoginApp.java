@@ -7,39 +7,44 @@ import javafx.stage.Stage;
 /**
  * <p> LoginApp. </p>
  * 
- * <p> Description: The main class for the login and registration system. It manages 
- * the launch of the application and determines whether the first-time admin setup or 
- * regular login page should be displayed, depending on the state of the database. </p>
+ * <p> Description: The main class for the login and registration system. It 
+ * manages the launch of the application and determines whether the first-time 
+ * admin setup or regular login page should be displayed, depending on the state 
+ * of the database. </p>
  * 
  * <p> Copyright: Group 11 - CSE 360 © 2024 </p>
  * 
- * @author Achintya Jha, Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
+ * <p> This class serves as the entry point for the JavaFX application. </p>
  * 
- * @version 1.00 	2024-10-09 Project Phase 1 Login and Registration System
- * @version 2.00 	2024-10-30 Project Phase 2 Login and Registration System
+ * @author Achintya Jha,
+ *         Akshin Senthilkumar, Ridham Ashwinkumar Patel, Shreeya Kar, Raya Khanna
  * 
+ * @version 1.00 2024-10-09 Initial Version
+ * @version 2.00 2024-10-30 Updated for Phase 2
  */
-
 public class LoginApp extends Application {
 
-    /** Handles database operations such as connection and user queries */
+    /** Handles database operations such as connection and user queries. */
     private final DatabaseHelper databaseHelper = new DatabaseHelper();
 
-    /************
-     * The entry point for the JavaFX application.
+    /**
+     * The main entry point for the application.
+     * Launches the JavaFX application and initializes the primary stage.
      * 
-     * @param args		The command-line arguments
+     * @param args the command-line arguments
      */
     public static void main(String[] args) {
         launch(args);
     }
 
-    /************
-     * The start method initializes the primary stage of the application, checks the 
-     * state of the database, and directs the user either to the admin setup page or 
-     * the login page depending on whether the database is empty.
+    /**
+     * Initializes the primary stage of the application.
+     * Determines the initial page to display (Admin Setup Page or Login Page) 
+     * based on the state of the database. If the database is empty, it redirects 
+     * to the Admin Setup Page for first-time setup. Otherwise, it loads the 
+     * regular login page.
      * 
-     * @param primaryStage		The primary stage used to display the graphical interface
+     * @param primaryStage the primary stage used to display the graphical interface
      */
     @Override
     public void start(Stage primaryStage) {
@@ -77,13 +82,14 @@ public class LoginApp extends Application {
         primaryStage.show();
     }
 
-    /************
-     * The stop method is called when the application is closed and ensures that 
-     * the database connection is properly closed.
+    /**
+     * Ensures proper cleanup when the application stops.
+     * This method is called automatically by the JavaFX framework when the
+     * application is closed. It ensures that the database connection is properly
+     * closed to prevent resource leaks.
      */
     @Override
     public void stop() {
-        // Close the database connection when the application stops
         databaseHelper.closeConnection();
     }
 }
