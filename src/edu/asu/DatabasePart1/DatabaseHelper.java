@@ -922,17 +922,15 @@ public class DatabaseHelper {
 	 * @throws SQLException If a database access error occurs.
 	 */
 	private void createGroupsTable() throws SQLException {
-		String groupsTable = "CREATE TABLE IF NOT EXISTS groups (" + "id INT AUTO_INCREMENT PRIMARY KEY, " // Unique
-																											// identifier
-																											// for the
-																											// group
-				+ "group_name VARCHAR(255), " // Name of the group
-				+ "article_ids VARCHAR(255), " // Comma-separated list of article IDs in the group
-				+ "admins VARCHAR(255), " // Comma-separated list of admin user IDs
-				+ "instructors VARCHAR(255), " // Comma-separated list of instructor user IDs
-				+ "students VARCHAR(255), " // Comma-separated list of student user IDs
-				+ "type VARCHAR(255))"; // type - either general or special
-		statement.execute(groupsTable);
+	    String groupsTable = "CREATE TABLE IF NOT EXISTS groups ("
+	            + "id INT AUTO_INCREMENT PRIMARY KEY, "     // Unique identifier for the group
+	            + "group_name VARCHAR(255), "               // Name of the group
+	            + "article_ids VARCHAR(255), "              // Comma-separated list of article IDs in the group
+	            + "admins VARCHAR(255), "                   // Comma-separated list of admin user IDs
+	            + "instructors VARCHAR(255), "              // Comma-separated list of instructor user IDs
+	            + "students VARCHAR(255), "                 // Comma-separated list of student user IDs
+	    		+ "type VARCHAR(255))";						// type - either general or special
+	    statement.execute(groupsTable);
 	}
 
 	/**
@@ -953,7 +951,7 @@ public class DatabaseHelper {
 
 		if (id != null) {
 			System.out.println("ID PROVIDED");
-			String insertGroup = "INSERT INTO groups (id, group_name, article_ids, admins, instructors, students, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			String insertGroup = "INSERT INTO groups (id, group_name, article_ids, admins, instructors, students, type) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			try (PreparedStatement pstmt = connection.prepareStatement(insertGroup)) {
 				pstmt.setString(1, id);
 				pstmt.setString(2, groupName);
@@ -1747,5 +1745,58 @@ public class DatabaseHelper {
 		System.out.println("Article " + (addArticle ? "added to" : "removed from") + " the group successfully.");
 
 	}
+	
+	public boolean isInstructorInGroup(String groupId, String instructorId) throws SQLException {
+        String query = "SELECT instructors FROM groups WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, groupId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                String instructors = rs.getString("instructors");
+                if (instructors != null && !instructors.isEmpty()) {
+                    String[] instructorList = instructors.split(",");
+                    for (String instructor : instructorList) {
+                        if (instructor.trim().equalsIgnoreCase(instructorId)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isInstructorAdminInGroup(String groupId, String instructorId) throws SQLException {
+        String query = "SELECT admins FROM groups WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, groupId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                String admins = rs.getString("admins");
+                if (admins != null && !admins.isEmpty()) {
+                    String[] adminList = admins.split(",");
+                    for (String admin : adminList) {
+                        if (admin.trim().equalsIgnoreCase(instructorId)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    public void deleteAllGroups() {
+        String deleteQuery = "DELETE FROM groups";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(deleteQuery)) {
+            int rowsAffected = pstmt.executeUpdate();
+            System.out.println("Number of groups deleted: " + rowsAffected);
+        } catch (SQLException e) {
+            System.err.println("Error occurred while deleting groups: " + e.getMessage());
+        }
+    }
 
 }
