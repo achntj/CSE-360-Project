@@ -1,3 +1,4 @@
+package tests;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -9,7 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
 
-public class DBHelperTests {
+public class UserPrivilegesTests {
 
     private DatabaseHelper databaseHelper;
 

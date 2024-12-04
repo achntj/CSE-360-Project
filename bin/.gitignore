@@ -1,2 +1,7 @@
 /edu/
 /DBHelperTests.class
+/BackupRestore.class
+/BackupRestoreTests.class
+/DBHelperBackupRestoreTests.class
+/UserPrivilegesTests.class
+/tests/
