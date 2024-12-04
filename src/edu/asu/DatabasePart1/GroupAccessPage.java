@@ -71,12 +71,13 @@ public class GroupAccessPage {
         Button createGroupButton = new Button("Create General Group");
         Button createSpecialButton = new Button("Create Special Access Group");
         Button listGroupsButton = new Button("List Groups");
+        Button editGroupsButton = new Button("Edit Groups");
         Label groupIDLabel = new Label("Group ID: ");
         TextField groupField = new TextField();
         Button viewGroupButton = new Button("View Group");
         Button deleteGroupButton = new Button("Delete Group");
-        Button backupGroupButton = new Button("Backup Group");
-        Button restoreGroupButton = new Button("Restore Group");
+        Button backupGroupButton = new Button("Backup Groups");
+        Button restoreGroupButton = new Button("Restore Groups");
         Button helpButton = new Button("Help");
         Button backButton = new Button("Back");
 
@@ -84,12 +85,13 @@ public class GroupAccessPage {
         groupGrid.add(createGroupButton, 0, 0);
         groupGrid.add(createSpecialButton, 2, 0);
         groupGrid.add(listGroupsButton, 0, 1);
-        groupGrid.add(groupIDLabel, 0, 2);
-        groupGrid.add(groupField, 2, 2);
-        groupGrid.add(viewGroupButton, 0, 3);
-        groupGrid.add(deleteGroupButton, 2, 3);
-        groupGrid.add(backupGroupButton, 0, 4);
-        groupGrid.add(restoreGroupButton, 2, 4);
+        groupGrid.add(editGroupsButton, 2, 1);
+        groupGrid.add(backupGroupButton, 0, 2);
+        groupGrid.add(restoreGroupButton, 2, 2);
+        groupGrid.add(groupIDLabel, 0, 3);
+        groupGrid.add(groupField, 2, 3);
+        groupGrid.add(viewGroupButton, 0, 4);
+        groupGrid.add(deleteGroupButton, 2, 4);
         groupGrid.add(helpButton, 2, 5);
         groupGrid.add(backButton, 0, 5);
 
@@ -97,6 +99,7 @@ public class GroupAccessPage {
         createGroupButton.setOnAction(event -> navigateToCreateGeneralGroup());
         createSpecialButton.setOnAction(event -> navigateToCreateSpecialGroup());
         listGroupsButton.setOnAction(event -> displayGroupList());
+        editGroupsButton.setOnAction(event -> editGroups());
         viewGroupButton.setOnAction(event -> viewGroup(groupField.getText().trim()));
         deleteGroupButton.setOnAction(event -> deleteGroup(groupField.getText().trim()));
         backupGroupButton.setOnAction(event -> backupGroups());
@@ -146,6 +149,10 @@ public class GroupAccessPage {
             e.printStackTrace();
             showAlert("Error", "An error occurred while listing groups.", Alert.AlertType.ERROR);
         }
+    }
+    
+    private void editGroups() {
+    	System.out.println("Edit Groups Pressed");
     }
 
     /**
