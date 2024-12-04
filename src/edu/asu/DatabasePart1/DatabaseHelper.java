@@ -138,7 +138,7 @@ public class DatabaseHelper {
 			pstmt.setString(7, middleName);
 			pstmt.setString(8, lastName);
 			pstmt.setString(9, preferredName);
-			pstmt.setString(10, role); // Store roles (can be multiple, comma-separated)
+			pstmt.setString(10, role.toLowerCase()); // Store roles (can be multiple, comma-separated)
 			pstmt.executeUpdate();
 		}
 	}
@@ -291,8 +291,8 @@ public class DatabaseHelper {
 				if (rs.next()) {
 					String roles = rs.getString("roles");
 					if (!roles.contains(newRole)) {
-						roles = roles + "," + newRole; // Append new role
-						updateRoles(email, roles);
+						roles = roles + "," + newRole.toLowerCase().trim(); // Append new role
+						updateRoles(email, roles.toLowerCase());
 					}
 				}
 			}
@@ -305,7 +305,7 @@ public class DatabaseHelper {
 
 		String updateQuery = "UPDATE cse360users SET roles = ? WHERE email = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(updateQuery)) {
-			pstmt.setString(1, roles);
+			pstmt.setString(1, roles.toLowerCase().trim());
 			pstmt.setString(2, email);
 			pstmt.executeUpdate();
 		}
@@ -391,7 +391,10 @@ public class DatabaseHelper {
 	// Get the user's roles as an array of strings
 	public String[] getUserRoles(String email) throws SQLException {
 		ensureConnection(); // Ensure connection is available
-
+		if (email == null) {
+			return new String[0];
+		}
+		
 		String query = "SELECT roles FROM cse360users WHERE email = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 			pstmt.setString(1, email);
@@ -1655,6 +1658,12 @@ public class DatabaseHelper {
 	public String getName(String email) throws SQLException {
 		ensureConnection();
 		// preferred_name
+		
+		if (email == null) {
+			System.out.println("No Email");
+			return null;
+		}
+		
 		String query = "SELECT first_name FROM cse360users WHERE email = ?";
 
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -1782,39 +1791,28 @@ public class DatabaseHelper {
 	 * 
 	 */
 
-	public String listStudents() throws SQLException {
-
+	public String getStudentList() throws SQLException {
 		ensureConnection(); // Ensure the connection is established
 
 		StringBuilder studentsList = new StringBuilder();
 
-		String query = "SELECT id, first_name, email, roles FROM cse360users WHERE roles LIKE '%student%'";
-
+		String query = "SELECT id,email FROM cse360users";
+		
 		try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-
 			while (rs.next()) {
-
+				
 				int id = rs.getInt("id");
+				String email = rs.getString("email");			
+				String name = getName(email);
 
-				String name = rs.getString("first_name");
+				if(hasRole(email, "student")) { 
+					studentsList.append("Student ID: ").append(id).append("\n")
+					.append("Name: ").append(name).append("\n")
+					.append("Email: ").append(email).append("\n")
+					.append("-------------------------------\n");
+				}			
 
-				String email = rs.getString("email");
-
-				String roles = rs.getString("roles"); // Should be 'student' as filtered in the query
-
-				// Append student details to the list
-
-				studentsList.append("Student ID: ").append(id).append("\n")
-
-						.append("First Name: ").append(name).append("\n")
-
-						.append("Email: ").append(email).append("\n")
-
-						.append("Role: ").append(roles).append("\n")
-
-						.append("-------------------------------\n");
-
-			}
+			} 
 
 		}
 

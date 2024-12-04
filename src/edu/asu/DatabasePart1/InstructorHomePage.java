@@ -147,8 +147,8 @@ public class InstructorHomePage {
     }
 
     private void listStudents() {
-        try {
-            String studentList = databaseHelper.listStudents();
+        try { 
+            String studentList = databaseHelper.getStudentList();
             showAlert("Students", studentList, Alert.AlertType.INFORMATION);
         } catch (Exception e) {
             e.printStackTrace();
