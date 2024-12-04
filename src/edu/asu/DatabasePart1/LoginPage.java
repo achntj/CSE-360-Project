@@ -65,25 +65,33 @@ public class LoginPage {
         Label passwordLabel = new Label("Password:");
         PasswordField passwordField = new PasswordField();
         Button loginButton = new Button("Login");
-        Button registerButton = new Button("Register");
+        Button inviteRegisterButton = new Button("Register Invite Code");
+        Button registerStudentButton = new Button("Register Student");
 
         // Add components to the login grid layout
         loginGrid.add(emailLabel, 0, 0);
-        loginGrid.add(emailField, 1, 0);
+        loginGrid.add(emailField, 2, 0);
         loginGrid.add(passwordLabel, 0, 1);
-        loginGrid.add(passwordField, 1, 1);
-        loginGrid.add(loginButton, 1, 2);
-        loginGrid.add(registerButton, 1, 3);
+        loginGrid.add(passwordField, 2, 1);
+        loginGrid.add(loginButton, 0, 2);
+        loginGrid.add(inviteRegisterButton, 0, 3);
+        loginGrid.add(registerStudentButton, 2, 3);
 
         // Adds functionality for the 'Login' button
         loginButton.setOnAction(event -> handleLogin(emailField, passwordField));
 
         // Adds functionality for the 'Register' button to redirect to the registration page
-        registerButton.setOnAction(event -> {
+        inviteRegisterButton.setOnAction(event -> {
             RegisterPage registerPage = new RegisterPage(primaryStage, databaseHelper);
             Scene registerScene = new Scene(registerPage.getRegisterLayout(), 400, 400);
             primaryStage.setScene(registerScene);
         });
+        registerStudentButton.setOnAction(event -> {
+        	RegisterStudentPage registerStudentPage = new RegisterStudentPage(primaryStage, databaseHelper);
+            Scene registerStudentScene = new Scene(registerStudentPage.getRegisterLayout(), 400, 400);
+            primaryStage.setScene(registerStudentScene);
+        });
+        
     }
 
     /**

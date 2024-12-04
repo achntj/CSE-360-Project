@@ -219,7 +219,41 @@ public class DatabaseHelper {
 		}
 		return inviteCode;
 	}
+	
+	public void addStudentWithEmail(String email) throws SQLException{
+		ensureConnection();
+		
+		String insertEmail = "INSERT INTO cse360users (email, roles) VALUES (?, ?)";
+		try (PreparedStatement pstmt = connection.prepareStatement(insertEmail)) {
+			pstmt.setString(1, email);
+			pstmt.setString(2, "student");
+			pstmt.executeUpdate();
+		}
+	}
+	
+	public boolean registerStudentWithEmail(String email, String username, String password) throws SQLException{
+		ensureConnection(); // Ensure connection is available
 
+		String query = "SELECT * FROM cse360users WHERE email = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, email);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					String updateUser = "UPDATE cse360users SET username = ?, password = ?, invite_code = NULL WHERE email = ?";
+					try (PreparedStatement updateStmt = connection.prepareStatement(updateUser)) {
+						updateStmt.setString(1, username);
+						updateStmt.setBytes(2, hashPassword(password));
+						updateStmt.setString(3, null);
+						updateStmt.executeUpdate();
+					}
+					return true; // Successfully registered with the invitation code
+				}
+			}
+		}
+		return false; // Invalid invitation code
+	}
+	
+	
 	// Register a user with an invitation code
 	public boolean registerWithInvitationCode(String inviteCode, String username, String password) throws SQLException {
 		ensureConnection(); // Ensure connection is available
@@ -448,6 +482,7 @@ public class DatabaseHelper {
 				// Append user details to the list
 
 				usersList.append("ID: " + id + "\n");
+				usersList.append("Email: " + email + "\n");
 				usersList.append("Username: ").append(username).append("\n").append("Name: ").append(firstName);
 
 				if (middleName != null && !middleName.isEmpty()) {
@@ -1623,6 +1658,23 @@ public class DatabaseHelper {
 					return rs.getString("id");
 				} else {
 					System.out.println("No user found with email: " + email);
+					return null;
+				}
+			}
+		}
+	}
+	
+	public String getEmail(int id) throws SQLException{
+		ensureConnection();
+		String query = "SELECT email FROM cse360users WHERE id = ?";
+
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, id);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getString("email");
+				} else {
+					System.out.println("No user found with id: " + id);
 					return null;
 				}
 			}

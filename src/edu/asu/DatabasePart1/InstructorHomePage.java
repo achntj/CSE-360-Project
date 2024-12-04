@@ -135,15 +135,15 @@ public class InstructorHomePage {
     // Navigation methods for button actions
 
     private void navigateToAddStudentPage() {
-        AddUserPage addUserPage = new AddUserPage(primaryStage, databaseHelper, email, "instructor");
-        Scene addUserScene = new Scene(addUserPage.getAddUserLayout(), 400, 300);
-        primaryStage.setScene(addUserScene);
+        AddStudentPage addStudentPage = new AddStudentPage(primaryStage, databaseHelper, email, "instructor");
+        Scene addStudentScene = new Scene(addStudentPage.getAddUserLayout(), 400, 300);
+        primaryStage.setScene(addStudentScene);
     }
 
     private void navigateToDeleteStudentPage() {
-        DeleteUserPage deleteUserPage = new DeleteUserPage(primaryStage, databaseHelper, email, "instructor");
-        Scene deleteUserScene = new Scene(deleteUserPage.getDeleteUserLayout(), 400, 300);
-        primaryStage.setScene(deleteUserScene);
+        DeleteStudentPage deleteStudentPage = new DeleteStudentPage(primaryStage, databaseHelper, email, "instructor");
+        Scene deleteStudentScene = new Scene(deleteStudentPage.getDeleteStudentLayout(), 400, 300);
+        primaryStage.setScene(deleteStudentScene);
     }
 
     private void listStudents() {
