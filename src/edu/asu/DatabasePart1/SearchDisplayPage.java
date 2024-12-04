@@ -92,8 +92,8 @@ public class SearchDisplayPage {
 
         homeGrid.add(listedArticles, 0, 2);
 
-        homeGrid.add(backToSearchButton, 0, 4);
         homeGrid.add(displayArticleButton, 0, 3);
+        homeGrid.add(backToSearchButton, 0, 4);
         homeGrid.add(articleID, 1, 3);
 
         // Set up the back-to-search button action

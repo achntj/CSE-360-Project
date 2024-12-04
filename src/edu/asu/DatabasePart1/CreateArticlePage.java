@@ -119,7 +119,7 @@ public class CreateArticlePage {
 		// Action event for create article button
 		createArticleButton.setOnAction(event -> {
 			String title = titleTextField.getText().trim();
-			String difficulty = difficultyComboBox.getValue();
+			String difficulty = difficultyComboBox.getValue().trim();
 			String authors = authorsTextField.getText().trim();
 			String abstractVal = abstractTextField.getText().trim();
 			String keywords = keywordsField.getText().trim();
@@ -135,7 +135,7 @@ public class CreateArticlePage {
 
 			// Attempt to create the article and handle exceptions if they occur
 			try {
-				databaseHelper.createArticle(null, title, difficulty.toLowerCase(), authors, abstractVal, keywords,
+				databaseHelper.createArticle(null, title, difficulty, authors, abstractVal, keywords,
 						body, references);
 				showAlert("Success", "Article Added Successfully!", Alert.AlertType.INFORMATION);
 

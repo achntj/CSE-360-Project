@@ -82,16 +82,16 @@ public class GroupAccessPage {
 
         // Add components to the GridPane layout
         groupGrid.add(createGroupButton, 0, 0);
-        groupGrid.add(createSpecialButton, 1, 0);
-        groupGrid.add(listGroupsButton, 2, 0);
-        groupGrid.add(groupIDLabel, 0, 1);
-        groupGrid.add(groupField, 2, 1);
-        groupGrid.add(viewGroupButton, 0, 2);
-        groupGrid.add(deleteGroupButton, 2, 2);
-        groupGrid.add(backupGroupButton, 0, 3);
-        groupGrid.add(restoreGroupButton, 2, 3);
-        groupGrid.add(helpButton, 2, 4);
-        groupGrid.add(backButton, 0, 4);
+        groupGrid.add(createSpecialButton, 2, 0);
+        groupGrid.add(listGroupsButton, 0, 1);
+        groupGrid.add(groupIDLabel, 0, 2);
+        groupGrid.add(groupField, 2, 2);
+        groupGrid.add(viewGroupButton, 0, 3);
+        groupGrid.add(deleteGroupButton, 2, 3);
+        groupGrid.add(backupGroupButton, 0, 4);
+        groupGrid.add(restoreGroupButton, 2, 4);
+        groupGrid.add(helpButton, 2, 5);
+        groupGrid.add(backButton, 0, 5);
 
         // Setup button actions
         createGroupButton.setOnAction(event -> navigateToCreateGeneralGroup());

@@ -580,11 +580,23 @@ public class DatabaseHelper {
 
 		if (id != null) {
 			System.out.println("ID PROVIDED");
+
+			String checkArticleExists = "SELECT COUNT(*) FROM articles WHERE id = ?";
+			try (PreparedStatement checkStmt = connection.prepareStatement(checkArticleExists)) {
+				checkStmt.setString(1, id);
+				ResultSet rs = checkStmt.executeQuery();
+				if (rs.next() && rs.getInt(1) > 0) {
+					// If an article with the ID already exists, skip insertion
+					System.out.println("Article with ID " + id + " already exists. Skipping insertion.");
+					return;
+				}
+			}
+
 			String insertArticle = "INSERT INTO articles (id, title, difficulty, authors, abstract, keywords, body, references) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 			try (PreparedStatement pstmt = connection.prepareStatement(insertArticle)) {
 				pstmt.setString(1, id);
 				pstmt.setString(2, title);
-				pstmt.setString(3, difficulty);
+				pstmt.setString(3, difficulty.toLowerCase());
 				pstmt.setString(4, authors);
 				pstmt.setString(5, abstractText);
 				pstmt.setString(6, keywords);
@@ -598,7 +610,7 @@ public class DatabaseHelper {
 			String insertArticle = "INSERT INTO articles (title, difficulty, authors, abstract, keywords, body, references) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			try (PreparedStatement pstmt = connection.prepareStatement(insertArticle)) {
 				pstmt.setString(1, title);
-				pstmt.setString(2, difficulty);
+				pstmt.setString(2, difficulty.toLowerCase());
 				pstmt.setString(3, authors);
 				pstmt.setString(4, abstractText);
 				pstmt.setString(5, keywords);
@@ -872,7 +884,8 @@ public class DatabaseHelper {
 			String[] articles = new String(decryptedData).split("\n");
 
 			// Clear existing articles
-			statement.executeUpdate("DELETE FROM articles WHERE keywords LIKE '%" + keyword + "%'");
+			// statement.executeUpdate("DELETE FROM articles WHERE keywords LIKE '%" +
+			// keyword + "%'");
 
 			for (String article : articles) {
 				String[] fields = article.split("\\|");
@@ -1133,41 +1146,59 @@ public class DatabaseHelper {
 		System.out.println("Group deleted successfully.");
 	}
 
-	public String[] groupsAccessibleToUser(String email) throws SQLException {
+	public int[] getGroupsAccessibleIDs(String email) throws SQLException {
 		ensureConnection();
 		System.out.println("Getting Groups...");
-		
+
 		List<Integer> accessibleGroupsIDs = new ArrayList<>();
 
-		for (int group : getGeneralGroups()) {
-			if (!accessibleGroupsIDs.contains(group)) {
-				accessibleGroupsIDs.add(group);
+		if (getGeneralGroups() != null) {
+			for (int group : getGeneralGroups()) {
+				if (!accessibleGroupsIDs.contains(group)) {
+					accessibleGroupsIDs.add(group);
+				}
 			}
 		}
-		for (int group : getGroupsWhereAdmin(email)) {
-			if (!accessibleGroupsIDs.contains(group)) {
-				accessibleGroupsIDs.add(group);
+		if (getGroupsWhereAdmin(email) != null) {
+			for (int group : getGroupsWhereAdmin(email)) {
+				if (!accessibleGroupsIDs.contains(group)) {
+					accessibleGroupsIDs.add(group);
+				}
 			}
 		}
-		for (int group : getGroupsWhereInstructor(email)) {
-			if (!accessibleGroupsIDs.contains(group)) {
-				accessibleGroupsIDs.add(group);
+		if (getGroupsWhereInstructor(email) != null) {
+			for (int group : getGroupsWhereInstructor(email)) {
+				if (!accessibleGroupsIDs.contains(group)) {
+					accessibleGroupsIDs.add(group);
+				}
 			}
 		}
-		for (int group : getGroupsWhereStudent(email)) {
-			if (!accessibleGroupsIDs.contains(group)) {
-				accessibleGroupsIDs.add(group);
+		if (getGroupsWhereStudent(email) != null) {
+			for (int group : getGroupsWhereStudent(email)) {
+				if (!accessibleGroupsIDs.contains(group)) {
+					accessibleGroupsIDs.add(group);
+				}
 			}
 		}
-		
+
+		if (accessibleGroupsIDs.isEmpty()) {
+			return null;
+		}
+
+		return accessibleGroupsIDs.stream().mapToInt(Integer::intValue).toArray();
+	}
+
+	public String[] groupNamesAccessible(String email) throws SQLException {
+
+		int[] accessibleGroupsIDs = getGroupsAccessibleIDs(email);
+
 		List<String> groupList = new ArrayList<>();
 
-		
 		String queryIDs = "SELECT group_name FROM groups WHERE id = ?";
 
-		for (int i = 0; i < accessibleGroupsIDs.size(); i++) {
+		for (int i = 0; i < accessibleGroupsIDs.length; i++) {
 			try (PreparedStatement pstmt = connection.prepareStatement(queryIDs)) {
-				pstmt.setInt(1, accessibleGroupsIDs.get(i));
+				pstmt.setInt(1, accessibleGroupsIDs[i]);
 				try (ResultSet rs = pstmt.executeQuery()) {
 					if (rs.next()) { // Iterate through all results
 						groupList.add(rs.getString("group_name"));
@@ -1200,7 +1231,6 @@ public class DatabaseHelper {
 
 	public int[] getGeneralGroups() throws SQLException {
 		ensureConnection();
-		System.out.println("\tGetting General Groups...");
 
 		List<Integer> generalList = new ArrayList<>();
 
@@ -1228,8 +1258,7 @@ public class DatabaseHelper {
 
 	public int[] getGroupsWhereAdmin(String email) throws SQLException {
 		ensureConnection();
-		System.out.println("\tChecking for Admin Access...");
-		
+
 		int userID = Integer.parseInt(getUserIdFromEmail(email));
 
 		List<Integer> adminsIDs = new ArrayList<>();
@@ -1269,8 +1298,7 @@ public class DatabaseHelper {
 
 	public int[] getGroupsWhereInstructor(String email) throws SQLException {
 		ensureConnection();
-		System.out.println("\tChecking for Instructor Access...");
-		
+
 		int userID = Integer.parseInt(getUserIdFromEmail(email));
 
 		List<Integer> instructorIDs = new ArrayList<>();
@@ -1310,8 +1338,7 @@ public class DatabaseHelper {
 
 	public int[] getGroupsWhereStudent(String email) throws SQLException {
 		ensureConnection();
-		System.out.println("\tChecking for Student Access...");
-		
+
 		int userID = Integer.parseInt(getUserIdFromEmail(email));
 
 		List<Integer> studentIDs = new ArrayList<>();
@@ -1349,39 +1376,41 @@ public class DatabaseHelper {
 		return studentIDs.stream().mapToInt(Integer::intValue).toArray();
 	}
 
-	public int[] getArticlesInGroupList(String[] groupsProvided, String groupSpecifier) throws SQLException {
+	public int[] getArticlesFromGroupProvided(int[] groupsProvided, String groupSpecifier) throws SQLException {
 		ensureConnection();
-		System.out.println("Checking Group Filter...");
+		System.out.println("\tChecking Group Filter...");
 		if (groupsProvided == null || groupsProvided.length == 0) {
 			return null;
 		}
 
-		int articlesInDatabase = 0;
-
-		String getCount = "SELECT COUNT(*) as count FROM articles";
-		try (PreparedStatement pstmt = connection.prepareStatement(getCount)) {
-			try (ResultSet rs = pstmt.executeQuery()) {
-				if (rs.next()) { // Move to the first result
-					articlesInDatabase = rs.getInt("count"); // Use the alias from the query
-				}
-			}
-		}
-		int[] returnArticles = new int[articlesInDatabase];
+		List<Integer> returnArticles = new ArrayList<>();
 
 		String ids_string = "";
 
-		String query = groupSpecifier.equals("*") ? "SELECT article_ids FROM groups"
+		String query = groupSpecifier.equals("*") ? "SELECT article_ids FROM groups WHERE id = ?"
 				: "SELECT article_ids FROM groups WHERE group_name = ?";
 
-		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-			if (!groupSpecifier.equals("*")) {
-				pstmt.setString(1, groupSpecifier);
+		if (groupSpecifier.equals("*")) {
+			for (int i = 0; i < groupsProvided.length; i++) {
+				try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+					pstmt.setInt(1, groupsProvided[i]);
+					try (ResultSet rs = pstmt.executeQuery()) {
+						while (rs.next()) {
+							ids_string += rs.getString("article_ids").trim() + ",";
+						}
+					}
+				}
 			}
+		}
 
-			try (ResultSet rs = pstmt.executeQuery()) {
-				while (rs.next()) {
-					ids_string += rs.getString("article_ids") + ",";
+		else {
+			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+				pstmt.setString(1, groupSpecifier);
+				try (ResultSet rs = pstmt.executeQuery()) {
+					while (rs.next()) {
+						ids_string = rs.getString("article_ids");
 
+					}
 				}
 			}
 		}
@@ -1391,43 +1420,24 @@ public class DatabaseHelper {
 			return null;
 		}
 
-		// System.out.println("-------ID STRING: " + ids_string + "---------------");
-		// TESTING
-		String[] parts = ids_string.trim().split(","); // Split string by ',' delimiter
+		String[] idStringList = ids_string.trim().split(","); // Split string by ',' delimiter
 
 		// Convert String array to int array
-		int i = 0;
-		for (String part : parts) {
+		for (int i = 0; i < idStringList.length; i++) {
+			if (!idStringList[i].isBlank()) {
+				int id = Integer.parseInt(idStringList[i].trim());
 
-			if (!part.isBlank() && part.matches("\\d+")) {
-				int id = Integer.parseInt(part.trim());
-
-				boolean existsAlready = false;
-				if (returnArticles != null) {
-					for (int currID : returnArticles) {
-						if (id == currID) {
-							existsAlready = true;
-						}
-					}
+				if (!returnArticles.contains(id)) {
+					returnArticles.add(id);
 				}
-
-				if (existsAlready == false) {
-					System.out.println("Article " + id + " in groups search!");
-					returnArticles[i] = id;
-					i++;
-				}
-
-			}
-			if (part.isBlank()) {
-				System.out.println("Article id is blank, skipping line");
 			}
 
 			else {
-				System.out.println("Invalid article ID: " + part);
+				System.out.println("Invalid article ID: " + idStringList[i]);
 			}
 		}
 
-		return returnArticles;
+		return returnArticles.stream().mapToInt(Integer::intValue).toArray();
 	}
 
 	public int[] articlesFilteredDifficulty(int[] articleIDs, String difficulty) throws SQLException {
@@ -1437,45 +1447,32 @@ public class DatabaseHelper {
 			return null;
 		}
 
-		int[] returnArticles = new int[articleIDs.length];
+		List<Integer> articleIDsList = new ArrayList<>();
+		Arrays.stream(articleIDs).forEach(articleIDsList::add);
 
-		String query = "";
+		List<Integer> returnArticles = new ArrayList<>();
+
 		if (difficulty.equals("*")) {
-			query = "SELECT id FROM articles";
-		} else {
-			query = "SELECT id FROM articles WHERE difficulty = ?";
+			return articleIDs;
 		}
 
-		System.out.println("\tCHEKCPOINT : BEFORE SEARCH");
+		String query = "SELECT id FROM articles WHERE difficulty = ?";
+
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-			if (!difficulty.equals("*")) {
-				pstmt.setString(1, difficulty.trim().toLowerCase());
-			}
-			System.out.println("\tCHEKCPOINT : BEFORE EXECUTION");
+			pstmt.setString(1, difficulty.trim().toLowerCase());
 			try (ResultSet rs = pstmt.executeQuery()) {
-				int index = 0;
-				System.out.println("\tCHEKCPOINT : BEFORE WHILELOOP");
 				System.out.println("\tCHEKCPOINT RS: " + rs);
 				while (rs.next()) {
 					int id = rs.getInt("id");
-					System.out.println("\tCHEKCPOINT : GET ID");
-					for (int i : articleIDs) {
-						System.out.println("\tCHEKCPOINT : CHECKING ID AGAINST STORED VALS");
-						if (i == id) {
-							System.out.println("\tCHEKCPOINT : IDS BEING ADDED");
-							System.out.println("Article " + id + " in difficulty search!");
-							returnArticles[index] = rs.getInt("id");
-							index++;
-						}
+					if (!returnArticles.contains(id) && articleIDsList.contains(id)) {
+						returnArticles.add(id);
 					}
-
 				}
-				System.out.println("\tCHEKCPOINT : WHILELOOP ENDED");
 
 			}
 		}
 
-		return returnArticles;
+		return returnArticles.stream().mapToInt(Integer::intValue).toArray();
 	}
 
 	public String getArticlesFromList(int[] articleIDs) throws SQLException {
@@ -1489,12 +1486,11 @@ public class DatabaseHelper {
 		String query = "SELECT title, difficulty, authors FROM articles WHERE id = ?";
 
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-			int index = 0;
-			while (index < articleIDs.length) {
-				pstmt.setInt(1, articleIDs[index]);
+			for (int i = 0; i < articleIDs.length; i++) {
+				pstmt.setInt(1, articleIDs[i]);
 				try (ResultSet rs = pstmt.executeQuery()) {
 					if (rs.next()) {
-						int id = articleIDs[index];
+						int id = articleIDs[i];
 						String title = rs.getString("title");
 						String difficulty = rs.getString("difficulty"); // Retrieve difficulty
 						String author = rs.getString("authors");
@@ -1507,7 +1503,7 @@ public class DatabaseHelper {
 								.append("-------------------------------\n");
 					}
 				}
-				index++;
+
 			}
 
 		}
