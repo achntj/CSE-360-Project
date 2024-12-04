@@ -89,7 +89,7 @@ public class CreateArticlePage {
 		TextField referenceLinksField = new TextField();
 
 		Button createArticleButton = new Button("Complete Article Setup");
-		Button backButton = new Button("Return to Homepage");
+		Button backButton = new Button("Back");
 
 		// Add components to the create article grid layout
 		createArticleGrid.add(titleLabel, 0, 0);
@@ -135,8 +135,7 @@ public class CreateArticlePage {
 
 			// Attempt to create the article and handle exceptions if they occur
 			try {
-				databaseHelper.createArticle(null, title, difficulty, authors, abstractVal, keywords,
-						body, references);
+				databaseHelper.createArticle(null, title, difficulty, authors, abstractVal, keywords, body, references);
 				showAlert("Success", "Article Added Successfully!", Alert.AlertType.INFORMATION);
 
 				// Redirect to user home page after article creation
@@ -163,18 +162,18 @@ public class CreateArticlePage {
 
 		// Action event for back button to return to home page
 		backButton.setOnAction(event -> {
-
 			if (role.equalsIgnoreCase("admin")) {
-				AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
-				Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
-				primaryStage.setScene(adminScene);
+				ArticleFunctionsPage articleFunctionsPage = new ArticleFunctionsPage(primaryStage, databaseHelper,
+						email, "admin");
+				Scene articleFunctionsScene = new Scene(articleFunctionsPage.getArticleFunctionsLayout(), 400, 300);
+				primaryStage.setScene(articleFunctionsScene);
 			}
 
 			else if (role.equalsIgnoreCase("instructor")) {
-				InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email,
-						role);
-				Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
-				primaryStage.setScene(instructorScene);
+				ArticleFunctionsPage articleFunctionsPage = new ArticleFunctionsPage(primaryStage, databaseHelper,
+						email, "instructor");
+				Scene articleFunctionsScene = new Scene(articleFunctionsPage.getArticleFunctionsLayout(), 400, 300);
+				primaryStage.setScene(articleFunctionsScene);
 			} else {
 
 				try {

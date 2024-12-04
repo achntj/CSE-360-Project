@@ -57,7 +57,7 @@ public class DeleteArticlePage {
         TextField idTextField = new TextField();
 
         Button deleteArticleButton = new Button("Delete Article");
-        Button backButton = new Button("Return to UserHome");
+        Button backButton = new Button("Back");
 
         // Add components to the delete article grid layout
         deleteArticleGrid.add(enterIDLabel, 0, 0);
@@ -103,17 +103,19 @@ public class DeleteArticlePage {
      * @param role  The role of the logged-in user (e.g., admin, instructor, student).
      */
     private void navigateToHomePage(String email, String role) {
+    	ArticleFunctionsPage articleFunctionsPage;
+    	Scene articleFunctionsScene;
         try {
             switch (role.toLowerCase()) {
                 case "admin":
-                    AdminHomePage adminHomePage = new AdminHomePage(primaryStage, databaseHelper, email);
-                    Scene adminScene = new Scene(adminHomePage.getAdminHomeLayout(), 400, 300);
-                    primaryStage.setScene(adminScene);
+                	 articleFunctionsPage = new ArticleFunctionsPage(primaryStage, databaseHelper, email, "admin");
+    				 articleFunctionsScene = new Scene(articleFunctionsPage.getArticleFunctionsLayout(), 400, 300);
+    				primaryStage.setScene(articleFunctionsScene);
                     break;
                 case "instructor":
-                    InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, role);
-                    Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
-                    primaryStage.setScene(instructorScene);
+                	 articleFunctionsPage = new ArticleFunctionsPage(primaryStage, databaseHelper, email, "instructor");
+    				 articleFunctionsScene = new Scene(articleFunctionsPage.getArticleFunctionsLayout(), 400, 300);
+    				primaryStage.setScene(articleFunctionsScene);
                     break;
                 default:
                     databaseHelper.ensureConnection();
