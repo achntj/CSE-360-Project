@@ -1136,32 +1136,47 @@ public class DatabaseHelper {
 	public String[] groupsAccessibleToUser(String email) throws SQLException {
 		ensureConnection();
 		System.out.println("Getting Groups...");
+		
+		List<Integer> accessibleGroupsIDs = new ArrayList<>();
 
-		printIntArray(getGeneralGroups());
-		printIntArray(getGroupsWhereAdmin(email));
-		printIntArray(getGroupsWhereInstructor(email));
-		printIntArray(getGroupsWhereStudent(email));
-
-		String queryIDs = "SELECT group_name FROM groups WHERE type = ?";
-
-		int id = Integer.parseInt(getUserIdFromEmail(email));
-
-		List<String> groupList = new ArrayList<>();
-
-		// Fetch group names
-		try (PreparedStatement pstmt = connection.prepareStatement(queryIDs)) {
-			pstmt.setInt(1, id);
-			pstmt.setInt(2, id);
-			pstmt.setInt(3, id);
-			pstmt.setString(4, "general");
-			try (ResultSet rs = pstmt.executeQuery()) {
-				while (rs.next()) { // Iterate through all results
-					groupList.add(rs.getString("group_name"));
-				}
+		for (int group : getGeneralGroups()) {
+			if (!accessibleGroupsIDs.contains(group)) {
+				accessibleGroupsIDs.add(group);
 			}
 		}
+		for (int group : getGroupsWhereAdmin(email)) {
+			if (!accessibleGroupsIDs.contains(group)) {
+				accessibleGroupsIDs.add(group);
+			}
+		}
+		for (int group : getGroupsWhereInstructor(email)) {
+			if (!accessibleGroupsIDs.contains(group)) {
+				accessibleGroupsIDs.add(group);
+			}
+		}
+		for (int group : getGroupsWhereStudent(email)) {
+			if (!accessibleGroupsIDs.contains(group)) {
+				accessibleGroupsIDs.add(group);
+			}
+		}
+		
+		List<String> groupList = new ArrayList<>();
 
-		// If no groups are found, return null
+		
+		String queryIDs = "SELECT group_name FROM groups WHERE id = ?";
+
+		for (int i = 0; i < accessibleGroupsIDs.size(); i++) {
+			try (PreparedStatement pstmt = connection.prepareStatement(queryIDs)) {
+				pstmt.setInt(1, accessibleGroupsIDs.get(i));
+				try (ResultSet rs = pstmt.executeQuery()) {
+					if (rs.next()) { // Iterate through all results
+						groupList.add(rs.getString("group_name"));
+					}
+				}
+			}
+
+		}
+
 		if (groupList.isEmpty()) {
 			System.out.println("No groups found for email: " + email);
 			return null;
