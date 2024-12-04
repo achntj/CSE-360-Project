@@ -688,15 +688,13 @@ public class DatabaseHelper {
 				String author = rs.getString("authors");
 				String abstractVal = rs.getString("abstract");
 				String keywords = rs.getString("keywords");
-				String body = rs.getString("body");
 				String references = rs.getString("references");
 
 				// Append article details to the list
 				articlesList.append("ID: ").append(id).append("\n").append("Title: ").append(title).append("\n")
 						.append("Difficulty: ").append(difficulty).append("\n") // Append difficulty
 						.append("Author: ").append(author).append("\n").append("Abstract: ").append(abstractVal)
-						.append("\n").append("Keywords: ").append(keywords).append("\n").append("Body: ").append(body)
-						.append("\n").append("References: ").append(references).append("\n")
+						.append("\n").append("Keywords: ").append(keywords).append("\n").append("References: ").append(references).append("\n")
 						.append("-------------------------------\n");
 			}
 		}
@@ -1456,7 +1454,16 @@ public class DatabaseHelper {
 			pstmt.setString(1, email);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
-					return rs.getString("preferred_name");
+					String prefName = rs.getString("preferred_name");
+					if (prefName == null) {
+						return null;
+					} 
+					else if (prefName.isBlank()){
+						return null;
+					} 
+					else { 
+						return rs.getString("preferred_name");
+					}
 				} else {
 					System.out.println("No user found with email: " + email);
 					return null;
@@ -1475,10 +1482,9 @@ public class DatabaseHelper {
 			pstmt.setString(1, email);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
-					if (getPrefferedName(email) == "") {
+					if (getPrefferedName(email) == null) {
 						return rs.getString("first_name");
 					}
-
 					return getPrefferedName(email);
 				} else {
 					System.out.println("No user found with email: " + email);
