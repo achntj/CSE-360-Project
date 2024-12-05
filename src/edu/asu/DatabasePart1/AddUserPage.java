@@ -141,9 +141,9 @@ public class AddUserPage {
 		// page
 		backButton.setOnAction(event -> {
 			// Navigates back to the Instructor Home Page
-			InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, role);
-			Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
-			primaryStage.setScene(instructorScene);
+			EditGroupsPage editGroupsPage = new EditGroupsPage(primaryStage, databaseHelper, email, role);
+			Scene editGroupsScene = new Scene(editGroupsPage.getGroupAccessLayout(), 400, 300);
+			primaryStage.setScene(editGroupsScene);
 		});
 	}
 

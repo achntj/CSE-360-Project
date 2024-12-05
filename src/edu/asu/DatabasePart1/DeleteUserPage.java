@@ -135,13 +135,9 @@ public class DeleteUserPage {
      * Redirects to the appropriate home page based on the user's role.
      */
     private void navigateBackToHomePage() {
-        if (role.equalsIgnoreCase("instructor")) {
-            InstructorHomePage instructorHomePage = new InstructorHomePage(primaryStage, databaseHelper, email, role);
-            Scene instructorScene = new Scene(instructorHomePage.getInstructorHomeLayout(), 400, 300);
-            primaryStage.setScene(instructorScene);
-        } else {
-            showAlert("Error", "Navigation for this role is not implemented.", Alert.AlertType.ERROR);
-        }
+    	EditGroupsPage editGroupsPage = new EditGroupsPage(primaryStage, databaseHelper, email, role);
+		Scene editGroupsScene = new Scene(editGroupsPage.getGroupAccessLayout(), 400, 300);
+		primaryStage.setScene(editGroupsScene);
     }
 
     /**

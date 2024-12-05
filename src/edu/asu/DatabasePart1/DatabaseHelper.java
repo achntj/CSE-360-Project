@@ -1980,6 +1980,7 @@ public class DatabaseHelper {
 		System.out.println("Article " + (addArticle ? "added to" : "removed from") + " the group successfully.");
 
 	}
+	
 
 	public boolean isInstructorInGroup(String groupId, String instructorId) throws SQLException {
 		String query = "SELECT instructors FROM groups WHERE id = ?";

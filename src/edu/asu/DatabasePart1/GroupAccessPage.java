@@ -155,7 +155,9 @@ public class GroupAccessPage {
      * 
      */
     private void editGroups() {
-    	System.out.println("Edit Groups Pressed");
+    	EditGroupsPage editGroupsPage = new EditGroupsPage(primaryStage, databaseHelper, email, role);
+        Scene editPage = new Scene(editGroupsPage.getGroupAccessLayout(), 400, 300);
+        primaryStage.setScene(editPage);
     }
 
     /**
