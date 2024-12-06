@@ -150,6 +150,8 @@ public class SearchPage {
 		// Set up search button action
 		searchButton.setOnAction(event -> {
 			System.out.println("Attempting to Perform Search...");
+			
+			String searchQuery = searchCriteria.getText().trim();
 
 			RadioButton selectedGroup = (RadioButton) groupsToggle.getSelectedToggle();
 			String groupFilter;
@@ -193,6 +195,10 @@ public class SearchPage {
 						filteredArticleList = databaseHelper.articlesFilteredDifficulty(filteredArticleList,
 								difficultyFilter);
 					}
+				}
+				
+				if (filteredArticleList != null) {
+					filteredArticleList = databaseHelper.searchForArticles(searchQuery, filteredArticleList);
 				}
 
 				try {
