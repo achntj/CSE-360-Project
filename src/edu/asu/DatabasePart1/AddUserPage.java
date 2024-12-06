@@ -77,7 +77,7 @@ public class AddUserPage {
 		// Establishes text fields and buttons used in the user interface
 		Label studentLabel = new Label("Student ID");
 		TextField studentField = new TextField();
-		Label groupRoleLabel = new Label("Role: (admin, instructor, student)");
+		Label groupRoleLabel = new Label("Role: (admins, instructors, students)");
 		TextField groupRoleField = new TextField();
 		Label groupLabel = new Label("Group ID");
 		TextField groupField = new TextField();
