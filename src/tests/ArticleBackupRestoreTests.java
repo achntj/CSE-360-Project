@@ -21,7 +21,7 @@ public class ArticleBackupRestoreTests {
 
         // Connect to the database and ensure a clean slate
         databaseHelper.connectToDatabase();
-        databaseHelper.clearArticlesTable(); // Assumes this method clears the articles table
+        databaseHelper.deleteAllArticles(); // Assumes this method clears the articles table
     }
 
     @Test
@@ -36,7 +36,7 @@ public class ArticleBackupRestoreTests {
             databaseHelper.backupArticles(backupFile);
 
             // Clear the articles table
-            databaseHelper.clearArticlesTable();
+            databaseHelper.deleteAllArticles();
             assertTrue("Articles table should be empty", databaseHelper.getAllArticles().isEmpty());
 
             // Restore articles from the backup file
@@ -69,7 +69,7 @@ public class ArticleBackupRestoreTests {
             databaseHelper.backupByKeyword(keywordBackupFile, "keyword1");
 
             // Clear the articles table
-            databaseHelper.clearArticlesTable();
+            databaseHelper.deleteAllArticles();
             assertTrue("Articles table should be empty", databaseHelper.getAllArticles().isEmpty());
 
             // Restore articles from the keyword backup file

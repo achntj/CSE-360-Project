@@ -2055,5 +2055,66 @@ public class DatabaseHelper {
 			System.err.println("Error occurred while deleting groups: " + e.getMessage());
 		}
 	}
+	
+	public void deleteAllArticles() {
+		String deleteQuery = "DELETE FROM articles";
+
+		try (PreparedStatement pstmt = connection.prepareStatement(deleteQuery)) {
+			int rowsAffected = pstmt.executeUpdate();
+			System.out.println("Number of articles deleted: " + rowsAffected);
+		} catch (SQLException e) {
+			System.err.println("Error occurred while deleting articles: " + e.getMessage());
+		}
+	}
+	
+	public List<String[]> getAllArticles() throws SQLException {
+	    ensureConnection(); // Ensure the connection is established
+
+	    List<String[]> articlesList = new ArrayList<>();
+	    String query = "SELECT id, title, difficulty, authors, abstract, keywords, body, references FROM articles";
+
+	    try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+	        while (rs.next()) {
+	            String[] article = new String[8]; // Array to store article details
+	            article[0] = String.valueOf(rs.getInt("id"));       // ID
+	            article[1] = rs.getString("title");                // Title
+	            article[2] = rs.getString("difficulty");           // Difficulty
+	            article[3] = rs.getString("authors");              // Authors
+	            article[4] = rs.getString("abstract");             // Abstract
+	            article[5] = rs.getString("keywords");             // Keywords
+	            article[6] = rs.getString("body");                 // Body
+	            article[7] = rs.getString("references");           // References
+	            articlesList.add(article);
+	        }
+	    }
+
+	    return articlesList;
+	}
+
+	public List<Integer> getAllGroupIds() throws SQLException {
+	    ensureConnection(); // Ensure the connection is established
+
+	    List<Integer> groupIds = new ArrayList<>();
+	    String query = "SELECT id FROM groups"; // Assuming the table name is 'groups' and ID column is 'id'
+
+	    try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+	        while (rs.next()) {
+	            groupIds.add(rs.getInt("id")); // Add each ID to the list
+	        }
+	    }
+
+	    return groupIds;
+	}
+
+	public void deleteAllUsers() throws SQLException {
+	    ensureConnection(); // Ensure the connection is established
+
+	    String query = "DELETE FROM cse360users"; // SQL query to delete all rows
+	    try (Statement stmt = connection.createStatement()) {
+	        stmt.executeUpdate(query);
+	    }
+	}
+
+	
 
 }

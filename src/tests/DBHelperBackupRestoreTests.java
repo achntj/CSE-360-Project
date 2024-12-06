@@ -15,7 +15,7 @@ import java.util.List;
 public class DBHelperBackupRestoreTests {
 
     private DatabaseHelper databaseHelper;
-    private static final String BACKUP_FILE = "test_backup.enc";
+    private static final String BACKUP_FILE = "test_backup.txt";
 
     @Before
     public void setUp() throws SQLException {
@@ -62,7 +62,7 @@ public class DBHelperBackupRestoreTests {
     public void testRestoreGroupsPopulatesDatabaseFromBackup() {
         try {
             // Set up test data for the database
-            String groupId = "1";
+            Integer groupId = 1;
             String groupName = "Restore Test Group";
             String articleIds = "4,5,6";
             String admins = "2,3";
@@ -71,12 +71,12 @@ public class DBHelperBackupRestoreTests {
             String type = "special";
 
             // Create a test group and back it up
-            databaseHelper.createGroup(groupId, groupName, articleIds, admins, instructors, students, type);
+            databaseHelper.createGroup(groupId.toString(), groupName, articleIds, admins, instructors, students, type);
             databaseHelper.backupGroups(BACKUP_FILE);
 
             // Clear the database and verify it is empty
             databaseHelper.deleteAllGroups();
-            List<String> groups = databaseHelper.getAllGroupIds();
+            List<Integer> groups = databaseHelper.getAllGroupIds();
             assertTrue("Database should be empty after deletion", groups.isEmpty());
 
             // Restore the group from the backup
@@ -85,6 +85,7 @@ public class DBHelperBackupRestoreTests {
             // Verify the group has been restored
             groups = databaseHelper.getAllGroupIds();
             assertFalse("Database should not be empty after restoration", groups.isEmpty());
+            System.out.println(groups+"asdasdasdasd");
             assertTrue("Restored group should match the original group ID", groups.contains(groupId));
 
         } catch (Exception e) {
@@ -104,7 +105,7 @@ public class DBHelperBackupRestoreTests {
             databaseHelper.restoreGroups("non_existent_file.enc");
 
             // Ensure no exception occurs and the database remains empty
-            List<String> groups = databaseHelper.getAllGroupIds();
+            List<Integer> groups = databaseHelper.getAllGroupIds();
             assertTrue("Database should remain empty after restore from missing file", groups.isEmpty());
         } catch (Exception e) {
             fail("Restore operation should handle missing file gracefully");
